@@ -21,6 +21,7 @@
     "cloudinary": "^2.6.1",
     "framer-motion": "^12.17.3",
     "hamburger-react": "^2.5.2",
+    "lucide-react": "^0.515.0",
     "radix-ui": "^1.4.2",
     "react": "^19.1.0",
     "react-apexcharts": "^1.7.0",

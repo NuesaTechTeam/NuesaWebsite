@@ -39,25 +39,25 @@ export const navbarLinks = [
 export const socialLinks = [
   {
     title: "Twitter",
-    icon: <BsTwitterX size={24} className='text-black hover:text-blue-500' />,
+    icon: <BsTwitterX size={24} className=' hover:text-blue-500' />,
     link: "https://x.com/nuesa_abuad",
     color: "",
   },
   {
     title: "Snapchat",
-    icon: <BsSnapchat size={24} className='text-black hover:text-yellow-400' />,
+    icon: <BsSnapchat size={24} className=' hover:text-yellow-400' />,
     link: "https://www.snapchat.com/add/nuesa_abuad",
     color: "",
   },
   {
     title: "Instagram",
-    icon: <BsInstagram size={24} className='text-black hover:text-pink-500' />,
+    icon: <BsInstagram size={24} className=' hover:text-pink-500' />,
     link: "https://www.instagram.com/nuesaabuad",
     color: "",
   },
   {
     title: "WhatsApp",
-    icon: <BsWhatsapp size={24} className='text-black hover:text-green-500' />,
+    icon: <BsWhatsapp size={24} className=' hover:text-green-500' />,
     link: "/",
     color: "",
   },
