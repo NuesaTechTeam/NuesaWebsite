@@ -83,7 +83,7 @@ const Navbar = () => {
               key={link.title}
               to={link.url}
               className={`px-4 py-2 text-gray-700 hover:bg-green-100 rounded ${
-                location.pathname === link.url ? "bg-green-400" : ""
+                location.pathname === link.url ? "bg-green-500" : ""
               }`}
             >
               {link.title}
@@ -161,7 +161,7 @@ const Navbar = () => {
                   href={social.link}
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='text-gray-700 hover:text-green transition-colors duration-200 flex items-center gap-2'
+                  className='text-black hover:text-green transition-colors duration-200 flex items-center gap-2'
                 >
                   {social.icon}
                 </a>
