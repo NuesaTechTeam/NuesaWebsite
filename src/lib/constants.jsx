@@ -218,3 +218,81 @@ export const eventsData = [
     status: "upcoming",
   },
 ];
+
+export const newsArticles = [
+  {
+    id: 1,
+    title: "Engineering Students Win National Robotics Championship",
+    excerpt:
+      "Our team of brilliant engineering students has secured first place in the National Robotics Championship, showcasing innovative solutions in autonomous systems.",
+    date: "March 10, 2025",
+    image:
+      "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=250&fit=crop",
+  },
+  {
+    id: 2,
+    title: "New AI Research Lab Opens on Campus",
+    excerpt:
+      "The college inaugurates a state-of-the-art Artificial Intelligence research facility, equipped with cutting-edge hardware and collaborative spaces.",
+    date: "March 8, 2025",
+    image:
+      "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=250&fit=crop",
+  },
+  {
+    id: 3,
+    title: "Industry Partnership Program Launches",
+    excerpt:
+      "New collaboration with leading tech companies provides internship opportunities and real-world project experience for final year students.",
+    date: "March 5, 2025",
+    image:
+      "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=250&fit=crop",
+  },
+  {
+    id: 4,
+    title: "Sustainability Initiative: Solar Panel Installation Complete",
+    excerpt:
+      "The college achieves 60% renewable energy coverage with the completion of rooftop solar installations across all academic buildings.",
+    date: "March 3, 2025",
+    image:
+      "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&h=250&fit=crop",
+  },
+];
+
+export const galleryPhotos = [
+  {
+    id: 1,
+    src: "/images/events/tech-fusion.jpg",
+    title: "TechFest 2024 - Opening Ceremony",
+    eventDate: "October 2024",
+  },
+  {
+    id: 2,
+    src: "/images/events/college.jpg",
+    title: "Engineering Symposium - Keynote Speech",
+    eventDate: "September 2024",
+  },
+  {
+    id: 3,
+    src: "/images/events/tech-fusion.jpg",
+    title: "Hackathon 2024 - Team Collaboration",
+    eventDate: "August 2024",
+  },
+  {
+    id: 4,
+    src: "/images/events/salam-odo-nuwa.jpg",
+    title: "Cultural Night - Dance Performance",
+    eventDate: "July 2024",
+  },
+  {
+    id: 5,
+    src: "/images/events/career-path-in-fintech.jpg",
+    title: "Industry Connect - Networking Session",
+    eventDate: "June 2024",
+  },
+  {
+    id: 6,
+    src: "/images/events/career-path-in-fintech.jpg",
+    title: "Science Exhibition - Project Showcase",
+    eventDate: "May 2024",
+  },
+];

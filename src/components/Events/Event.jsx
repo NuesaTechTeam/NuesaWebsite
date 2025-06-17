@@ -84,12 +84,12 @@ const Event = () => {
   const stats = getEventStats();
 
   return (
-    <div className='min-h-screen bg-white py-15 '>
-      <div className='container mx-auto px-3'>
+    <section className='bg-white py-15 '>
+      <div className='container mx-auto'>
         {/* header */}
         <div className='text-center mb-12'>
           <h1 className='text-5xl md:text-7xl font-bold mb-6 bg-gradient-to-r from-green to-teal-600 bg-clip-text text-transparent'>
-            College Events
+            College Events and News
           </h1>
           <p className='text-xl text-green-900/80 max-w-2xl mx-auto'>
             Discover our exciting events that shape the future of engineering
@@ -121,7 +121,7 @@ const Event = () => {
                   onClick={() => setActiveFilter("past")}
                 >
                   <Clock className='size-6' />
-                  <span>Past ({stats.past})</span>
+                  <span>Past</span>
                 </button>
               </div>
             </div>
@@ -276,7 +276,7 @@ const Event = () => {
           </div>
         )}
       </div>
-    </div>
+    </section>
   );
 };
 export default Event;
