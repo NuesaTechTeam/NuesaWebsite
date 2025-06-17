@@ -95,3 +95,126 @@ export const faqData = [
       "While NUESA primarily serves engineering students, many of our events are open to the wider university community. Non-engineering students can attend public lectures, exhibitions, and social events, but may not be eligible for certain technical workshops or competitions.",
   },
 ];
+
+
+export const eventsData = [
+  {
+    id: 1,
+    title: "Career Path in Fintech: The Journey",
+    date: "September 7, 2024",
+    time: "11:30 AM - 13:30 PM",
+    venue: "Google Meet",
+    description:
+      "A webinar session hosting 2 guests with a wealth of experience in the fintech sector.",
+    image: "/images/events/career-path-in-fintech.jpg",
+    category: "Professional",
+    status: "past",
+  },
+  {
+    id: 2,
+    title: "Q&A Sessions with your Excos",
+    date: "September 18, 2024",
+    time: "8:00 PM - 09:30 PM",
+    venue: "Twitter Spaces",
+    description:
+      "Visit to leading tech companies in Lagos to gain insights into industry practices and network with professionals.",
+    image: "/images/events/know-your-excos.jpg",
+    category: "Exhibition",
+    status: "past",
+  },
+  {
+    id: 3,
+    title: "Fresher's Orientation",
+    date: "October 12, 2024",
+    time: "09:30 AM - 12:00 PM",
+    venue: "Engineering Auditorium",
+    description:
+      "Hands-on workshops on emerging technologies and engineering practices led by industry experts.",
+    image: "/images/events/freshers-orientation.jpg",
+    category: "Academic",
+    status: "past",
+  },
+  {
+    id: 4,
+    title: "Tech Fusion",
+    date: "November 20, 2024",
+    time: "05:00 PM - 07:00 PM",
+    venue: "Engineering Auditorium",
+    description:
+      "Annual technical festival featuring coding competitions, robotics, and innovation showcases.",
+    image: "/images/events/tech-fusion.jpg",
+    category: "Technical",
+    status: "past",
+  },
+  {
+    id: 5,
+    title: "Salam Odo N'uwa",
+    date: "November 24, 2024",
+    time: "07:00 PM - 10:30 PM",
+    venue: "Alfa Belgore Hall, ABUAD",
+    description: "Annual dinner and awards night.",
+    image: "/images/events/salam-odo-nuwa.jpg",
+    category: "Cultural",
+    status: "past",
+  },
+  {
+    id: 6,
+    title: "Career Path in Fintech: The Journey",
+    date: "September 7, 2024",
+    time: "11:30 AM - 13:30 PM",
+    venue: "Google Meet",
+    description:
+      "A webinar session hosting 2 guests with a wealth of experience in the fintech sector.",
+    image: "/images/events/career-path-in-fintech.jpg",
+    category: "Professional",
+    status: "upcoming",
+  },
+  {
+    id: 7,
+    title: "Q&A Sessions with your Excos",
+    date: "September 18, 2024",
+    time: "8:00 PM - 09:30 PM",
+    venue: "Twitter Spaces",
+    description:
+      "Visit to leading tech companies in Lagos to gain insights into industry practices and network with professionals.",
+    image: "/images/events/know-your-excos.jpg",
+    category: "Exhibition",
+    status: "upcoming",
+  },
+  {
+    id: 8,
+    title: "Fresher's Orientation",
+    date: "October 12, 2024",
+    time: "09:30 AM - 12:00 PM",
+    venue: "Engineering Auditorium",
+    description:
+      "Hands-on workshops on emerging technologies and engineering practices led by industry experts.",
+    image: "/images/events/freshers-orientation.jpg",
+    category: "Academic",
+    status: "upcoming",
+  },
+  {
+    id: 9,
+    title: "Tech Fusion",
+    date: "November 20, 2024",
+    time: "05:00 PM - 07:00 PM",
+    venue: "Engineering Auditorium",
+    description:
+      "Annual technical festival featuring coding competitions, robotics, and innovation showcases.",
+    image: "/images/events/tech-fusion.jpg",
+    category: "Technical",
+    status: "upcoming",
+  },
+  {
+    id: 10,
+    title: "Salam Odo N'uwa",
+    date: "November 24, 2024",
+    time: "07:00 PM - 10:30 PM",
+    venue: "Alfa Belgore Hall, ABUAD",
+    description:
+      "Annual dinner and awards night. Annual dinner and awards night.",
+    image: "/images/events/salam-odo-nuwa.jpg",
+    category: "Cultural",
+    status: "upcoming",
+  },
+];
