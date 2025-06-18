@@ -5,7 +5,7 @@ import { Calendar, ChevronDown, Clock } from "lucide-react";
 
 const Event = () => {
   const [visibleEvents, setVisibleEvents] = useState(new Set());
-  const [activeFilter, setActiveFilter] = useState("past");
+  const [activeFilter, setActiveFilter] = useState("upcoming");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const timelineRef = useRef(null);
   const eventRefs = useRef([]);
@@ -253,7 +253,7 @@ const Event = () => {
               <h3 className='text-2xl font-bold text-green mb-2'>
                 No Events Found
               </h3>
-              <p className='text-gray-600'>
+              <p className='text-gray-700'>
                 No events match your current filter selection.
               </p>
             </div>

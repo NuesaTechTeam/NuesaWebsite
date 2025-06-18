@@ -10,7 +10,7 @@ const News = () => {
           <h2 className='text-4xl md:text-5xl font-bold text-green mb-4'>
             Latest News & Updates
           </h2>
-          <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
+          <p className='text-xl text-gray-700 max-w-3xl mx-auto'>
             Stay informed with the latest developments, achievements, and
             announcements from our engineering college
           </p>
@@ -38,7 +38,7 @@ const News = () => {
                   <h3 className='text-xl font-bold text-gray-900 mb-3 group-hover:text-green-600 transition-colors line-clamp-2'>
                     {article.title}
                   </h3>
-                  <p className='text-gray-600 mb-4 leading-relaxed line-clamp-3'>
+                  <p className='text-gray-700 mb-4 leading-relaxed line-clamp-3'>
                     {article.excerpt}
                   </p>
 

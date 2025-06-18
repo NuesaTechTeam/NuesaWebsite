@@ -37,7 +37,7 @@ const Gallery = () => {
           <h2 className='text-4xl md:text-5xl font-bold text-green mb-4'>
             Event Photo Gallery
           </h2>
-          <p className='text-xl text-gray-600 max-w-3xl mx-auto'>
+          <p className='text-xl text-gray-700 max-w-3xl mx-auto'>
             Relive the memorable moments from our college events through this
             curated collection of photographs
           </p>
