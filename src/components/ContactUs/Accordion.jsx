@@ -21,7 +21,7 @@ const AccordionDemo = () => {
                 <AccordionTrigger className='text-lg font-semibold text-gray-800'>
                   {item.question}
                 </AccordionTrigger>
-              <Accordion.Content className='p-4 text-gray-600'>
+              <Accordion.Content className='p-4 text-gray-700'>
                 {item.answer}
               </Accordion.Content>
             </AccordionItem>

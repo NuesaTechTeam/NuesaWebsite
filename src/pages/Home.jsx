@@ -1,6 +1,10 @@
+import { EventsHome } from "../components/Events"
+
 const Home = () => {
   return (
-    <div>Home</div>
-  )
+    <div>
+      <EventsHome />
+    </div>
+  );
 }
 export default Home
