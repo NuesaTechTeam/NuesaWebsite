@@ -28,7 +28,11 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false}) => {
           <img
             src={executive.image}
             alt={executive.name}
-            className='w-full h-full object-cover'
+            className='w-full h-full object-fill'
+            onError={(e) => {
+              e.target.src =
+                "/images/executives/current/OIP.webp?height=300&width=300";
+            }}
           />
         </div>
         <div className='absolute top-4 right-4 bg-green text-white px-3 py-1 rounded-full text-sm font-medium'>

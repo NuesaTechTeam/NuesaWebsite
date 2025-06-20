@@ -3,19 +3,37 @@ import {
   currentExecutivesData,
   pastExecutivesByYear,
 } from "../../lib/constants";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Calendar } from "lucide-react";
 
 const Executive = () => {
   const [activeTab, setActiveTab] = useState("current");
   const [selectedYear, setSelectedYear] = useState("2024-2025");
+  const [scrollIntoView, setScrollIntoView] = useState(null)
+
+  const ref = useRef(null)
+
+  useEffect(() => {
+    if (scrollIntoView && ref.current) {
+      ref.current.scrollIntoView({behavior: "smooth"})
+    }
+  }, [scrollIntoView])
+
+  const pastButton = () => {
+    setActiveTab("past")
+    setScrollIntoView("header")
+  }
 
     return (
       <div className='py-12 lg:px-4'>
         <div className='max-w-7xl mx-auto'>
           {/* header */}
           <div className='text-center mb-12'>
-            <h1 className='text-4xl font-bold text-green mb-4'>
+            <h1
+              className='text-4xl font-bold text-green mb-4'
+              ref={ref}
+              id='header'
+            >
               NUESA Leadership Team
             </h1>
             <p className='text-xl text-gray-700 max-w-4xl mx-auto mb-8'>
@@ -68,7 +86,7 @@ const Executive = () => {
                 </p>
               </div>
 
-              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12'>
+              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12'>
                 {currentExecutivesData.map((executive, index) => (
                   <ExecutiveCard
                     key={index}
@@ -86,17 +104,17 @@ const Executive = () => {
                     className={`px-4 py-3 rounded-md font-medium transition-all ${
                       activeTab === "current"
                         ? "bg-green text-white shadow-sm"
-                        : "text-gray-700 hover:text-gray-900"
+                        : "text-gray-700 hover:text-gray-900 cursor-pointer"
                     }`}
                   >
                     Current Executives
                   </button>
                   <button
-                    onClick={() => setActiveTab("past")}
+                    onClick={pastButton}
                     className={`px-4 py-3 rounded-md font-medium transition-all ${
                       activeTab === "past"
                         ? "bg-green text-white shadow-sm"
-                        : "text-gray-700 hover:text-gray-900"
+                        : "text-gray-700 hover:text-gray-900 cursor-pointer"
                     }`}
                   >
                     Past Excos
@@ -125,7 +143,7 @@ const Executive = () => {
                 </div>
               </div>
 
-              <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8'>
+              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8'>
                 {pastExecutivesByYear
                   .find((yearData) => yearData.year === selectedYear)
                   ?.executives.map((executive, index) => (

@@ -43,7 +43,7 @@ const EventsHome = () => {
   const dateInfo = formatDate(currentEvent.date);
 
   return (
-    <section className='py-8 bg-white'>
+    <section className='py-8 bg-white border-t-1 border-green-200'>
       <div className='max-w-7xl mx-auto'>
         {/* header */}
         <div className='text-center mb-16'>
