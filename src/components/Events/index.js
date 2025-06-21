@@ -5,3 +5,4 @@ import News from "./News";
 import EventsHome from "./EventsHome";
 
 export { Event, EventCard, Gallery, News, EventsHome };
+

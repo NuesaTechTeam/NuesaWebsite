@@ -113,6 +113,7 @@ export const eventsData = [
     image: "/images/events/career-path-in-fintech.jpg",
     category: "Professional",
     status: "past",
+    featured: false,
   },
   {
     id: 2,
@@ -125,6 +126,7 @@ export const eventsData = [
     image: "/images/events/know-your-excos.jpg",
     category: "Exhibition",
     status: "past",
+    featured: false,
   },
   {
     id: 3,
@@ -137,6 +139,7 @@ export const eventsData = [
     image: "/images/events/freshers-orientation.jpg",
     category: "Academic",
     status: "past",
+    featured: false,
   },
   {
     id: 4,
@@ -149,6 +152,7 @@ export const eventsData = [
     image: "/images/events/tech-fusion.jpg",
     category: "Technical",
     status: "past",
+    featured: false,
   },
   {
     id: 5,
@@ -160,6 +164,7 @@ export const eventsData = [
     image: "/images/events/salam-odo-nuwa.jpg",
     category: "Cultural",
     status: "past",
+    featured: false,
   },
   {
     id: 6,
@@ -185,6 +190,7 @@ export const eventsData = [
     image: "/images/events/know-your-excos.jpg",
     category: "Exhibition",
     status: "upcoming",
+    featured: false,
   },
   {
     id: 8,
@@ -197,6 +203,7 @@ export const eventsData = [
     image: "/images/events/freshers-orientation.jpg",
     category: "Academic",
     status: "upcoming",
+    featured: false,
   },
   {
     id: 9,
@@ -209,7 +216,7 @@ export const eventsData = [
     image: "/images/events/tech-fusion.jpg",
     category: "Technical",
     status: "upcoming",
-    featured: true
+    featured: true,
   },
   {
     id: 10,
@@ -763,7 +770,6 @@ export const pastExecutivesByYear = [
         name: "Tolu Adeyemi",
         position: "Financial Secretary",
         department: "Chemical Engineering",
-        image:
           "/images/executives/current/OIP.webp?height=300&width=300",
       },
     ],

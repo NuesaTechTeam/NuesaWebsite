@@ -28,7 +28,7 @@ const Gallery = () => {
   const goToSlide = (index) => {
     setCurrentSlide(index);
   };
-
+  
   return (
     <section className='py-10 bg-white'>
       <div className='max-w-7xl mx-auto'>
@@ -134,3 +134,4 @@ const Gallery = () => {
   );
 };
 export default Gallery;
+
