@@ -4,17 +4,16 @@ import { Calendar, MapPin, Clock, ArrowRight, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const EventsHome = () => {
-    
   const [currentEventIndex, setCurrentEventIndex] = useState(0);
   const featuredEvents = eventsData.filter((event) => event.featured === true);
   const upcomingEvents = eventsData.filter(
     (event) => event.status === "upcoming"
-    );
-    const navigate = useNavigate()
+  );
+  const navigate = useNavigate();
 
-    const handleEventButton = () => {
-        navigate("/events")
-    }
+  const handleEventButton = () => {
+    navigate("/events");
+  };
 
   const categoryColors = {
     Technical: "bg-blue-100 text-blue-800 border-blue-200",
@@ -44,7 +43,7 @@ const EventsHome = () => {
   const dateInfo = formatDate(currentEvent.date);
 
   return (
-    <section className='py-8 bg-white'>
+    <section className='py-8 bg-white border-t-1 border-green-200'>
       <div className='max-w-7xl mx-auto'>
         {/* header */}
         <div className='text-center mb-16'>
@@ -200,59 +199,60 @@ const EventsHome = () => {
             </div>
 
             <div className='space-y-4'>
-                          <button
-              onClick={handleEventButton}
-                              className='w-full lg:w-auto bg-gradient-to-r to-green from-green-700 hover:from-green-600 hover:to-green-700 text-white px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl flex items-center justify-center group cursor-pointer'>
+              <button
+                onClick={handleEventButton}
+                className='w-full lg:w-auto bg-gradient-to-r to-green from-green-700 hover:from-green-600 hover:to-green-700 text-white px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl flex items-center justify-center group cursor-pointer'
+              >
                 View All Events
                 <ArrowRight className='size-7 ml-2 group-hover:translate-x-1 transition-transform' />
               </button>
             </div>
           </div>
+        </div>
+
+        <div className='mt-12'>
+          <h3 className='text-2xl font-bold text-green text-center mb-12'>
+            Also Coming Up
+          </h3>
+          <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
+            {featuredEvents
+              .filter((_, index) => index !== currentEventIndex)
+              .slice(0, 2)
+              .map((event) => (
+                <div
+                  key={event.id}
+                  className='bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2'
+                >
+                  <img
+                    src={event.image}
+                    alt={event.title}
+                    className='w-full h-32 object-cover'
+                  />
+                  <div className='p-4'>
+                    <h4 className='font-bold text-gray-900 mb-2 line-clamp-1'>
+                      {event.title}
+                    </h4>
+                    <div className='flex items-center text-gray-500 text-sm'>
+                      <Calendar className='w-3 h-3 mr-1' />
+                      <span>{event.date}</span>
+                    </div>
+                  </div>
                 </div>
+              ))}
 
-          <div className='mt-12'>
-            <h3 className='text-2xl font-bold text-green text-center mb-12'>
-              Also Coming Up
-            </h3>
-            <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-              {featuredEvents
-                .filter((_, index) => index !== currentEventIndex)
-                .slice(0, 2)
-                .map((event) => (
-                  <div
-                    key={event.id}
-                    className='bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2'
-                  >
-                    <img
-                      src={event.image}
-                      alt={event.title}
-                      className='w-full h-32 object-cover'
-                    />
-                    <div className='p-4'>
-                      <h4 className='font-bold text-gray-900 mb-2 line-clamp-1'>
-                        {event.title}
-                      </h4>
-                      <div className='flex items-center text-gray-500 text-sm'>
-                        <Calendar className='w-3 h-3 mr-1' />
-                        <span>{event.date}</span>
-                      </div>
-                    </div>
+            <div className='bg-gradient-to-br from-green-50 to-green-100 rounded-2xl border-2 border-dashed border-green-300 p-6 flex flex-col items-center justify-center text-center hover:from-green-100 hover:to-green-200 transition-all duration-300 cursor-pointer'>
+              {upcomingEvents.length - 3 > 0 && (
+                <div className='text-green mb-2'>
+                  <Sparkles className='size-7 mx-auto mb-2' />
+                  <div className='text-lg font-bold'>
+                    {upcomingEvents.length - 3}+ More
                   </div>
-                ))}
-
-              <div className='bg-gradient-to-br from-green-50 to-green-100 rounded-2xl border-2 border-dashed border-green-300 p-6 flex flex-col items-center justify-center text-center hover:from-green-100 hover:to-green-200 transition-all duration-300 cursor-pointer'>
-                {upcomingEvents.length - 3 > 0 && (
-                  <div className='text-green mb-2'>
-                    <Sparkles className='size-7 mx-auto mb-2' />
-                    <div className='text-lg font-bold'>
-                      {upcomingEvents.length - 3}+ More
-                    </div>
-                    <div className='text-sm'>Exciting Events</div>
-                  </div>
-                )}
-              </div>
+                  <div className='text-sm'>Exciting Events</div>
+                </div>
+              )}
             </div>
           </div>
+        </div>
       </div>
     </section>
   );

@@ -1,35 +1,34 @@
-import { useEffect, useState } from "react"
-import { galleryPhotos } from "../../lib/constants"
-import { ChevronLeft, ChevronRight, Play, Pause } from "lucide-react"
-
+import { useEffect, useState } from "react";
+import { galleryPhotos } from "../../lib/constants";
+import { ChevronLeft, ChevronRight, Play, Pause } from "lucide-react";
 
 const Gallery = () => {
-    const [currentSlide, setCurrentSlide] = useState(0)
-    const [isAutoPlaying, setIsAutoPlaying] = useState(true)
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
-    useEffect(() => {
-        if(!isAutoPlaying) return
+  useEffect(() => {
+    if (!isAutoPlaying) return;
 
-        const interval = setInterval(() => {
-            setCurrentSlide((prev) => (prev + 1) % galleryPhotos.length)
-        }, 5000);
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % galleryPhotos.length);
+    }, 5000);
 
-        return () => clearInterval(interval)
-    }, [isAutoPlaying])
+    return () => clearInterval(interval);
+  }, [isAutoPlaying]);
 
-    const nextSlide = () => {
-        setCurrentSlide((prev) => (prev + 1) % galleryPhotos.length)
-    }
-    const prevSlide = () => {
-        setCurrentSlide((prev) => (prev - 1 + galleryPhotos.length) % galleryPhotos.length)
-    }
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % galleryPhotos.length);
+  };
+  const prevSlide = () => {
+    setCurrentSlide(
+      (prev) => (prev - 1 + galleryPhotos.length) % galleryPhotos.length
+    );
+  };
 
-    const goToSlide = (index) => {
-     setCurrentSlide(index)
-    }
-
-    
-    
+  const goToSlide = (index) => {
+    setCurrentSlide(index);
+  };
+  
   return (
     <section className='py-10 bg-white'>
       <div className='max-w-7xl mx-auto'>
@@ -133,5 +132,6 @@ const Gallery = () => {
       </div>
     </section>
   );
-}
-export default Gallery
+};
+export default Gallery;
+

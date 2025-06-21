@@ -1,5 +1,5 @@
 import { Layout } from "./components"
-import { About, Blog, Error, Events, Executives, Home, ContactUs, Projects } from "./pages"
+import { About, Blog, Error, Events, Executives, Home, ContactUs, Projects, Academics } from "./pages"
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom"
 
 function App() {
@@ -15,6 +15,7 @@ function App() {
         <Route path='/executives' element={<Executives />} />
         <Route path='/projects' element={<Projects />} />
         <Route path='/blog' element={<Blog />} />
+        <Route path='/academics' element={<Academics />} />
         <Route path='/contactus' element={<ContactUs />} />
         <Route path='*' element={<Error />} />
       </Routes>
