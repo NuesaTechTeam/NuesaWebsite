@@ -770,6 +770,7 @@ export const pastExecutivesByYear = [
         name: "Tolu Adeyemi",
         position: "Financial Secretary",
         department: "Chemical Engineering",
+        image:
           "/images/executives/current/OIP.webp?height=300&width=300",
       },
     ],
