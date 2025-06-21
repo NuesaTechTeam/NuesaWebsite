@@ -27,6 +27,10 @@ export const navbarLinks = [
     url: "/projects",
   },
   {
+    title: "Academics",
+    url: "/academics",
+  },
+  {
     title: "Blog",
     url: "/blog",
   },

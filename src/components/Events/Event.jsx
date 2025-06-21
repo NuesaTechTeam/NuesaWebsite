@@ -5,7 +5,7 @@ import { Calendar, ChevronDown, Clock } from "lucide-react";
 
 const Event = () => {
   const [visibleEvents, setVisibleEvents] = useState(new Set());
-  const [activeFilter, setActiveFilter] = useState("past");
+  const [activeFilter, setActiveFilter] = useState("upcoming");
   const [selectedCategory, setSelectedCategory] = useState("all");
   const timelineRef = useRef(null);
   const eventRefs = useRef([]);
