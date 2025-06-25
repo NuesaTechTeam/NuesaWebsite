@@ -54,13 +54,13 @@ const News = () => {
               </div>
             </article>
           ))}
-        </div>
-
-        <div className='text-center mt-10'>
-          <button className='bg-green hover:bg-green-600 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg'>
-            View All News Articles
-          </button>
-        </div>
+              </div>
+              
+              <div className="text-center mt-10">
+                  <button className="bg-green hover:bg-green-600 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
+                      View All News Articles
+                  </button>
+              </div>
       </div>
     </section>
   );
