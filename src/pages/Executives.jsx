@@ -1,10 +1,6 @@
-import { Executive } from "../components/Executives"
-
 const Executives = () => {
   return (
-    <div>
-      <Executive />
-    </div>
-  );
+    <div>Executives</div>
+  )
 }
 export default Executives

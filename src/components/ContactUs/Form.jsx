@@ -20,7 +20,7 @@ const Form = () => {
       icon: <Mail />,
     },
     {
-      value: "E26 - E27, Engineering College, ABUAD,  Ado-Ekiti, Ekiti State",
+      value: "E26 - E27, Engineering College, ABUAD",
       icon: <MapPin />,
     },
   ];
