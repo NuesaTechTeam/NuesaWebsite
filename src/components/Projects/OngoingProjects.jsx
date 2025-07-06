@@ -37,7 +37,7 @@ const ongoing = [
 
 const OngoingProjects = () => {
   return (
-    <section className='max-w-7xl mx-auto pt-4 pb-10 px-4'>
+    <section className='max-w-7xl mx-auto pb-2'>
       <h2 className='text-2xl md:text-3xl font-bold text-center mb-8 text-green-700'>
         Ongoing Projects
       </h2>

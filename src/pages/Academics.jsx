@@ -5,7 +5,7 @@ import Notes from "../components/Academics/Notes";
 
 const Academics = () => {
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen">
       <header className="text-center py-12 px-4 bg-green-100">
         <h1 className="text-4xl md:text-5xl font-bold text-green-700 mb-3">
           🎓 NUESA Academic Resources

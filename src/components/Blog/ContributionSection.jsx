@@ -10,7 +10,7 @@ const ContributionSection = () => {
   if (studentPosts.length === 0) return null;
 
   return (
-    <section className="py-12 px-4 max-w-7xl mx-auto">
+    <section className="py-12 px-2 max-w-7xl mx-auto">
       <h2 className="text-2xl md:text-3xl font-bold text-green-700 text-center mb-6">
         📝 Student Contributions
       </h2>

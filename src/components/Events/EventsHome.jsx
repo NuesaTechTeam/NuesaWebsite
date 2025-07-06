@@ -48,9 +48,15 @@ const EventsHome = () => {
         {/* header */}
         <div className='text-center mb-16'>
           <div className='flex items-center justify-center mb-4'>
+            <Calendar className='w-5 h-5 text-green mr-2' />
+            <span className='text-sm font-semibold text-green uppercase tracking-wide'>
+              What's Happening
+            </span>
+          </div>
+          <div className='flex items-center justify-center mb-4'>
             <Sparkles className='size-8 text-green mr-3' />
-            <h2 className='text-4xl md:text-5xl font-bold text-green'>
-              Upcoming Events
+            <h2 className='text-4xl md:text-5xl font-bold text-gray-900'>
+              Upcoming <span className="text-green">Events</span>
             </h2>
             <Sparkles className='size-8 text-green ml-3' />
           </div>

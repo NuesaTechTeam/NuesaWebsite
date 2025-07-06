@@ -1,3 +1,5 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
@@ -20,7 +22,7 @@ const ProjectCarousel = ({ projects }) => {
   const active = projects[currentIndex];
 
   return (
-    <div className='mb-12'>
+    <div>
       <div className='relative flex flex-col md:flex-row bg-white rounded-xl shadow-md overflow-hidden'>
         <img
           src={active.image}
@@ -31,7 +33,7 @@ const ProjectCarousel = ({ projects }) => {
           <h3 className='text-2xl font-bold text-green-700 mb-2'>
             {active.title}
           </h3>
-          <p className='text-gray-700 text-sm'>{active.summary}</p>
+          <p className='text-gray-700 text-sm line-clamp-10'>{active.summary}</p>
         </div>
         <button
           onClick={prevSlide}
@@ -61,14 +63,14 @@ const ProjectCarousel = ({ projects }) => {
         ))}
       </div>
 
-      <div className='mt-6 flex gap-5 overflow-x-auto px-2 scrollbar-hidden'>
+      <div className='mt-6 flex gap-6 overflow-x-auto px-2 py-8 scrollbar-hidden'>
         {projects.map((proj, idx) => (
-          <button
+          <div
             key={idx}
             onClick={() => goTo(idx)}
-            className={`flex-shrink-0 w-72 bg-white border rounded-xl overflow-hidden text-left transition-all duration-300 ${
+            className={`flex-shrink-0 w-65 p-2 bg-white border rounded-xl overflow-hidden text-left transition-all duration-300 ${
               idx === currentIndex
-                ? "ring-2 ring-green-500 scale-105"
+                ? "ring-2 ring-green border-0 scale-105"
                 : "hover:shadow-md hover:scale-[1.02]"
             }`}
           >
@@ -79,10 +81,10 @@ const ProjectCarousel = ({ projects }) => {
             />
             <div className='p-4 flex flex-col justify-between min-h-[150px]'>
               <div>
-                <h4 className='text-green-700 text-lg font-semibold mb-1'>
+                <h4 className='text-green text-lg font-semibold mb-1'>
                   {proj.title}
                 </h4>
-                <p className='text-gray-600 text-sm line-clamp-2'>
+                <p className='text-gray-700 text-sm line-clamp-2'>
                   {proj.summary}
                 </p>
               </div>
@@ -91,12 +93,12 @@ const ProjectCarousel = ({ projects }) => {
                   e.stopPropagation();
                   setModalProject(proj);
                 }}
-                className='mt-3 w-full py-2 px-4 text-sm border border-green-500 text-green-700 rounded-full hover:bg-green-500 hover:text-white transition-all duration-300'
+                className='mt-3 w-full py-2 px-4 text-sm border border-green-700 text-green rounded-full hover:bg-green-600 hover:text-white transition-all duration-300'
               >
                 View Details
               </button>
             </div>
-          </button>
+          </div>
         ))}
       </div>
 
@@ -109,7 +111,7 @@ const ProjectCarousel = ({ projects }) => {
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className='bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto relative'
+              className='bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[78vh] overflow-y-auto scrollbar-hidden relative pt-10'
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}

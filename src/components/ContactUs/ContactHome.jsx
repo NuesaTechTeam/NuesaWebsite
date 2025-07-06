@@ -51,8 +51,14 @@ const ContactHome = () => {
     <section className='bg-white py-8 lg:px-4 border-t-1 border-green-200'>
       <div className='max-w-7xl mx-auto'>
         <div className='text-center mb-12'>
-          <h2 className='text-3xl font-bold text-green mb-4'>
-            Get In Touch With Us
+          <div className='flex items-center justify-center mb-4'>
+            <Mail className='w-5 h-5 text-green mr-2' />
+            <span className='text-sm font-semibold text-green uppercase tracking-wide'>
+              Get In Touch
+            </span>
+          </div>
+          <h2 className='text-3xl font-bold text-gray-900 mb-4'>
+            Get In Touch With <span className="text-green">Us</span>
           </h2>
           <p className='text-lg text-gray-700 max-w-3xl mx-auto'>
             Have questions, suggestions, or want to get involved? We'd love to
@@ -104,13 +110,13 @@ const ContactHome = () => {
                     className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent transition-all resize-none outline-none sm:col-span-2'
                   ></textarea>
                 </div>
-                  <button
-                    onClick={handleQuickSubmit}
-                    className='w-full bg-green text-white py-3 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center'
-                  >
-                    <Send className='size-5 mr-2' />
-                    Send Message
-                  </button>
+                <button
+                  onClick={handleQuickSubmit}
+                  className='w-full bg-green text-white py-3 rounded-lg font-medium hover:bg-green-700 transition-colors flex items-center justify-center'
+                >
+                  <Send className='size-5 mr-2' />
+                  Send Message
+                </button>
               </div>
             </div>
 
@@ -152,25 +158,25 @@ const ContactHome = () => {
                   </div>
                 </div>
               </div>
-                    </div>
+            </div>
 
-              <div className='bg-gradient-to-r from-green-700 to-green rounded-2xl p-6 text-white lg:col-span-2'>
-                <div className='flex items-center mb-4'>
-                  <Users className='size-6 mr-2' />
-                  <h4 className='font-bold text-lg'>Need More Help?</h4>
-                </div>
-                <p className='text-green-100 mb-4'>
-                  Visit our complete contact page for detailed forms, FAQs,
-                  social media links, and more ways to connect with us.
-                </p>
-                <button
-                  onClick={handleContactButton}
-                  className='bg-white text-green px-6 py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors inline-flex items-center cursor-pointer'
-                >
-                  Visit Contact Page
-                  <ArrowRight className='size-5 ml-2' />
-                </button>
+            <div className='bg-gradient-to-r from-green-700 to-green rounded-2xl p-6 text-white lg:col-span-2'>
+              <div className='flex items-center mb-4'>
+                <Users className='size-6 mr-2' />
+                <h4 className='font-bold text-lg'>Need More Help?</h4>
               </div>
+              <p className='text-green-100 mb-4'>
+                Visit our complete contact page for detailed forms, FAQs, social
+                media links, and more ways to connect with us.
+              </p>
+              <button
+                onClick={handleContactButton}
+                className='bg-white text-green px-6 py-2 rounded-lg font-medium hover:bg-gray-100 transition-colors inline-flex items-center cursor-pointer'
+              >
+                Visit Contact Page
+                <ArrowRight className='size-5 ml-2' />
+              </button>
+            </div>
           </div>
         </div>
 

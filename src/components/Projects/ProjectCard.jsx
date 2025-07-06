@@ -10,7 +10,7 @@ const ProjectCard = ({ title, summary, image, year }) => {
       />
       <div className='p-4 flex flex-col justify-between min-h-[140px]'>
         <div>
-          <h3 className='text-green-700 font-semibold text-lg mb-1'>{title}</h3>
+          <h3 className='text-green font-semibold text-lg mb-1'>{title}</h3>
           <p className='text-gray-700 text-sm line-clamp-2'>{summary}</p>
         </div>
         <p className='text-sm text-gray-500 mt-3'>{year}</p>

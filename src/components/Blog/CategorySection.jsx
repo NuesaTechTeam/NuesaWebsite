@@ -11,7 +11,7 @@ const CategorySection = ({ activeCategory, setActiveCategory }) => {
   ];
 
   return (
-    <section className="max-w-7xl mx-auto px-4 pt-6">
+    <section className="max-w-7xl mx-auto px-2 pt-6">
       <h3 className="text-xl font-semibold text-green-700 mb-4 text-center">
         Explore by Category
       </h3>
