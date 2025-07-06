@@ -1,12 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FaWhatsapp, FaArrowRight } from "react-icons/fa";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import emailjs from "@emailjs/browser";
 
-const CTASection = () => {
+const CTASection = ({scrollIntoView}) => {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [formData, setFormData] = useState({
@@ -16,6 +17,14 @@ const CTASection = () => {
     email: "",
     content: "",
   });
+
+  const submitRef = useRef(null);
+
+  useEffect(() => {
+    if (scrollIntoView && submitRef.current) {
+      submitRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [scrollIntoView]);
 
   const handleWhatsAppShare = () => {
     const text = encodeURIComponent(
@@ -55,7 +64,7 @@ const CTASection = () => {
   };
 
   return (
-    <section className="py-12 px-4 bg-green-50 border-t border-green-100">
+    <section ref={submitRef} className="py-12 px-4 bg-green-50 border-t border-green-100">
       <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
         <div className="bg-white rounded-lg shadow p-6 hover:shadow-md transition">
           <h3 className="text-xl font-bold text-green-700 mb-2">

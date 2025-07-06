@@ -1,4 +1,5 @@
-import { Target, Sparkles, Users, GraduationCap, ArrowRight } from "lucide-react";
+import { Target, Sparkles, Users, GraduationCap, ArrowRight, Info } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const AboutHome = () => {
 
@@ -35,12 +36,24 @@ const pillars = [
       "Petroleum Engineering",
       "Biomedical Engineering",
       "Aeronautical Engineering",
-    ];
+  ];
+  
+  const navigate = useNavigate();
+
+  const handleAboutButton = () => {
+    navigate("/about");
+  };
 
     return (
       <section className='bg-white py-8 lg:px-4 border-t-1 border-green-200 overflow-hidden'>
         <div className='max-w-7xl mx-auto'>
           <div className='text-center mb-10'>
+            <div className='flex items-center justify-center mb-4'>
+              <Info className='w-5 h-5 text-green mr-2' />
+              <span className='text-sm font-semibold text-green uppercase tracking-wide'>
+                Who We Are
+              </span>
+            </div>
             <h2 className='text-4xl font-bold text-gray-900 mb-4'>
               About <span className='text-green'>NUESA</span>
             </h2>
@@ -54,16 +67,14 @@ const pillars = [
           {/* who we are section */}
           <div className='mb-16'>
             <div className='grid grid-cols-1 lg:grid-cols-2 gap-14 items-center'>
-                        <div className="relative">
-                            
-              <div className='order-2 lg:order-1 relative overflow-hidden'>
-                <img
-                  src='/images/executives/past/Official.jpg'
-                  alt='nuesa team photo'
-                  className='rounded-lg shadow-lg w-full h-90 object-cover'
-                            />
-              </div>
-                            
+              <div className='relative'>
+                <div className='order-2 lg:order-1 relative overflow-hidden'>
+                  <img
+                    src='/images/executives/past/Official.jpg'
+                    alt='nuesa team photo'
+                    className='rounded-lg shadow-lg w-full h-90 object-cover'
+                  />
+                </div>
 
                 <div className='absolute -bottom-10 -right-6 bg-white p-6 py-4 rounded-lg shadow-lg max-w-xs overflow-x-hidden'>
                   <h4 className='text-xl font-medium text-green mb-3'>
@@ -75,7 +86,7 @@ const pillars = [
                     problems.
                   </p>
                 </div>
-                </div>
+              </div>
               <div className='order-1 lg:order-2 '>
                 <h3 className='text-3xl font-bold text-green mb-3'>
                   Who We Are
@@ -135,9 +146,7 @@ const pillars = [
                     <h4 className='text-lg font-semibold text-gray-900 mb-2'>
                       {pillar.title}
                     </h4>
-                    <p className='text-gray-700 text-sm'>
-                      {pillar.text}
-                    </p>
+                    <p className='text-gray-700 text-sm'>{pillar.text}</p>
                   </div>
                 );
               })}
@@ -186,15 +195,15 @@ const pillars = [
                 and grow with us. Together, we engineer greatness.
               </blockquote>
               <div className='text-center mt-4'>
-                <div className='text-green font-bold'>
-                  President, NUESA
-                </div>
+                <div className='text-green font-bold'>President, NUESA</div>
               </div>
             </div>
           </div>
 
           <div className='text-center'>
-            <button className='inline-flex items-center px-8 py-4 bg-green text-white font-semibold rounded-lg hover:bg-green-700 duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all cursor-pointer'>
+            <button
+            onClick={handleAboutButton}
+              className='inline-flex items-center px-8 py-4 bg-green text-white font-semibold rounded-lg hover:bg-green-700 duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all cursor-pointer'>
               Learn More About NUESA
               <ArrowRight className='ml-2' size={20} />
             </button>

@@ -1,5 +1,6 @@
-import { ArrowRight, CheckCircle, ChevronLeft, ChevronRight, Clock, Users } from "lucide-react";
+import { ArrowRight, CheckCircle, ChevronLeft, ChevronRight, Clock, Lightbulb, Users } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const ongoingProjects = [
     {
@@ -72,11 +73,23 @@ const ProjectHome = () => {
       const timer = setInterval(nextSlide, 5000);
       return () => clearInterval(timer);
     }, []);
+  
+    const navigate = useNavigate();
+
+    const handleProjectButton = () => {
+      navigate("/projects");
+    };
 
   return (
     <section className='bg-white py-8 lg:px-4 border-t-1 border-green-200'>
       <div className='max-w-7xl mx-auto'>
         <div className='text-center mb-12'>
+          <div className='flex items-center justify-center mb-4'>
+            <Lightbulb className='w-5 h-5 text-green mr-2' />
+            <span className='text-sm font-semibold text-green uppercase tracking-wide'>
+              Innovation Hub
+            </span>
+          </div>
           <h2 className='text-4xl font-bold text-gray-900 mb-4'>
             Legacy <span className='text-green'>Projects</span>
           </h2>
@@ -178,9 +191,7 @@ const ProjectHome = () => {
                 {/* Project Image */}
                 <div className='h-48 overflow-hidden'>
                   <img
-                    src={
-                      project.image
-                    }
+                    src={project.image}
                     alt={project.title}
                     className='w-full h-full object-cover hover:scale-105 transition-transform duration-300'
                   />
@@ -205,7 +216,9 @@ const ProjectHome = () => {
         </div>
 
         <div className='text-center'>
-          <button className='inline-flex items-center px-8 py-4 bg-green text-white font-semibold rounded-lg hover:bg-green-700 duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all cursor-pointer'>
+          <button
+          onClick={handleProjectButton}
+            className='inline-flex items-center px-8 py-4 bg-green text-white font-semibold rounded-lg hover:bg-green-700 duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all cursor-pointer'>
             View All Projects
             <ArrowRight className='ml-2 w-5 h-5' />
           </button>

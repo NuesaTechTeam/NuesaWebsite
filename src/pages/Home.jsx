@@ -3,6 +3,8 @@ import { ExecHome } from "../components/Executives";
 import { ContactHome } from "../components/ContactUs";
 import { AboutHome } from "../components/About"
 import { ProjectHome } from "../components/Projects";
+import { AcademicsHome } from "../components/Academics";
+import { BlogHome } from "../components/Blog";
 import {CollegeEnvironment, Hero} from "../components/Home"
 
 const Home = () => {
@@ -12,6 +14,8 @@ const Home = () => {
       <AboutHome />
       <CollegeEnvironment />
       <EventsHome />
+      <AcademicsHome />
+      <BlogHome />
       <ProjectHome />
       <ExecHome />
       <ContactHome />

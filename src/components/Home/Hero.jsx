@@ -18,12 +18,12 @@ const Hero = () => {
             </div>
           </div>
           <div className='relative'>
-            <div className='absolute z-10 -top-6 -left-6 bg-white p-4 rounded-lg shadow-lg transform rotate-[-5deg] hover:rotate-0 transition-transform duration-300 '>
+            <div className='absolute z-10 -top-6 -left-2 md:-left-6 bg-white p-4 rounded-lg shadow-lg transform rotate-[-5deg] hover:rotate-0 transition-transform duration-300 '>
               <span className='text-green font-bold'>
                 Engineering Excellence
               </span>
             </div>
-            <div className='absolute z-10 -bottom-6 -right-6 bg-white p-4 rounded-lg shadow-lg transform rotate-[5deg] hover:rotate-0 transition-transform duration-300 '>
+            <div className='absolute z-10 -bottom-6 -right-2 md:-right-6 bg-white p-4 rounded-lg shadow-lg transform rotate-[5deg] hover:rotate-0 transition-transform duration-300 '>
               <span className='text-green font-bold'>High Standards</span>
             </div>
             <div className='group relative w-full overflow-hidden rounded-lg h-130'>

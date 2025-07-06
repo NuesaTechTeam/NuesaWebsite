@@ -49,8 +49,8 @@ const PastProjects = () => {
   );
 
   return (
-    <section className='max-w-7xl mx-auto pt-4 pb-10 px-4'>
-      <h3 className='text-lg font-bold text-green-600 text-center mb-2'>
+    <section className='max-w-7xl mx-auto pb-10 px-4'>
+      <h3 className='text-lg font-bold text-green-700 text-center mb-2'>
         Completed & Past Projects
       </h3>
       <h2 className='text-2xl md:text-3xl font-bold text-center text-green mb-3'>

@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { currentExecutivesData } from "../../lib/constants"
 import ExecutiveCard from "./ExecutiveCard";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, UserCheck } from "lucide-react";
 
 const ExecHome = () => {
     const featuredExecutives = currentExecutivesData.slice(0, 4)
@@ -14,8 +14,14 @@ const ExecHome = () => {
     <section className='bg-white py-8 lg:px-4 border-t-1 border-green-200'>
       <div className='max-w-7xl mx-auto'>
         <div className='text-center mb-12'>
-          <h2 className='text-3xl font-bold text-green mb-4'>
-            Meet Our Leadership
+          <div className='flex items-center justify-center mb-4'>
+            <UserCheck className='w-5 h-5 text-green mr-2' />
+            <span className='text-sm font-semibold text-green uppercase tracking-wide'>
+              Leadership Team
+            </span>
+          </div>
+          <h2 className='text-3xl font-bold text-gray-900 mb-4'>
+            Meet Our <span className="text-green">Leadership</span>
           </h2>
           <p className='text-lg text-gray-700 maw-w-3xl mx-auto'>
             Our dedicated executive team works tirelessly to serve the

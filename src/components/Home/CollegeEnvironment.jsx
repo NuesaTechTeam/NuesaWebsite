@@ -14,6 +14,12 @@ const CollegeEnvironment = () => {
     <section className='bg-white py-8 lg:px-4 border-t-1 border-green-200'>
       <div className='max-w-7xl mx-auto'>
         <div className='text-center mb-10'>
+          <div className='flex items-center justify-center mb-4'>
+            <Building className='w-5 h-5 text-green mr-2' />
+            <span className='text-sm font-semibold text-green uppercase tracking-wide'>
+              College Life
+            </span>
+          </div>
           <h2 className='text-4xl font-bold text-gray-900 mb-4'>
             Our <span className='text-green'>College</span>
           </h2>

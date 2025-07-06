@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Wrench, Building, Users, BookOpen } from "lucide-react"; //dont remove
 
 const GallerySlider = ({ category }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -21,9 +22,15 @@ const GallerySlider = ({ category }) => {
     );
   };
 
+  let IconComponent = category.icon;
+
   return (
     <div className='flex flex-col gap-3 mb-2'>
-      <h3 className='text-green font-bold text-xl'>{category.title}</h3>
+      <h3 className='text-green font-bold text-xl'>
+        {" "}
+        <IconComponent className='inline mr-1' /> {category.title}
+      </h3>
+
       <p className='text-gray-700'>{category.description}</p>
       <div className='relative rounded-2xl overflow-hidden shadow-2xl bg-white'>
         <div className='relative h-55'>
@@ -59,4 +66,4 @@ const GallerySlider = ({ category }) => {
   );
 };
 
-export default GallerySlider
+export default GallerySlider;
