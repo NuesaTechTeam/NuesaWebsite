@@ -5,6 +5,8 @@ import {
   BsSnapchat,
 } from "react-icons/bs";
 
+import { Wrench, Building, Users, BookOpen } from "lucide-react";
+
 export const navbarLinks = [
   {
     title: "Home",
@@ -44,19 +46,19 @@ export const socialLinks = [
   {
     title: "Twitter",
     icon: <BsTwitterX size={24} className=' hover:text-blue-500' />,
-    link: "https://x.com/nuesa_abuad",
+    link: "https://x.com/nuesa_abuad?s=21",
     color: "",
   },
   {
     title: "Snapchat",
     icon: <BsSnapchat size={24} className=' hover:text-yellow-400' />,
-    link: "https://www.snapchat.com/add/nuesa_abuad",
+    link: "https://snapchat.com/t/LFnYiU0W",
     color: "",
   },
   {
     title: "Instagram",
     icon: <BsInstagram size={24} className=' hover:text-pink-500' />,
-    link: "https://www.instagram.com/nuesaabuad",
+    link: "https://www.instagram.com/nuesaabuad?igsh=MThyYzg3aXN5ZHg2bQ==",
     color: "",
   },
   {
@@ -311,14 +313,69 @@ export const galleryPhotos = [
   },
 ];
 
+export const collegeGallery = {
+  environment: {
+    title: "College Environment",
+    description:
+      "Our beautiful and modern college provides an inspiring environment for learning and innovation",
+    icon: Building,
+    images: [
+      "/images/college/environment/environment1.jpg",
+      "/images/college/environment/environment2.jpg",
+      "/images/college/environment/environment3.jpg",
+      "/images/college/environment/environment4.jpg",
+      "/images/college/environment/environment5.jpg",
+      "/images/college/environment/environment6.jpg",
+    ],
+  },
+  classrooms: {
+    title: "Classrooms",
+    description:
+      "State-of-the-art classrooms equipped with the latest technology for interactive learning",
+    icon: Users,
+    images: [
+      "https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=600&h=400&fit=crop",
+    ],
+  },
+  workshop: {
+    title: "Engineering Workshops & Labs",
+    description:
+      "Fully equipped workshops where students bring their engineering concepts to life",
+    icon: Wrench,
+    images: [
+      "/images/college/workshop/workshop1.jpg",
+      "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=600&h=400&fit=crop",
+      "https://images.unsplash.com/photo-1565043666747-69f6646db940?w=600&h=400&fit=crop",
+    ],
+  },
+  library: {
+    title: "Academic Library",
+    description:
+      "A quiet sanctuary for research and study with extensive engineering resources",
+    icon: BookOpen,
+    images: [
+      "/images/college/library/library1.jpg",
+      "/images/college/library/library2.jpg",
+      "/images/college/library/library3.jpg",
+      "/images/college/library/library4.jpg",
+      "/images/college/library/library5.jpg",
+      "/images/college/library/library6.jpg",
+    ],
+  },
+};
+
 export const currentExecutivesData = [
   {
     name: "Marvelous Osigwe",
     position: "President",
-    department: "Civil Engineering",
+    department: "Electrical Engineering",
     year: "500 Level",
     image:
-      "/images/executives/past/Marvelous.jpg?height=300&width=300",
+      "/images/executives/current/Kinabere.jpg?height=300&width=300",
     bio: "A visionary leader with a passion for innovation and community building in engineering. Emmanuel has led several initiatives to enhance the academic and professional development of NUESA members.",
     achievements: [
       "Led the organization of the largest Engineering Week in ABUAD history",
