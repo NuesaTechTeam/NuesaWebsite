@@ -5,10 +5,14 @@ import { useNavigate } from "react-router-dom";
 
 const EventsHome = () => {
   const [currentEventIndex, setCurrentEventIndex] = useState(0);
-  const featuredEvents = eventsData.filter((event) => event.featured === true);
   const upcomingEvents = eventsData.filter(
     (event) => event.status === "upcoming"
   );
+  const pastEvents = eventsData.filter((event) => event.status === "past");
+  const hasUpcomingEvents = upcomingEvents.length > 0;
+  const featuredEvents = hasUpcomingEvents
+    ? eventsData.filter((event) => event.featured === true)
+    : pastEvents.slice(0, 3); 
   const navigate = useNavigate();
 
   const handleEventButton = () => {
@@ -23,11 +27,14 @@ const EventsHome = () => {
   };
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentEventIndex((prev) => (prev + 1) % featuredEvents.length);
-    }, 5000);
+    if (featuredEvents.length > 0) {
+      const interval = setInterval(() => {
+        setCurrentEventIndex((prev) => (prev + 1) % featuredEvents.length);
+      }, 5000);
 
-    return () => clearInterval(interval);
+      return () => clearInterval(interval);
+    }
+
   }, [featuredEvents.length]);
 
   const formatDate = (dateStr) => {
@@ -41,6 +48,105 @@ const EventsHome = () => {
 
   const currentEvent = featuredEvents[currentEventIndex];
   const dateInfo = formatDate(currentEvent.date);
+
+  const NoEventsCard = () => (
+    <div className='bg-white rounded-3xl shadow-2xl overflow-hidden border border-gray-100 p-8 text-center'>
+      <div className='mb-6'>
+        <Calendar className='w-16 h-16 text-gray-400 mx-auto mb-4' />
+        <h3 className='text-2xl font-bold text-gray-900 mb-3'>
+          No Events Scheduled
+        </h3>
+        <p className='text-gray-600 leading-relaxed'>
+          We're currently planning exciting new events for our engineering
+          community. Stay tuned for updates and be the first to know when we
+          announce our next activities!
+        </p>
+      </div>
+      <button className='bg-green hover:bg-green-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg'>
+        Get Notified
+      </button>
+    </div>
+  );
+
+  if (featuredEvents.length === 0) {
+    return (
+      <section className='py-8 bg-white border-t-1 border-green-200'>
+        <div className='max-w-7xl mx-auto'>
+          {/* header */}
+          <div className='text-center mb-16'>
+            <div className='flex items-center justify-center mb-4'>
+              <Calendar className='w-5 h-5 text-green mr-2' />
+              <span className='text-sm font-semibold text-green uppercase tracking-wide'>
+                What's Happening
+              </span>
+            </div>
+            <div className='flex items-center justify-center mb-4'>
+              <Sparkles className='size-8 text-green mr-3' />
+              <h2 className='text-4xl md:text-5xl font-bold text-gray-900'>
+                Stay <span className='text-green'>Connected</span>
+              </h2>
+              <Sparkles className='size-8 text-green ml-3' />
+            </div>
+            <p className='text-xl text-gray-600 max-w-3xl mx-auto '>
+              Be part of the exciting events that shape our engineering college
+              and community
+            </p>
+            <div className='w-24 h-1 bg-green mx-auto mt-6'></div>
+          </div>
+
+          {/* content */}
+          <div className='grid grid-cols-1 lg:grid-cols-2 gap-12 items-center'>
+            <div className='order-2 lg:order-1'>
+              <NoEventsCard />
+            </div>
+
+            <div className='order-1 lg:order-2 text-center lg:text-left'>
+              <div className='grid grid-cols-2 gap-6 mb-12'>
+                <div className='bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-2xl border border-green-200'>
+                  <div className='text-3xl font-bold text-green-600 mb-2'>
+                    {pastEvents.length}+
+                  </div>
+                  <div className='text-sm font-medium text-green-700'>
+                    Past Events
+                  </div>
+                </div>
+                <div className='bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl border border-blue-200'>
+                  <div className='text-3xl font-bold text-blue-600 mb-2'>
+                    1k+
+                  </div>
+                  <div className='text-sm font-medium text-blue-700'>
+                    Students Participated
+                  </div>
+                </div>
+              </div>
+
+              <div className='mb-8'>
+                <h3 className='text-3xl md:text-4xl font-bold text-gray-900 mb-4'>
+                  More Events
+                  <span className='text-green block'>Coming Soon</span>
+                </h3>
+                <p className='text-lg text-gray-700 leading-relaxed mb-6'>
+                  We're planning exciting new events, workshops, and
+                  competitions. Follow our updates to be the first to know about
+                  upcoming activities!
+                </p>
+              </div>
+
+              <div className='space-y-4'>
+                <button
+                  onClick={handleEventButton}
+                  className='w-full lg:w-auto bg-gradient-to-r to-green from-green-700 hover:from-green-600 hover:to-green-700 text-white px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl flex items-center justify-center group cursor-pointer'
+                >
+                  View Past Events
+                  <ArrowRight className='size-7 ml-2 group-hover:translate-x-1 transition-transform' />
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className='py-8 bg-white border-t-1 border-green-200'>
@@ -56,13 +162,22 @@ const EventsHome = () => {
           <div className='flex items-center justify-center mb-4'>
             <Sparkles className='size-8 text-green mr-3' />
             <h2 className='text-4xl md:text-5xl font-bold text-gray-900'>
-              Upcoming <span className="text-green">Events</span>
+              {hasUpcomingEvents ? (
+                <>
+                  Upcoming <span className='text-green'>Events</span>
+                </>
+              ) : (
+                <>
+                  Recent <span className='text-green'>Events</span>
+                </>
+              )}
             </h2>
             <Sparkles className='size-8 text-green ml-3' />
           </div>
           <p className='text-xl text-gray-600 max-w-3xl mx-auto '>
-            Don't miss out on the exciting events that shape our engineering
-            college and community
+            {hasUpcomingEvents
+              ? "Don't miss out on the exciting events that shape our engineering college and community"
+              : "Check out our recent events while we plan new exciting activities for our engineering community"}
           </p>
           <div className='w-24 h-1 bg-green mx-auto mt-6'></div>
         </div>
@@ -86,6 +201,11 @@ const EventsHome = () => {
                     >
                       {currentEvent.category}
                     </span>
+                    {!hasUpcomingEvents && (
+                      <span className='px-3 py-1 rounded-full text-xs font-bold border bg-gray-100 text-gray-800 border-gray-200'>
+                        Past Event
+                      </span>
+                    )}
                   </div>
                   <div className='absolute bottom-4 left-4 bg-white rounded-xl p-3 shadow-lg'>
                     <div className='text-center'>
@@ -130,9 +250,15 @@ const EventsHome = () => {
                       </span>
                     </div>
                   </div>
-                  <button className='w-full bg-green hover:bg-green-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg'>
-                    Register Now
-                  </button>
+                  {hasUpcomingEvents ? (
+                    <button className='w-full bg-green hover:bg-green-600 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg'>
+                      Register Now
+                    </button>
+                  ) : (
+                    <button className='w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-3 px-6 rounded-xl font-semibold transition-all duration-300 cursor-not-allowed'>
+                      Event Completed
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -156,29 +282,42 @@ const EventsHome = () => {
             <div className='grid grid-cols-2 gap-6 mb-12'>
               <div className='bg-gradient-to-br from-green-50 to-green-100 p-6 rounded-2xl border border-green-200'>
                 <div className='text-3xl font-bold text-green-600 mb-2'>
-                  {upcomingEvents.length}+
+                  {hasUpcomingEvents
+                    ? `${upcomingEvents.length}+`
+                    : `${pastEvents.length}+`}
                 </div>
                 <div className='text-sm font-medium text-green-700'>
-                  Upcoming Events
+                  {hasUpcomingEvents ? "Upcoming Events" : "Past Events"}
                 </div>
               </div>
               <div className='bg-gradient-to-br from-blue-50 to-blue-100 p-6 rounded-2xl border border-blue-200'>
                 <div className='text-3xl font-bold text-blue-600 mb-2'>1k+</div>
                 <div className='text-sm font-medium text-blue-700'>
-                  Students Participating
+                  Students{" "}
+                  {hasUpcomingEvents ? "Participating" : "Participated"}
                 </div>
               </div>
             </div>
 
             <div className='mb-8'>
               <h3 className='text-3xl md:text-4xl font-bold text-gray-900 mb-4'>
-                Be Part of Something
+                {hasUpcomingEvents ? (
+                  <>
+                    Be Part of Something
+                    <span className='text-green block'>Amazing</span>
+                  </>
+                ) : (
+                  <>
+                    Stay Tuned for
+                    <span className='text-green block'>New Events</span>
+                  </>
+                )}
                 <span className='text-green block'>Amazing</span>
               </h3>
               <p className='text-lg text-gray-700 leading-relaxed mb-6'>
-                Stay connected with the latest events, workshops, and
-                competitions organized by NUESA ABUAD Chapter to enhance your
-                engineering journey
+                {hasUpcomingEvents
+                  ? "Stay connected with the latest events, workshops, and competitions organized by NUESA ABUAD Chapter to enhance your engineering journey"
+                  : "We're planning exciting new events, workshops, and competitions. Follow our updates to be the first to know about upcoming activities!"}
               </p>
             </div>
 
@@ -209,7 +348,7 @@ const EventsHome = () => {
                 onClick={handleEventButton}
                 className='w-full lg:w-auto bg-gradient-to-r to-green from-green-700 hover:from-green-600 hover:to-green-700 text-white px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-xl flex items-center justify-center group cursor-pointer'
               >
-                View All Events
+                {hasUpcomingEvents ? "View All Events" : "View All Past Events"}
                 <ArrowRight className='size-7 ml-2 group-hover:translate-x-1 transition-transform' />
               </button>
             </div>
@@ -218,7 +357,7 @@ const EventsHome = () => {
 
         <div className='mt-12'>
           <h3 className='text-2xl font-bold text-green text-center mb-12'>
-            Also Coming Up
+            {hasUpcomingEvents ? "Also Coming Up" : "More Past Events"}
           </h3>
           <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
             {featuredEvents
@@ -247,13 +386,21 @@ const EventsHome = () => {
               ))}
 
             <div className='bg-gradient-to-br from-green-50 to-green-100 rounded-2xl border-2 border-dashed border-green-300 p-6 flex flex-col items-center justify-center text-center hover:from-green-100 hover:to-green-200 transition-all duration-300 cursor-pointer'>
-              {upcomingEvents.length - 3 > 0 && (
+              {hasUpcomingEvents ? (
+                upcomingEvents.length - 3 > 0 && (
+                  <div className='text-green mb-2'>
+                    <Sparkles className='size-7 mx-auto mb-2' />
+                    <div className='text-lg font-bold'>
+                      {upcomingEvents.length - 3}+ More
+                    </div>
+                    <div className='text-sm'>Exciting Events</div>
+                  </div>
+                )
+              ) : (
                 <div className='text-green mb-2'>
                   <Sparkles className='size-7 mx-auto mb-2' />
-                  <div className='text-lg font-bold'>
-                    {upcomingEvents.length - 3}+ More
-                  </div>
-                  <div className='text-sm'>Exciting Events</div>
+                  <div className='text-lg font-bold'>New Events</div>
+                  <div className='text-sm'>Coming Soon</div>
                 </div>
               )}
             </div>

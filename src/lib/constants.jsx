@@ -168,110 +168,45 @@ export const eventsData = [
     status: "past",
     featured: false,
   },
-  {
-    id: 6,
-    title: "Career Path in Fintech: The Journey",
-    date: "September 7, 2024",
-    time: "11:30 AM - 13:30 PM",
-    venue: "Google Meet",
-    description:
-      "A webinar session hosting 2 guests with a wealth of experience in the fintech sector.",
-    image: "/images/events/career-path-in-fintech.jpg",
-    category: "Professional",
-    status: "upcoming",
-    featured: true
-  },
-  {
-    id: 7,
-    title: "Q&A Sessions with your Excos",
-    date: "September 18, 2024",
-    time: "8:00 PM - 09:30 PM",
-    venue: "Twitter Spaces",
-    description:
-      "Visit to leading tech companies in Lagos to gain insights into industry practices and network with professionals.",
-    image: "/images/events/know-your-excos.jpg",
-    category: "Exhibition",
-    status: "upcoming",
-    featured: false,
-  },
-  {
-    id: 8,
-    title: "Fresher's Orientation",
-    date: "October 12, 2024",
-    time: "09:30 AM - 12:00 PM",
-    venue: "Engineering Auditorium",
-    description:
-      "Hands-on workshops on emerging technologies and engineering practices led by industry experts.",
-    image: "/images/events/freshers-orientation.jpg",
-    category: "Academic",
-    status: "upcoming",
-    featured: false,
-  },
-  {
-    id: 9,
-    title: "Tech Fusion",
-    date: "November 20, 2024",
-    time: "05:00 PM - 07:00 PM",
-    venue: "Engineering Auditorium",
-    description:
-      "Annual technical festival featuring coding competitions, robotics, and innovation showcases.",
-    image: "/images/events/tech-fusion.jpg",
-    category: "Technical",
-    status: "upcoming",
-    featured: true,
-  },
-  {
-    id: 10,
-    title: "Salam Odo N'uwa",
-    date: "November 24, 2024",
-    time: "07:00 PM - 10:30 PM",
-    venue: "Alfa Belgore Hall, ABUAD",
-    description:
-      "Annual dinner and awards night. Annual dinner and awards night.",
-    image: "/images/events/salam-odo-nuwa.jpg",
-    category: "Cultural",
-    status: "upcoming",
-    featured: true,
-  },
 ];
 
 export const newsArticles = [
-  {
-    id: 1,
-    title: "Engineering Students Win National Robotics Championship",
-    excerpt:
-      "Our team of brilliant engineering students has secured first place in the National Robotics Championship, showcasing innovative solutions in autonomous systems.",
-    date: "March 10, 2025",
-    image:
-      "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=250&fit=crop",
-  },
-  {
-    id: 2,
-    title: "New AI Research Lab Opens on Campus",
-    excerpt:
-      "The college inaugurates a state-of-the-art Artificial Intelligence research facility, equipped with cutting-edge hardware and collaborative spaces.",
-    date: "March 8, 2025",
-    image:
-      "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=250&fit=crop",
-  },
-  {
-    id: 3,
-    title: "Industry Partnership Program Launches",
-    excerpt:
-      "New collaboration with leading tech companies provides internship opportunities and real-world project experience for final year students.",
-    date: "March 5, 2025",
-    image:
-      "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=250&fit=crop",
-  },
-  {
-    id: 4,
-    title: "Sustainability Initiative: Solar Panel Installation Complete",
-    excerpt:
-      "The college achieves 60% renewable energy coverage with the completion of rooftop solar installations across all academic buildings.",
-    date: "March 3, 2025",
-    image:
-      "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&h=250&fit=crop",
-  },
+  // {
+  //   id: 1,
+  //   title: "Engineering Students Win National Robotics Championship",
+  //   excerpt:
+  //     "Our team of brilliant engineering students has secured first place in the National Robotics Championship, showcasing innovative solutions in autonomous systems.",
+  //   date: "March 10, 2025",
+  //   image:
+  //     "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=250&fit=crop",
+  // },
+  // {
+  //   id: 2,
+  //   title: "New AI Research Lab Opens on Campus",
+  //   excerpt:
+  //     "The college inaugurates a state-of-the-art Artificial Intelligence research facility, equipped with cutting-edge hardware and collaborative spaces.",
+  //   date: "March 8, 2025",
+  //   image:
+  //     "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=400&h=250&fit=crop",
+  // },
+  // {
+  //   id: 3,
+  //   title: "Industry Partnership Program Launches",
+  //   excerpt:
+  //     "New collaboration with leading tech companies provides internship opportunities and real-world project experience for final year students.",
+  //   date: "March 5, 2025",
+  //   image:
+  //     "https://images.unsplash.com/photo-1556761175-b413da4baf72?w=400&h=250&fit=crop",
+  // },
+  // {
+  //   id: 4,
+  //   title: "Sustainability Initiative: Solar Panel Installation Complete",
+  //   excerpt:
+  //     "The college achieves 60% renewable energy coverage with the completion of rooftop solar installations across all academic buildings.",
+  //   date: "March 3, 2025",
+  //   image:
+  //     "https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&h=250&fit=crop",
+  // },
 ];
 
 export const galleryPhotos = [
@@ -328,18 +263,18 @@ export const collegeGallery = {
       "/images/college/environment/environment6.jpg",
     ],
   },
-  classrooms: {
-    title: "Classrooms",
-    description:
-      "State-of-the-art classrooms equipped with the latest technology for interactive learning",
-    icon: Users,
-    images: [
-      "https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=600&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=600&h=400&fit=crop",
-    ],
-  },
+  // classrooms: {
+  //   title: "Classrooms",
+  //   description:
+  //     "State-of-the-art classrooms equipped with the latest technology for interactive learning",
+  //   icon: Users,
+  //   images: [
+  //     "https://images.unsplash.com/photo-1571260899304-425eee4c7efc?w=600&h=400&fit=crop",
+  //     "https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=600&h=400&fit=crop",
+  //     "https://images.unsplash.com/photo-1580582932707-520aed937b7b?w=600&h=400&fit=crop",
+  //     "https://images.unsplash.com/photo-1497486751825-1233686d5d80?w=600&h=400&fit=crop",
+  //   ],
+  // },
   workshop: {
     title: "Engineering Workshops & Labs",
     description:
@@ -347,9 +282,9 @@ export const collegeGallery = {
     icon: Wrench,
     images: [
       "/images/college/workshop/workshop1.jpg",
-      "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=600&h=400&fit=crop",
-      "https://images.unsplash.com/photo-1565043666747-69f6646db940?w=600&h=400&fit=crop",
+      // "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600&h=400&fit=crop",
+      // "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=600&h=400&fit=crop",
+      // "https://images.unsplash.com/photo-1565043666747-69f6646db940?w=600&h=400&fit=crop",
     ],
   },
   library: {
@@ -374,8 +309,7 @@ export const currentExecutivesData = [
     position: "President",
     department: "Electrical Engineering",
     year: "500 Level",
-    image:
-      "/images/executives/current/Kinabere.jpg?height=300&width=300",
+    image: "/images/executives/past/Marvelous.jpg?height=300&width=300",
     bio: "A visionary leader with a passion for innovation and community building in engineering. Emmanuel has led several initiatives to enhance the academic and professional development of NUESA members.",
     achievements: [
       "Led the organization of the largest Engineering Week in ABUAD history",
@@ -393,8 +327,7 @@ export const currentExecutivesData = [
     position: "Vice President",
     department: "Chemical Engineering",
     year: "400 Level",
-    image:
-      "/images/executives/past/Hannah.jpg?height=300&width=300",
+    image: "/images/executives/past/Hannah.jpg?height=300&width=300",
     bio: "Dedicated to fostering collaboration and excellence among engineering students. Amina oversees the academic committee and has implemented several programs to support student success.",
     achievements: [
       "Coordinated the inter-departmental technical competition",
@@ -412,8 +345,7 @@ export const currentExecutivesData = [
     position: "General Secretary",
     department: "Civil Engineering",
     year: "500 Level",
-    image:
-      "/images/executives/past/Ciaran.jpg?height=300&width=300",
+    image: "/images/executives/past/Ciaran.jpg?height=300&width=300",
     bio: "Committed to maintaining effective communication and organization within NUESA. David ensures that all association activities are well-documented and members are informed about opportunities.",
     achievements: [
       "Digitized NUESA's record-keeping system",
@@ -431,8 +363,7 @@ export const currentExecutivesData = [
     position: "Financial Secretary",
     department: "Mechanical Engineering",
     year: "500 Level",
-    image:
-      "/images/executives/past/Qudus.jpg?height=300&width=300",
+    image: "/images/executives/past/Qudus.jpg?height=300&width=300",
     bio: "Managing NUESA's finances with transparency and strategic planning. Chioma has implemented systems to ensure financial accountability and efficient resource allocation.",
     achievements: [
       "Secured funding for student projects through corporate sponsorships",
@@ -450,8 +381,7 @@ export const currentExecutivesData = [
     position: "Assistant General Secretary",
     department: "Mechanical Engineering",
     year: "400 Level",
-    image:
-      "/images/executives/past/Bayo.jpg?height=300&width=300",
+    image: "/images/executives/past/Bayo.jpg?height=300&width=300",
     bio: "Committed to maintaining effective communication and organization within NUESA. David ensures that all association activities are well-documented and members are informed about opportunities.",
     achievements: [
       "Digitized NUESA's record-keeping system",
@@ -469,8 +399,7 @@ export const currentExecutivesData = [
     position: "Public Relations Officer",
     department: "Mechatronics Engineering",
     year: "500 Level",
-    image:
-      "/images/executives/past/Arnold.jpg?height=300&width=300",
+    image: "/images/executives/past/Arnold.jpg?height=300&width=300",
     bio: "Oversees the financial integrity of the association. Charles ensures proper budgeting, financial reporting, and resource planning for NUESA activities.",
     achievements: [
       "Redesigned NUESA's website and social media presence",
@@ -488,8 +417,7 @@ export const currentExecutivesData = [
     position: "Treasurer",
     department: "Mechatronics Engineering",
     year: "400 Level",
-    image:
-      "/images/executives/past/Charles.jpg?height=300&width=300",
+    image: "/images/executives/past/Charles.jpg?height=300&width=300",
     bio: "Responsible for NUESA's public image and external communications. Tunde has strengthened the association's presence on campus and in the wider engineering community.",
     achievements: [
       "Prepared quarterly financial reports for executive review",
@@ -507,8 +435,7 @@ export const currentExecutivesData = [
     position: "Social Director (Male)",
     department: "Civil Engineering",
     year: "500 Level",
-    image:
-      "/images/executives/past/Royal.jpg?height=300&width=300",
+    image: "/images/executives/past/Royal.jpg?height=300&width=300",
     bio: "Organizing social events and activities that foster community among engineering students. Fatima ensures that NUESA members have opportunities to network and build relationships outside the classroom.",
     achievements: [
       "Organized the annual Engineering Gala Night",
@@ -526,8 +453,7 @@ export const currentExecutivesData = [
     position: "Social Director (Female)",
     department: "Biomedical Engineering",
     year: "500 Level",
-    image:
-      "/images/executives/past/Elizabeth.jpg?height=300&width=300",
+    image: "/images/executives/past/Elizabeth.jpg?height=300&width=300",
     bio: "Coordinates social events and activities tailored to female students. Elizabeth promotes community engagement and fun learning experiences.",
     achievements: [
       "Organized female-led networking brunch",
@@ -545,8 +471,7 @@ export const currentExecutivesData = [
     position: "Sport Director (Male)",
     department: "Aeronautical Engineering",
     year: "500 Level",
-    image:
-      "/images/executives/past/Joshua.jpg?height=300&width=300",
+    image: "/images/executives/past/Joshua.jpg?height=300&width=300",
     bio: "Oversees all male-focused sports and fitness activities in NUESA. Joshua motivates students through athletics and team-building.",
     achievements: [
       "Hosted the annual NUESA male football league",
@@ -564,8 +489,7 @@ export const currentExecutivesData = [
     position: "Sport Director (Female)",
     department: "Mechanical Engineering",
     year: "500 Level",
-    image:
-      "/images/executives/past/Cheta.jpg?height=300&width=300",
+    image: "/images/executives/past/Cheta.jpg?height=300&width=300",
     bio: "Encourages female student involvement in sports. Chetachi empowers women in engineering to participate in wellness and competition.",
     achievements: [
       "Led the female sports tournament planning",
@@ -583,8 +507,7 @@ export const currentExecutivesData = [
     position: "Welfare Officer",
     department: "Biomedical Engineering",
     year: "500 Level",
-    image:
-      "/images/executives/past/Awele.jpg?height=300&width=300",
+    image: "/images/executives/past/Awele.jpg?height=300&width=300",
     bio: "Ensures student welfare, advocating for resources and mental health awareness. Awele fosters a supportive engineering community.",
     achievements: [
       "Introduced the mental health awareness unit (H.E.A.R.T.)",
@@ -603,8 +526,7 @@ export const currentExecutivesData = [
     position: "Chief of Staff",
     department: "Mechanical Engineering",
     year: "500 Level",
-    image:
-      "/images/executives/past/Dickson.jpg?height=300&width=300",
+    image: "/images/executives/past/Dickson.jpg?height=300&width=300",
     bio: "Manages executive workflow and coordination across departments. Dickson enhances internal efficiency and executive planning.",
     achievements: [
       "Streamlined executive meeting processes",
@@ -622,8 +544,7 @@ export const currentExecutivesData = [
     position: "Director of Academics",
     department: "Aeronautical Engineering",
     year: "400 Level",
-    image:
-      "/images/executives/past/Christopher.jpg?height=300&width=300",
+    image: "/images/executives/past/Christopher.jpg?height=300&width=300",
     bio: "Dedicated to enhancing academic excellence among engineering students. Christopher coordinates tutoring programs, academic competitions, and liaises with faculty on curriculum matters.",
     achievements: [
       "Launched the Engineering Scholars Program",
@@ -641,8 +562,7 @@ export const currentExecutivesData = [
     position: "Director of Events",
     department: "Mechanical Engineering",
     year: "500 Level",
-    image:
-      "/images/executives/past/gbolahan.jpg?height=300&width=300",
+    image: "/images/executives/past/gbolahan.jpg?height=300&width=300",
     bio: "Leads planning and execution of all official NUESA events. Gbolahan curates experiences that inspire, educate, and entertain students.",
     achievements: [
       "Produced the most attended Engineering Gala in history",
@@ -660,8 +580,7 @@ export const currentExecutivesData = [
     position: "Technical Secretary",
     department: "Mechtronics Engineering",
     year: "500 Level",
-    image:
-      "/images/executives/past/Emmanuel.jpg?height=300&width=300",
+    image: "/images/executives/past/Emmanuel.jpg?height=300&width=300",
     bio: "Responsible for NUESA's technical activities, equipments, events, outreach, website and technical advances implmentation in the college for a better learning environment for students.",
     achievements: [
       "Organized the annual Tech Hangpout",
@@ -681,8 +600,7 @@ export const currentExecutivesData = [
     position: "Director of outreach and alliance",
     department: "Civil Engineering",
     year: "500 Level",
-    image:
-      "/images/executives/past/Stephen.jpg?height=300&width=300",
+    image: "/images/executives/past/Stephen.jpg?height=300&width=300",
     bio: "Establishes partnerships and outreach programs with industry, alumni, and other institutions. Stephen promotes visibility and cooperation.",
     achievements: [
       "Built an alumni-student career connect program",
@@ -700,8 +618,7 @@ export const currentExecutivesData = [
     position: "Head of Departmental Affairs",
     department: "Computer Engineering",
     year: "500 Level",
-    image:
-      "/images/executives/past/Chidera.jpg?height=300&width=300",
+    image: "/images/executives/past/Chidera.jpg?height=300&width=300",
     bio: "Manages department-level student concerns and harmonizes inter-departmental communication. Chidera ensures academic and administrative alignment.",
     achievements: [
       "Created a cross-departmental student rep network",

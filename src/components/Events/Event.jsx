@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import EventCard from "./EventCard";
 import { eventsData } from "../../lib/constants";
-import { Calendar, ChevronDown, Clock } from "lucide-react";
+import { Calendar, ChevronDown, Clock, Filter } from "lucide-react";
 
 const Event = () => {
   const [visibleEvents, setVisibleEvents] = useState(new Set());
@@ -249,7 +249,7 @@ const Event = () => {
         ) : (
           <div className='text-center py-20'>
             <div className='bg-green-400/10 backdrop-blur-lg rounded-2xl p-12 max-w-md mx-auto border border-green-400/20'>
-              <Filter className='w-16 h-16 text-gray-800 mx-auto mb-4' />
+              <Filter className='w-16 h-16 text-green mx-auto mb-4' />
               <h3 className='text-2xl font-bold text-green mb-2'>
                 No Events Found
               </h3>
