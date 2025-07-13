@@ -25,10 +25,11 @@ const ProjectCarousel = ({ projects }) => {
     <div>
       <div className='relative flex flex-col md:flex-row bg-white rounded-xl shadow-md overflow-hidden'>
         <img
-          src={active.image}
-          alt={active.title}
-          className='w-full md:w-1/2 h-72 md:h-auto object-cover'
-        />
+  src={active.image}
+  alt={active.title}
+  className="w-full md:w-1/2 h-64 md:h-[20rem] object-cover object-center rounded-l-xl"
+/>
+
         <div className='p-6 flex-1'>
           <h3 className='text-2xl font-bold text-green-700 mb-2'>
             {active.title}

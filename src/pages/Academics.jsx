@@ -8,7 +8,7 @@ const Academics = () => {
     <div className="min-h-screen">
       <header className="text-center py-12 px-4 bg-green-100">
         <h1 className="text-4xl md:text-5xl font-bold text-green-700 mb-3">
-          🎓 NUESA Academic Resources
+           NUESA Academic Resources
         </h1>
         <p className="text-gray-700 text-sm max-w-2xl mx-auto">
           Empowering students through structured learning support: tutorials, past papers, and detailed notes.

@@ -8,7 +8,7 @@ const ongoing = [
       "Your Engineering Companion in the Digital Age.\n\nThe NUESA App is a powerful academic companion tailored specifically for students of the College of Engineering. Designed to simplify campus life, it brings together essential academic tools and communication features in one seamless platform.\n\nKey Features:\n\n🗓️ Personalized academic schedule\n📚 Lecture notes organized by course\n❓ Access to past questions for exam preparation\n🤖 AI-generated practice questions based on materials and past exams\n📈 Smart revision support for active learning\n\nWhether you're attending lectures, revising for exams, or planning your study time, the NUESA App ensures you're always one step ahead — focused, prepared, and connected.",
     year: 2025,
     students: 2,
-    image: "/images/nuesa-app.jpg",
+    image: "/images/projects/nuesa-app.jpg",
   },
   {
     title: "NUESA Website",

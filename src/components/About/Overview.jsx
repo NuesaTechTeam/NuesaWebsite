@@ -4,12 +4,14 @@ const Overview = () => {
   return (
     <section className='max-w-7xl mx-auto flex flex-col md:flex-row gap-10 items-center'>
       {/* Left: Image */}
-      <div className='w-full md:w-1/2'>
-        <div className='w-full h-64 md:h-80 bg-gray-200 rounded-xl flex items-center justify-center'>
-          <span className='text-gray-400'>[ Image Placeholder ]</span>
+        <div className='w-full md:w-1/2'>
+          <img
+            src='/images/executives/past/Official.jpg' 
+            alt='NUESA Overview'
+            className='w-full h-64 md:h-80 object-cover rounded-xl shadow-md'
+          />
         </div>
-      </div>
-
+        
       {/* Right: Text */}
       <div className='w-full md:w-1/2 text-center md:text-left'>
         <h2 className='text-3xl md:text-4xl font-bold text-green mb-6'>

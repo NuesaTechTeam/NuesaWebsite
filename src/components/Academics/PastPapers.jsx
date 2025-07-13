@@ -34,7 +34,7 @@ const PastPapers = () => {
   return (
     <section className="max-w-7xl mx-auto py-12 px-2">
       <h2 className="text-3xl md:text-4xl font-bold text-green-700 mb-6 text-center">
-        📘 Past Questions & Solutions
+         Past Questions & Solutions
       </h2>
       <p className="text-center text-gray-600 mb-6 max-w-2xl mx-auto text-sm">
         Browse past exam papers across various levels and engineering courses.

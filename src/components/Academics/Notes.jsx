@@ -4,20 +4,11 @@ import Filters from "./Filters";
 
 const notesList = [
   {
-    title: "Thermodynamics Notes",
-    course: "Mechanical Engineering",
-    link: "/notes/thermodynamics-notes.pdf",
+    title: "Health Awareness Education 2",
+    course: "100 Level",
+    link: "/documents/100%20lvl/1st%20Semester/AFE101/Health%20awareness%20education%202nd%20lecture%20review%20recent%202021.pdf",
   },
-  {
-    title: "Circuit Theory Essentials",
-    course: "Electrical Engineering",
-    link: "/notes/circuit-theory.pdf",
-  },
-  {
-    title: "Introduction to Programming (Python)",
-    course: "Computer Engineering",
-    link: "/notes/python-intro.pdf",
-  },
+
 ];
 
 const Notes = () => {
@@ -28,6 +19,7 @@ const Notes = () => {
 
   const departments = [
     "All",
+    "100 Level",
     "Civil Engineering",
     "Computer Engineering",
     "Aeronautical Engineering",
@@ -57,7 +49,7 @@ const Notes = () => {
   return (
     <section className="max-w-7xl mx-auto py-12 px-2">
       <h2 className="text-3xl md:text-4xl font-bold text-green-700 mb-6 text-center">
-        📚 Notes & Textbooks
+        Notes & Textbooks
       </h2>
       <p className="text-center text-gray-600 mb-6 max-w-2xl mx-auto text-sm">
         Download comprehensive lecture notes and recommended textbooks to guide your academic journey.

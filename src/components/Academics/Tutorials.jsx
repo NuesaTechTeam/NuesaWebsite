@@ -4,30 +4,6 @@ import Filters from "./Filters";
 
 const tutorialData = [
   {
-    title: "Thermodynamics Basics",
-    description: "Intro to thermodynamics with real-life examples.",
-    tutor: "Engr. Samuel D.",
-    date: "June 2025",
-    department: "Mechanical",
-    link: "https://youtu.be/4pmE4Qpum_s?si=dyXgnwOstL4p0xL_",
-  },
-  {
-    title: "MATLAB for Beginners",
-    description: "Step-by-step guide to MATLAB for engineers.",
-    tutor: "Chisom E.",
-    date: "May 2025",
-    department: "Electrical",
-    link: "https://youtu.be/7f50sQYjNRA?si=qr6R6ypaKOnepzmn",
-  },
-  {
-    title: "Introduction to Engineering Drawing",
-    description: "Best practices for mastering technical drawing.",
-    tutor: "Engr. Blessing O.",
-    date: "April 2025",
-    department: "Civil",
-    link: "https://youtu.be/YE0oZZO7vbk?si=_gGdBDWQDs5yesMO",
-  },
-  {
     title: "Signals and Systems",
     description: "Concepts in Signals & Systems play a very important role in many areas of engineering. Learn these concepts with properly designed lectures.",
     tutor: "Neso Academy",
@@ -59,7 +35,7 @@ const Tutorials = () => {
   return (
     <section className="max-w-7xl mx-auto py-12 px-2">
       <h2 className="text-3xl md:text-4xl font-bold text-green-700 mb-6 text-center">
-        🎓 Tutorials
+        Tutorials
       </h2>
       <p className="text-center text-gray-600 mb-6 max-w-2xl mx-auto text-sm">
         Access tutorials provided and gotten from Youtube.
