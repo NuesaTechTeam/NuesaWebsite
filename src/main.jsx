@@ -3,6 +3,7 @@ import './index.css';
 import App from './App.jsx';
 import 'react-quill/dist/quill.snow.css';
 import { GlobalProvider } from './context/index.js';
+import { BrowserRouter } from 'react-router-dom';
 
 import AOS from 'aos';
 import 'aos/dist/aos.css';
@@ -18,7 +19,9 @@ const Root = () => {
 
   return (
     <GlobalProvider>
-      <App />
+      <BrowserRouter basename="/NuesaWebsite">
+        <App />
+      </BrowserRouter>
     </GlobalProvider>
   );
 };
