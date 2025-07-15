@@ -1,6 +1,8 @@
-@import "tailwindcss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-@theme {
+:root {
   --font-poppins: "Poppins", sans-serif;
   --font-lora: "Lora", serif;
   --font-montserrat: "Montserrat", sans-serif;
@@ -10,27 +12,19 @@
   --color-green-dark: #0d3c1f;
 }
 
-
-@utility scrollbar-hidden {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-
-  &::-webkit-scrollbar {
-    display: none;
-  }
-}
-
+/* Hide scrollbars globally */
 body {
+  font-family: var(--font-montserrat);
   -ms-overflow-style: none;
   scrollbar-width: none;
-  font-family: var(--font-montserrat);
-  @apply text-gray-700
+  color: #374151; /* Tailwind's text-gray-700 */
 }
 
 body::-webkit-scrollbar {
   display: none;
 }
 
+/* Base font families */
 @layer base {
   p {
     font-family: var(--font-montserrat);
@@ -49,9 +43,9 @@ body::-webkit-scrollbar {
   button {
     font-family: var(--font-poppins);
   }
-
 }
 
+/* Accordion animations */
 @keyframes slideDown {
   from {
     height: 0;
@@ -75,10 +69,12 @@ body::-webkit-scrollbar {
 .animate-slideUp {
   animation: slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1);
 }
+
 .animate-slideDown {
   animation: slideDown 300ms cubic-bezier(0.87, 0, 0.13, 1);
 }
 
+/* Fade animation utility */
 @layer utilities {
   .animate-fadeIn {
     animation: fadeIn 0.3s ease-out;

@@ -1,5 +1,5 @@
 // tailwind.config.mjs
-import { defineConfig } from 'tailwindcss'
+import { defineConfig } from 'tailwindcss';
 
 export default defineConfig({
   content: [
@@ -10,4 +10,4 @@ export default defineConfig({
     extend: {},
   },
   plugins: [],
-})
+});
