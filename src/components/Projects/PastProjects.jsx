@@ -15,21 +15,21 @@ const projects = [
       "Installations of fans in classes around the Engineering college for a more conducive learning environment.",
     status: "past",
     year: 2015,
-    image: "/images/projects/2015-2016.webp",
+    image: "/NuesaWebsite/images/projects/2015-2016.webp",
   },
   {
     title: "Common Room Lounge",
     summary: "Sofas and Couches for Engineering Students to chill.",
     status: "past",
     year: 2022,
-    image: "/images/projects/2022-2023-1.webp",
+    image: "/NuesaWebsite/images/projects/2022-2023-1.webp",
   },
   {
     title: "Garden Bench",
     summary: "A relaxation bench for Engineering Students during idle hours.",
     status: "past",
     year: 2023,
-    image: "/images/projects/2023-2024.webp",
+    image: "/NuesaWebsite/images/projects/2023-2024.webp",
   },
   {
     title: "Findr",
@@ -37,7 +37,7 @@ const projects = [
       "A simple platform to help university students connect with their roommates before resumption for better bonding.",
     status: "past",
     year: 2024,
-    image: "/images/projects/findr.webp",
+    image: "/NuesaWebsite/images/projects/findr.webp",
   },
 ];
 
