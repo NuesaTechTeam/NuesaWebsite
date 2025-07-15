@@ -112,7 +112,7 @@ export const eventsData = [
     venue: "Google Meet",
     description:
       "A webinar session hosting 2 guests with a wealth of experience in the fintech sector.",
-    image: "/images/events/career-path-in-fintech.jpg",
+    image: "/NuesaWebsite/images/events/career-path-in-fintech.jpg",
     category: "Professional",
     status: "past",
     featured: false,
@@ -125,7 +125,7 @@ export const eventsData = [
     venue: "Twitter Spaces",
     description:
       "Visit to leading tech companies in Lagos to gain insights into industry practices and network with professionals.",
-    image: "/images/events/know-your-excos.jpg",
+    image: "/NuesaWebsite/images/events/know-your-excos.jpg",
     category: "Exhibition",
     status: "past",
     featured: false,
@@ -138,7 +138,7 @@ export const eventsData = [
     venue: "Engineering Auditorium",
     description:
       "Hands-on workshops on emerging technologies and engineering practices led by industry experts.",
-    image: "/images/events/freshers-orientation.jpg",
+    image: "/NuesaWebsite/images/events/freshers-orientation.jpg",
     category: "Academic",
     status: "past",
     featured: false,
@@ -151,7 +151,7 @@ export const eventsData = [
     venue: "Engineering Auditorium",
     description:
       "Annual technical festival featuring coding competitions, robotics, and innovation showcases.",
-    image: "/images/events/tech-fusion.jpg",
+    image: "/NuesaWebsite/images/events/tech-fusion.jpg",
     category: "Technical",
     status: "past",
     featured: false,
@@ -163,7 +163,7 @@ export const eventsData = [
     time: "07:00 PM - 10:30 PM",
     venue: "Alfa Belgore Hall, ABUAD",
     description: "Annual dinner and awards night.",
-    image: "/images/events/salam-odo-nuwa.jpg",
+    image: "/NuesaWebsite/images/events/salam-odo-nuwa.jpg",
     category: "Cultural",
     status: "past",
     featured: false,
@@ -212,37 +212,37 @@ export const newsArticles = [
 export const galleryPhotos = [
   {
     id: 1,
-    src: "/images/events/tech-fusion.jpg",
+    src: "/NuesaWebsite/images/events/tech-fusion.jpg",
     title: "TechFest 2024 - Opening Ceremony",
     eventDate: "October 2024",
   },
   {
     id: 2,
-    src: "/images/events/college.jpg",
+    src: "/NuesaWebsite/images/events/college.jpg",
     title: "Engineering Symposium - Keynote Speech",
     eventDate: "September 2024",
   },
   {
     id: 3,
-    src: "/images/events/tech-fusion.jpg",
+    src: "/NuesaWebsite/images/events/tech-fusion.jpg",
     title: "Hackathon 2024 - Team Collaboration",
     eventDate: "August 2024",
   },
   {
     id: 4,
-    src: "/images/events/salam-odo-nuwa.jpg",
+    src: "/NuesaWebsite/images/events/salam-odo-nuwa.jpg",
     title: "Cultural Night - Dance Performance",
     eventDate: "July 2024",
   },
   {
     id: 5,
-    src: "/images/events/career-path-in-fintech.jpg",
+    src: "/NuesaWebsite/images/events/career-path-in-fintech.jpg",
     title: "Industry Connect - Networking Session",
     eventDate: "June 2024",
   },
   {
     id: 6,
-    src: "/images/events/career-path-in-fintech.jpg",
+    src: "/NuesaWebsite/images/events/career-path-in-fintech.jpg",
     title: "Science Exhibition - Project Showcase",
     eventDate: "May 2024",
   },
@@ -255,12 +255,12 @@ export const collegeGallery = {
       "Our beautiful and modern college provides an inspiring environment for learning and innovation",
     icon: Building,
     images: [
-      "/images/college/environment/environment1.jpg",
-      "/images/college/environment/environment2.jpg",
-      "/images/college/environment/environment3.jpg",
-      "/images/college/environment/environment4.jpg",
-      "/images/college/environment/environment5.jpg",
-      "/images/college/environment/environment6.jpg",
+      "/NuesaWebsite/images/college/environment/environment2.jpg",
+      "/NuesaWebsite/images/college/environment/environment1.jpg",
+      "/NuesaWebsite/images/college/environment/environment3.jpg",
+      "/NuesaWebsite/images/college/environment/environment4.jpg",
+      "/NuesaWebsite/images/college/environment/environment5.jpg",
+      "/NuesaWebsite/images/college/environment/environment6.jpg",
     ],
   },
   // classrooms: {
@@ -281,7 +281,7 @@ export const collegeGallery = {
       "Fully equipped workshops where students bring their engineering concepts to life",
     icon: Wrench,
     images: [
-      "/images/college/workshop/workshop1.jpg",
+      "/NuesaWebsite/images/college/workshop/workshop1.jpg",
       // "https://images.unsplash.com/photo-1598300042247-d088f8ab3a91?w=600&h=400&fit=crop",
       // "https://images.unsplash.com/photo-1587825140708-dfaf72ae4b04?w=600&h=400&fit=crop",
       // "https://images.unsplash.com/photo-1565043666747-69f6646db940?w=600&h=400&fit=crop",
@@ -293,12 +293,12 @@ export const collegeGallery = {
       "A quiet sanctuary for research and study with extensive engineering resources",
     icon: BookOpen,
     images: [
-      "/images/college/library/library1.jpg",
-      "/images/college/library/library2.jpg",
-      "/images/college/library/library3.jpg",
-      "/images/college/library/library4.jpg",
-      "/images/college/library/library5.jpg",
-      "/images/college/library/library6.jpg",
+      "/NuesaWebsite/images/college/library/library1.jpg",
+      "/NuesaWebsite/images/college/library/library2.jpg",
+      "/NuesaWebsite/images/college/library/library3.jpg",
+      "/NuesaWebsite/images/college/library/library4.jpg",
+      "/NuesaWebsite/images/college/library/library5.jpg",
+      "/NuesaWebsite/images/college/library/library6.jpg",
     ],
   },
 };
@@ -309,7 +309,7 @@ export const currentExecutivesData = [
     position: "President",
     department: "Electrical Engineering",
     year: "500 Level",
-    image: "/images/executives/past/Marvelous.jpg?height=300&width=300",
+    image: "/NuesaWebsite/images/executives/past/Marvelous.jpg?height=300&width=300",
     bio: "A visionary leader with a passion for innovation and community building in engineering. Emmanuel has led several initiatives to enhance the academic and professional development of NUESA members.",
     achievements: [
       "Led the organization of the largest Engineering Week in ABUAD history",
@@ -327,7 +327,7 @@ export const currentExecutivesData = [
     position: "Vice President",
     department: "Chemical Engineering",
     year: "400 Level",
-    image: "/images/executives/past/Hannah.jpg?height=300&width=300",
+    image: "/NuesaWebsite/images/executives/past/Hannah.jpg?height=300&width=300",
     bio: "Dedicated to fostering collaboration and excellence among engineering students. Amina oversees the academic committee and has implemented several programs to support student success.",
     achievements: [
       "Coordinated the inter-departmental technical competition",
@@ -345,7 +345,7 @@ export const currentExecutivesData = [
     position: "General Secretary",
     department: "Civil Engineering",
     year: "500 Level",
-    image: "/images/executives/past/Ciaran.jpg?height=300&width=300",
+    image: "/NuesaWebsite/images/executives/past/Ciaran.jpg?height=300&width=300",
     bio: "Committed to maintaining effective communication and organization within NUESA. David ensures that all association activities are well-documented and members are informed about opportunities.",
     achievements: [
       "Digitized NUESA's record-keeping system",
@@ -363,7 +363,7 @@ export const currentExecutivesData = [
     position: "Financial Secretary",
     department: "Mechanical Engineering",
     year: "500 Level",
-    image: "/images/executives/past/Qudus.jpg?height=300&width=300",
+    image: "/NuesaWebsite/images/executives/past/Qudus.jpg?height=300&width=300",
     bio: "Managing NUESA's finances with transparency and strategic planning. Chioma has implemented systems to ensure financial accountability and efficient resource allocation.",
     achievements: [
       "Secured funding for student projects through corporate sponsorships",
@@ -381,7 +381,7 @@ export const currentExecutivesData = [
     position: "Assistant General Secretary",
     department: "Mechanical Engineering",
     year: "400 Level",
-    image: "/images/executives/past/Bayo.jpg?height=300&width=300",
+    image: "/NuesaWebsite/images/executives/past/Bayo.jpg?height=300&width=300",
     bio: "Committed to maintaining effective communication and organization within NUESA. David ensures that all association activities are well-documented and members are informed about opportunities.",
     achievements: [
       "Digitized NUESA's record-keeping system",
@@ -399,7 +399,7 @@ export const currentExecutivesData = [
     position: "Public Relations Officer",
     department: "Mechatronics Engineering",
     year: "500 Level",
-    image: "/images/executives/past/Arnold.jpg?height=300&width=300",
+    image: "/NuesaWebsite/images/executives/past/Arnold.jpg?height=300&width=300",
     bio: "Oversees the financial integrity of the association. Charles ensures proper budgeting, financial reporting, and resource planning for NUESA activities.",
     achievements: [
       "Redesigned NUESA's website and social media presence",
@@ -417,7 +417,7 @@ export const currentExecutivesData = [
     position: "Treasurer",
     department: "Mechatronics Engineering",
     year: "400 Level",
-    image: "/images/executives/past/Charles.jpg?height=300&width=300",
+    image: "/NuesaWebsite/images/executives/past/Charles.jpg?height=300&width=300",
     bio: "Responsible for NUESA's public image and external communications. Tunde has strengthened the association's presence on campus and in the wider engineering community.",
     achievements: [
       "Prepared quarterly financial reports for executive review",
@@ -435,7 +435,7 @@ export const currentExecutivesData = [
     position: "Social Director (Male)",
     department: "Civil Engineering",
     year: "500 Level",
-    image: "/images/executives/past/Royal.jpg?height=300&width=300",
+    image: "/NuesaWebsite/images/executives/past/Royal.jpg?height=300&width=300",
     bio: "Organizing social events and activities that foster community among engineering students. Fatima ensures that NUESA members have opportunities to network and build relationships outside the classroom.",
     achievements: [
       "Organized the annual Engineering Gala Night",
@@ -453,7 +453,7 @@ export const currentExecutivesData = [
     position: "Social Director (Female)",
     department: "Biomedical Engineering",
     year: "500 Level",
-    image: "/images/executives/past/Elizabeth.jpg?height=300&width=300",
+    image: "/NuesaWebsite/images/executives/past/Elizabeth.jpg?height=300&width=300",
     bio: "Coordinates social events and activities tailored to female students. Elizabeth promotes community engagement and fun learning experiences.",
     achievements: [
       "Organized female-led networking brunch",
@@ -471,7 +471,7 @@ export const currentExecutivesData = [
     position: "Sport Director (Male)",
     department: "Aeronautical Engineering",
     year: "500 Level",
-    image: "/images/executives/past/Joshua.jpg?height=300&width=300",
+    image: "/NuesaWebsite/images/executives/past/Joshua.jpg?height=300&width=300",
     bio: "Oversees all male-focused sports and fitness activities in NUESA. Joshua motivates students through athletics and team-building.",
     achievements: [
       "Hosted the annual NUESA male football league",
@@ -489,7 +489,7 @@ export const currentExecutivesData = [
     position: "Sport Director (Female)",
     department: "Mechanical Engineering",
     year: "500 Level",
-    image: "/images/executives/past/Cheta.jpg?height=300&width=300",
+    image: "/NuesaWebsite/images/executives/past/Cheta.jpg?height=300&width=300",
     bio: "Encourages female student involvement in sports. Chetachi empowers women in engineering to participate in wellness and competition.",
     achievements: [
       "Led the female sports tournament planning",
@@ -507,7 +507,7 @@ export const currentExecutivesData = [
     position: "Welfare Officer",
     department: "Biomedical Engineering",
     year: "500 Level",
-    image: "/images/executives/past/Awele.jpg?height=300&width=300",
+    image: "/NuesaWebsite/images/executives/past/Awele.jpg?height=300&width=300",
     bio: "Ensures student welfare, advocating for resources and mental health awareness. Awele fosters a supportive engineering community.",
     achievements: [
       "Introduced the mental health awareness unit (H.E.A.R.T.)",
@@ -526,7 +526,7 @@ export const currentExecutivesData = [
     position: "Chief of Staff",
     department: "Mechanical Engineering",
     year: "500 Level",
-    image: "/images/executives/past/Dickson.jpg?height=300&width=300",
+    image: "/NuesaWebsite/images/executives/past/Dickson.jpg?height=300&width=300",
     bio: "Manages executive workflow and coordination across departments. Dickson enhances internal efficiency and executive planning.",
     achievements: [
       "Streamlined executive meeting processes",
@@ -544,7 +544,7 @@ export const currentExecutivesData = [
     position: "Director of Academics",
     department: "Aeronautical Engineering",
     year: "400 Level",
-    image: "/images/executives/past/Christopher.jpg?height=300&width=300",
+    image: "/NuesaWebsite/images/executives/past/Christopher.jpg?height=300&width=300",
     bio: "Dedicated to enhancing academic excellence among engineering students. Christopher coordinates tutoring programs, academic competitions, and liaises with faculty on curriculum matters.",
     achievements: [
       "Launched the Engineering Scholars Program",
@@ -562,7 +562,7 @@ export const currentExecutivesData = [
     position: "Director of Events",
     department: "Mechanical Engineering",
     year: "500 Level",
-    image: "/images/executives/past/gbolahan.jpg?height=300&width=300",
+    image: "/NuesaWebsite/images/executives/past/gbolahan.jpg?height=300&width=300",
     bio: "Leads planning and execution of all official NUESA events. Gbolahan curates experiences that inspire, educate, and entertain students.",
     achievements: [
       "Produced the most attended Engineering Gala in history",
@@ -580,7 +580,7 @@ export const currentExecutivesData = [
     position: "Technical Secretary",
     department: "Mechtronics Engineering",
     year: "500 Level",
-    image: "/images/executives/past/Emmanuel.jpg?height=300&width=300",
+    image: "/NuesaWebsite/images/executives/past/Emmanuel.jpg?height=300&width=300",
     bio: "Responsible for NUESA's technical activities, equipments, events, outreach, website and technical advances implmentation in the college for a better learning environment for students.",
     achievements: [
       "Organized the annual Tech Hangpout",
@@ -600,7 +600,7 @@ export const currentExecutivesData = [
     position: "Director of outreach and alliance",
     department: "Civil Engineering",
     year: "500 Level",
-    image: "/images/executives/past/Stephen.jpg?height=300&width=300",
+    image: "/NuesaWebsite/images/executives/past/Stephen.jpg?height=300&width=300",
     bio: "Establishes partnerships and outreach programs with industry, alumni, and other institutions. Stephen promotes visibility and cooperation.",
     achievements: [
       "Built an alumni-student career connect program",
@@ -618,7 +618,7 @@ export const currentExecutivesData = [
     position: "Head of Departmental Affairs",
     department: "Computer Engineering",
     year: "500 Level",
-    image: "/images/executives/past/Chidera.jpg?height=300&width=300",
+    image: "/NuesaWebsite/images/executives/past/Chidera.jpg?height=300&width=300",
     bio: "Manages department-level student concerns and harmonizes inter-departmental communication. Chidera ensures academic and administrative alignment.",
     achievements: [
       "Created a cross-departmental student rep network",
@@ -642,7 +642,7 @@ export const pastExecutivesByYear = [
         position: "President",
         department: "Civil Engineering",
         image:
-          "/images/executives/past/Marvelous.jpg?height=300&width=300",
+          "/NuesaWebsite/images/executives/past/Marvelous.jpg?height=300&width=300",
       },
       {
         name: "Hannah Ezera",
@@ -656,63 +656,63 @@ export const pastExecutivesByYear = [
         position: "General Secretary",
         department: "Civil Engineering",
         image:
-          "/images/executives/past/Ciaran.jpg?height=300&width=300",
+          "/NuesaWebsite/images/executives/past/Ciaran.jpg?height=300&width=300",
       },
       {
         name: "Qudus Igbalaye",
         position: "Financial Secretary",
         department: "Mechanical Engineering",
         image:
-          "/images/executives/past/Qudus.jpg?height=300&width=300",
+          "/NuesaWebsite/images/executives/past/Qudus.jpg?height=300&width=300",
       },
       {
         name: "Arnold Olika",
         position: "Public Relations Officer",
         department: "Mechatronics Engineering",
         image:
-          "/images/executives/past/Arnold.jpg?height=300&width=300",
+          "/NuesaWebsite/images/executives/past/Arnold.jpg?height=300&width=300",
       },
       {
         name: "Royal Week-Doodei",
         position: "Social Director (Male)",
         department: "Civil Engineering",
         image:
-          "/images/executives/past/Royal.jpg?height=300&width=300",
+          "/NuesaWebsite/images/executives/past/Royal.jpg?height=300&width=300",
       },
       {
         name: "Elizabeth Soriwei",
         position: "Social Director (Female)",
         department: "Biomedical Engineering",
         image:
-          "/images/executives/past/Elizabeth.jpg?height=300&width=300",
+          "/NuesaWebsite/images/executives/past/Elizabeth.jpg?height=300&width=300",
       },
       {
         name: "Awele Okofu",
         position: "Welfare Officer",
         department: "Biomedical Engineering",
         image:
-          "/images/executives/past/Awele.jpg?height=300&width=300",
+          "/NuesaWebsite/images/executives/past/Awele.jpg?height=300&width=300",
       },
       {
         name: "Joshua Osiyemi",
         position: "Sport Director (Male)",
         department: "Aeronautical Engineering",
         image:
-          "/images/executives/past/Joshua.jpg?height=300&width=300",
+          "/NuesaWebsite/images/executives/past/Joshua.jpg?height=300&width=300",
       },
       {
         name: "Chetachi Okorie",
         position: "Sport Director (Female)",
         department: "Mechanical Engineering",
         image:
-          "/images/executives/past/Cheta.jpg?height=300&width=300",
+          "/NuesaWebsite/images/executives/past/Cheta.jpg?height=300&width=300",
       },
       {
         name: "Emmanuel Omoiya",
         position: "Technical Secretary",
         department: "Mechtronics Engineering",
         image:
-          "/images/executives/past/Emmanuel.jpg?height=300&width=300",
+          "/NuesaWebsite/images/executives/past/Emmanuel.jpg?height=300&width=300",
       },
     ],
   },
@@ -724,28 +724,28 @@ export const pastExecutivesByYear = [
         position: "President",
         department: "Mechanical Engineering",
         image:
-          "/images/executives/current/OIP.webp?height=300&width=300",
+          "/NuesaWebsite/images/executives/current/OIP.webp?height=300&width=300",
       },
       {
         name: "Chioma Okonkwo",
         position: "Vice President",
         department: "Electrical Engineering",
         image:
-          "/images/executives/current/OIP.webp?height=300&width=300",
+          "/NuesaWebsite/images/executives/current/OIP.webp?height=300&width=300",
       },
       {
         name: "Abdullahi Ibrahim",
         position: "General Secretary",
         department: "Civil Engineering",
         image:
-          "/images/executives/current/OIP.webp?height=300&width=300",
+          "/NuesaWebsite/images/executives/current/OIP.webp?height=300&width=300",
       },
       {
         name: "Tolu Adeyemi",
         position: "Financial Secretary",
         department: "Chemical Engineering",
         image:
-          "/images/executives/current/OIP.webp?height=300&width=300",
+          "/NuesaWebsite/images/executives/current/OIP.webp?height=300&width=300",
       },
     ],
   },
@@ -757,28 +757,28 @@ export const pastExecutivesByYear = [
         position: "President",
         department: "Computer Engineering",
         image:
-          "/images/executives/current/OIP.webp?height=300&width=300",
+          "/NuesaWebsite/images/executives/current/OIP.webp?height=300&width=300",
       },
       {
         name: "Emmanuel Osei",
         position: "Vice President",
         department: "Mechatronics Engineering",
         image:
-          "/images/executives/current/OIP.webp?height=300&width=300",
+          "/NuesaWebsite/images/executives/current/OIP.webp?height=300&width=300",
       },
       {
         name: "Aisha Mohammed",
         position: "General Secretary",
         department: "Civil Engineering",
         image:
-          "/images/executives/current/OIP.webp?height=300&width=300",
+          "/NuesaWebsite/images/executives/current/OIP.webp?height=300&width=300",
       },
       {
         name: "Daniel Obi",
         position: "Financial Secretary",
         department: "Electrical Engineering",
         image:
-          "/images/executives/current/OIP.webp?height=300&width=300",
+          "/NuesaWebsite/images/executives/current/OIP.webp?height=300&width=300",
       },
     ],
   },
@@ -790,28 +790,28 @@ export const pastExecutivesByYear = [
         position: "President",
         department: "Mechanical Engineering",
         image:
-          "/images/executives/current/OIP.webp?height=300&width=300",
+          "/NuesaWebsite/images/executives/current/OIP.webp?height=300&width=300",
       },
       {
         name: "Sarah Mensah",
         position: "Vice President",
         department: "Chemical Engineering",
         image:
-          "/images/executives/current/OIP.webp?height=300&width=300",
+          "/NuesaWebsite/images/executives/current/OIP.webp?height=300&width=300",
       },
       {
         name: "Taiwo Ogunleye",
         position: "General Secretary",
         department: "Civil Engineering",
         image:
-          "/images/executives/current/OIP.webp?height=300&width=300",
+          "/NuesaWebsite/images/executives/current/OIP.webp?height=300&width=300",
       },
       {
         name: "Blessing Nwachukwu",
         position: "Financial Secretary",
         department: "Computer Engineering",
         image:
-          "/images/executives/current/OIP.webp?height=300&width=300",
+          "/NuesaWebsite/images/executives/current/OIP.webp?height=300&width=300",
       },
     ],
   },

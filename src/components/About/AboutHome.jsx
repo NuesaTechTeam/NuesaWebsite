@@ -70,7 +70,7 @@ const pillars = [
               <div className='relative'>
                 <div className='order-2 lg:order-1 relative overflow-hidden'>
                   <img
-                    src='/images/executives/past/Official.jpg'
+                    src='/NuesaWebsite/images/executives/past/Official.jpg'
                     alt='nuesa team photo'
                     className='rounded-lg shadow-lg w-full h-90 object-cover'
                   />

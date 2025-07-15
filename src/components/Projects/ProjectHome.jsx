@@ -17,7 +17,7 @@ const ongoingProjects = [
         "Your online engineering hub. Features: 📰 News, 📚 study resources, 🗓️ schedules, 🎓 leadership profiles, 🧪 projects, and 📩 direct contact. Stay connected and informed!",
       year: 2025,
       students: 2,
-      image: "/images/projects/website.jpg",
+      image: "/NuesaWebsite/images/projects/website.jpg",
     },
 ]
 
@@ -29,21 +29,21 @@ const pastProjects = [
       "Installations of fans in classes around the Engineering college for a more conducive learning environment.",
     status: "past",
     year: 2015,
-    image: "/images/projects/2015-2016.jpg",
+    image: "/NuesaWebsite/images/projects/2015-2016.jpg",
   },
   {
     title: "Common Room Lounge",
     summary: "Sofas and Couches for Engineering Students to chill.",
     status: "past",
     year: 2022,
-    image: "/images/projects/2022-2023-1.jpg",
+    image: "/NuesaWebsite/images/projects/2022-2023-1.jpg",
   },
   {
     title: "Garden Bench",
     summary: "A relaxation bench for Engineering Students during idle hours.",
     status: "past",
     year: 2023,
-    image: "/images/projects/2023-2024.jpg",
+    image: "/NuesaWebsite/images/projects/2023-2024.jpg",
   },
   {
     title: "Findr",
@@ -51,7 +51,7 @@ const pastProjects = [
       "A simple platform to help university students connect with their roommates before resumption for better bonding.",
     status: "past",
     year: 2024,
-    image: "/images/projects/findr.jpg",
+    image: "/NuesaWebsite/images/projects/findr.jpg",
   },
 ];
 

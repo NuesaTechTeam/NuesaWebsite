@@ -5,7 +5,7 @@ export const blogPosts = [
     category: "Featured",
     excerpt: "Highlighting outstanding engineering student contributions this month.",
     content: "Full content for this post...",
-    image: "/images/engineer-month.jpg",
+    image: "/NuesaWebsite/images/engineer-month.jpg",
     author: "NUESA Editorial",
     date: "June 2025",
     isFeatured: true,
@@ -50,7 +50,7 @@ Pulling an all-nighter may work once, but consistent rest is key to memory reten
 ---
 
 Engineering is tough — but you’re tougher 💪. Start early, be consistent, and believe in your preparation. Success is just an equation away!`,
-  image: "/images/exam-prep.jpg",
+  image: "/NuesaWebsite/images/exam-prep.jpg",
   author: "Nikola Tesla",
   date: "June 2025",
   isFeatured: false

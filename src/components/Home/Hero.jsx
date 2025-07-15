@@ -29,7 +29,7 @@ const Hero = () => {
             <div className='group relative w-full overflow-hidden rounded-lg h-130'>
               
               <img
-                src='/images/college/college.jpg'
+                src='/NuesaWebsite/images/college/college.jpg'
                 alt='College'
                 className='w-full h-full object-cover transform transition-transform duration-700 group-hover:scale-105'
               />

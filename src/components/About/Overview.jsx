@@ -6,7 +6,7 @@ const Overview = () => {
       {/* Left: Image */}
         <div className='w-full md:w-1/2'>
           <img
-            src='/images/executives/past/Official.jpg' 
+            src='/NuesaWebsite/images/executives/past/Official.jpg' 
             alt='NUESA Overview'
             className='w-full h-64 md:h-80 object-cover rounded-xl shadow-md'
           />
