@@ -1,15 +1,12 @@
-import { Layout } from "./components"
-import { About, Blog, Error, Events, Executives, Home, ContactUs, Projects, Academics } from "./pages"
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom"
+import { Layout } from "./components";
+import { About, Blog, Error, Events, Executives, Home, ContactUs, Projects, Academics } from "./pages";
+import { Route, Routes } from "react-router-dom";
 
 function App() {
-  
-
   return (
-    <Router>
     <Layout>
       <Routes>
-        <Route exact path='/' element={<Home />} />
+        <Route path='/' element={<Home />} />
         <Route path='/about' element={<About />} />
         <Route path='/events' element={<Events />} />
         <Route path='/executives' element={<Executives />} />
@@ -20,8 +17,7 @@ function App() {
         <Route path='*' element={<Error />} />
       </Routes>
     </Layout>
-  </Router>
-  )
+  );
 }
 
-export default App
+export default App;
