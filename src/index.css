@@ -2,19 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --font-poppins: "Poppins", sans-serif;
-  --font-lora: "Lora", serif;
-  --font-montserrat: "Montserrat", sans-serif;
-  --font-dm: "DM Sans", sans-serif;
-  --color-green: #0f5132;
-  --color-green-light: #4caf50;
-  --color-green-dark: #0d3c1f;
-}
-
-/* Hide scrollbars globally */
+/* Custom global styles */
 body {
-  font-family: var(--font-montserrat);
+  font-family: 'Montserrat', sans-serif;
   -ms-overflow-style: none;
   scrollbar-width: none;
   color: #374151; /* Tailwind's text-gray-700 */
@@ -24,33 +14,24 @@ body::-webkit-scrollbar {
   display: none;
 }
 
-/* Base font families */
 @layer base {
   p {
-    font-family: var(--font-montserrat);
+    font-family: 'Montserrat', sans-serif;
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6,
-  label {
-    font-family: var(--font-dm);
+  h1, h2, h3, h4, h5, h6, label {
+    font-family: 'DM Sans', sans-serif;
   }
 
   button {
-    font-family: var(--font-poppins);
+    font-family: 'Poppins', sans-serif;
   }
 }
 
-/* Accordion animations */
 @keyframes slideDown {
   from {
     height: 0;
   }
-
   to {
     height: var(--radix-accordion-content-height);
   }
@@ -60,7 +41,6 @@ body::-webkit-scrollbar {
   from {
     height: var(--radix-accordion-content-height);
   }
-
   to {
     height: 0;
   }
@@ -74,7 +54,6 @@ body::-webkit-scrollbar {
   animation: slideDown 300ms cubic-bezier(0.87, 0, 0.13, 1);
 }
 
-/* Fade animation utility */
 @layer utilities {
   .animate-fadeIn {
     animation: fadeIn 0.3s ease-out;
