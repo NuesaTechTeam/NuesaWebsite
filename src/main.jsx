@@ -19,7 +19,7 @@ const Root = () => {
 
   return (
     <GlobalProvider>
-      <BrowserRouter basename="/NuesaWebsite">
+      <BrowserRouter>
         <App />
       </BrowserRouter>
     </GlobalProvider>
