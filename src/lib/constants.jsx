@@ -88,7 +88,7 @@ export const faqData = [
   {
     question: "Does NUESA offer any scholarships or financial support?",
     answer:
-      "NUESA occasionally offers scholarships and financial support to members based on academic excellence and financial need. We also provide information about external scholarships and grants available to engineering students.",
+      "ABUAD offers direct scholarships based on academic performance or need but NUESA can help with the external scholarships by partnering with organizations or helping students get some scholarship programs.",
   },
   {
     question: "How does NUESA connect students with industry professionals?",

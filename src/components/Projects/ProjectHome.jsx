@@ -3,21 +3,21 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 const ongoingProjects = [
-    {
-      title: "NUESA Engineering Hub Mobile App",
-      summary:
-       "Your all-in-one engineering study app. Features: 📅 Class schedules, 📚 course notes, ❓ past questions, 🤖 AI practice tests, and 📈 smart revision tools. Stay organized and exam-ready!",
-      year: 2025,
-      students: 2,
-      image: "/images/projects/application.webp",
-    },
-    {
-      title: "NUESA Website",
-      summary:
-        "Your online engineering hub. Features: 📰 News, 📚 study resources, 🗓️ schedules, 🎓 leadership profiles, 🧪 projects, and 📩 direct contact. Stay connected and informed!",
-      year: 2025,
-      students: 2,
-      image: "/images/projects/website.jpg",
+  {
+    title: "NUESA Engineering Hub Application",
+    summary:
+      "The \"Engineering Hub\" is an application to aid students in the college of engineering.\nIt has amazing features, which include, the academic schedule for students per session,\neasy access to notes and textbooks for various lectures, past questions, and,\nAI generated questions based on study materials and past questions that can be used\nto prepare for tests and examinations.",
+    year: 2025,
+    students: 2,
+    image: "/images/projects/nuesa-app.jpg",
+  },
+  {
+    title: "NUESA Website",
+    summary:
+      "The NUESA Website is designed to serve as a central platform for engineering students. It provides easy access to important information, resources, and updates that are relevant to their academic life.\n\nSome of the key features include the latest NUESA announcements, downloadable materials like notes, past questions, and final year project templates, as well as departmental timetables and event schedules. It also highlights NUESA leadership profiles, alumni activities, project showcases, and blog posts related to engineering.\n\nStudents can also use the website to contact NUESA directly or share feedback easily.",
+    year: 2025,
+    students: 2,
+    image: "/images/projects/website.jpg",
     },
 ]
 

@@ -78,7 +78,7 @@ const ProjectCarousel = ({ projects }) => {
             <img
               src={proj.image}
               alt={proj.title}
-              className='w-full h-48 object-cover'
+              className="w-full h-64 object-cover rounded-md"
             />
             <div className='p-4 flex flex-col justify-between min-h-[150px]'>
               <div>

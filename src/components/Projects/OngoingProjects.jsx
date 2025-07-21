@@ -2,22 +2,22 @@ import React from "react";
 import ProjectCarousel from "./ProjectCarousel";
 
 const ongoing = [
-  {
-    title: "NUESA Engineering Hub Mobile App",
-    summary:
-      "Your Engineering Companion in the Digital Age.\n\nThe NUESA App is a powerful academic companion tailored specifically for students of the College of Engineering. Designed to simplify campus life, it brings together essential academic tools and communication features in one seamless platform.\n\nKey Features:\n\n🗓️ Personalized academic schedule\n📚 Lecture notes organized by course\n❓ Access to past questions for exam preparation\n🤖 AI-generated practice questions based on materials and past exams\n📈 Smart revision support for active learning\n\nWhether you're attending lectures, revising for exams, or planning your study time, the NUESA App ensures you're always one step ahead — focused, prepared, and connected.",
-    year: 2025,
-    students: 2,
-    image: "/images/projects/nuesa-app.jpg",
-  },
-  {
-    title: "NUESA Website",
-    summary:
-      "The Digital Home of Engineering Students.\n\nThe NUESA website serves as an all-in-one hub for information, resources, and updates tailored to the needs of engineering students. Built to be accessible and student-friendly, it showcases everything from event details to academic tools.\n\nHighlights:\n\n📰 Latest NUESA announcements and press releases\n📚 Downloadable materials (notes, past questions, FYP templates)\n🗓️ Departmental timetables and event schedules\n🎓 NUESA leadership profiles and alumni highlights\n🧪 Project showcases and engineering blog posts\n📩 Contact and feedback form to reach NUESA directly\n\nStay informed, stay involved, stay inspired — all from your browser.",
-    year: 2025,
-    students: 2,
-    image: "/images/projects/website.jpg",
-  },
+{
+  title: "NUESA Website",
+  summary:
+    "The \"Engineering Hub\" is an application to aid students in the college of engineering.\nIt has amazing features, which include, the academic schedule for students per session,\neasy access to notes and textbooks for various lectures, past questions, and,\nAI generated questions based on study materials and past questions that can be used\nto prepare for tests and examinations.",
+  year: 2025,
+  students: 2,
+  image: "/images/projects/nuesa-app.jpg",
+},
+{
+  title: "NUESA Website",
+  summary:
+    "The NUESA Website is designed to serve as a central platform for engineering students. It provides easy access to important information, resources, and updates that are relevant to their academic life.\n\nSome of the key features include the latest NUESA announcements, downloadable materials like notes, past questions, and final year project templates, as well as departmental timetables and event schedules. It also highlights NUESA leadership profiles, alumni activities, project showcases, and blog posts related to engineering.\n\nStudents can also use the website to contact NUESA directly or share feedback easily.",
+  year: 2025,
+  students: 2,
+  image: "/images/projects/website.jpg",
+},
 
   // {
   //   title: "Common Room Lounge",
