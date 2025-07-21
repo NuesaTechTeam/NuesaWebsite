@@ -24,11 +24,12 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false}) => {
   return (
     <div className='bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100'>
       <div className='relative'>
-        <div className='w-full h-64 bg-gray-200 flex items-center justify-center overflow-hidden'>
+        <div className='w-full h-76 bg-gray-200 flex items-center justify-center overflow-hidden'>
           <img
             src={executive.image}
             alt={executive.name}
-            className='w-full h-full object-fill'
+            loading = "lazy"
+            className='w-full  object-fill'
             onError={(e) => {
               e.target.src =
                 "/images/executives/current/OIP.webp?height=300&width=300";
@@ -63,16 +64,16 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false}) => {
             </p>
             <button
               onClick={() => toggleBio(index)}
-              className='text-green-600 hidden text-sm font-medium hover:text-green-700 mt-2 items-center'
+              className='text-green text-sm font-medium hover:text-green-700 mt-2 items-center'
             >
               {expandedBio === index ? (
-                <>
+                <div className='flex items-center'>
                   Show Less <ChevronUp className='w-4 h-4 ml-1' />
-                </>
+                </div>
               ) : (
-                <>
+                <div className='flex items-center'>
                   Read More <ChevronDown className='w-4 h-4 ml-1' />
-                </>
+                </div>
               )}
             </button>
           </div>
