@@ -24,7 +24,7 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false}) => {
   return (
     <div className='bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100'>
       <div className='relative'>
-        <div className='w-full h-76 bg-gray-200 flex items-center justify-center overflow-hidden'>
+        <div className='w-full h-82 bg-gray-200 flex items-center justify-center overflow-hidden'>
           <img
             src={executive.image}
             alt={executive.name}
