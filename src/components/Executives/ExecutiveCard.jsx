@@ -28,8 +28,7 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false}) => {
           <img
             src={executive.image}
             alt={executive.name}
-            loading='lazy'
-            className='w-full max-h-100'
+            className='w-full max-h-120'
             onError={(e) => {
               e.target.src =
                 "/images/executives/current/OIP.webp?height=300&width=300";
