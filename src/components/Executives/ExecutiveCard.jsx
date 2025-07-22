@@ -24,12 +24,12 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false}) => {
   return (
     <div className='bg-white rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden border border-gray-100'>
       <div className='relative'>
-        <div className='w-full h-92 bg-gray-200 flex items-center justify-center overflow-hidden'>
+        <div className='w-full bg-gray-200 flex items-center justify-center overflow-hidden'>
           <img
             src={executive.image}
             alt={executive.name}
             loading='lazy'
-            className='w-full min-h-full object-cover'
+            className='w-full max-h-100'
             onError={(e) => {
               e.target.src =
                 "/images/executives/current/OIP.webp?height=300&width=300";
