@@ -309,7 +309,7 @@ export const currentExecutivesData = [
     position: "President",
     department: "Electrical/Electronics Engineering",
     year: "500 Level",
-    image: "/images/executives/current/Kienabere.webp?height=300&width=300",
+    image: "/images/executives/current/Kienabere.webp",
     bio: " I’m a passionate student leader and all-round people person who enjoys creating meaningful experiences and building connections that last. When I’m not leading or learning, I’m either on the football pitch or rooting for Man City or Barça. I’m also learning French adding a little joie de vivre to the mix and always chasing growth, purpose, and good vibes.",
     achievements: [
       "President of the NUESA 25/26 administration.",
@@ -328,7 +328,7 @@ export const currentExecutivesData = [
     position: "Vice President",
     department: "Biomedical Engineering",
     year: "400 Level",
-    image: "/images/executives/current/Chinenye.webp?height=300&width=300",
+    image: "/images/executives/current/Chinenye.webp",
     bio: "I am a friendly, smiling face who is always willing to engage and offer support to the best of my abilities. I believe in fostering a supportive environment where every student feels seen and heard.",
     achievements: [
       "Assistant General Secretary, BESA 2024/2025",
@@ -437,7 +437,7 @@ export const currentExecutivesData = [
     position: "Social Director (Female)",
     department: "Computer Engineering",
     year: "500 Level",
-    image: "/images/executives/current/Amarachi.webp?height=300&width=300",
+    image: "/images/executives/current/Amarachi.jpg",
     bio: "Fun and social",
     achievements: ["Social elite 2023/2024 & 2024/2025)"],
     social: {
