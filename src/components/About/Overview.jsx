@@ -19,7 +19,7 @@ const Overview = () => {
       return () => clearInterval(interval);
     }, [images.length]);
   return (
-    <section className='max-w-7xl mx-auto flex flex-col md:flex-row gap-10 items-center'>
+    <section className='max-w-7xl mx-auto flex flex-col md:flex-row max-sm:gap-6 gap-10 items-center'>
       {/* Left: Image */}
       {/* <div className='w-full md:w-1/2'>
         <img
@@ -28,7 +28,7 @@ const Overview = () => {
           className='w-full h-64 md:h-80 object-cover rounded-xl shadow-md'
         />
       </div> */}
-      <div className='relative w-full md:w-1/2 h-70 md:h-100 rounded-lg '>
+      <div className='relative w-full md:w-1/2 h-76 md:h-105 rounded-lg '>
         {images.map((photo, index) => (
           <img
             key={index}
