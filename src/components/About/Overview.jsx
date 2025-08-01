@@ -28,7 +28,7 @@ const Overview = () => {
           className='w-full h-64 md:h-80 object-cover rounded-xl shadow-md'
         />
       </div> */}
-      <div className='relative w-full md:w-1/2 h-76 md:h-105 rounded-lg '>
+      <div className='relative w-full md:w-1/2 h-84 md:h-105 rounded-lg '>
         {images.map((photo, index) => (
           <img
             key={index}
