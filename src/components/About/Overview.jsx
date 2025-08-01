@@ -1,17 +1,46 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 const Overview = () => {
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+    const images = [
+      "/images/executives/current/Kienabere.webp",
+      "/images/executives/current/Chinenye.webp",
+      "/images/executives/current/Daniel.webp",
+      "/images/executives/current/Ese.jpg",
+      "/images/executives/current/Karissa.jpg",
+      "/images/executives/current/Prosper.jpg",
+    ];
+  
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setCurrentSlide((prev) => (prev + 1) % images.length);
+      }, 5000);
+      return () => clearInterval(interval);
+    }, [images.length]);
   return (
     <section className='max-w-7xl mx-auto flex flex-col md:flex-row gap-10 items-center'>
       {/* Left: Image */}
-        <div className='w-full md:w-1/2'>
+      {/* <div className='w-full md:w-1/2'>
+        <img
+          src='/images/executives/past/Official.jpg'
+          alt='NUESA Overview'
+          className='w-full h-64 md:h-80 object-cover rounded-xl shadow-md'
+        />
+      </div> */}
+      <div className='relative w-full md:w-1/2 h-70 md:h-100 rounded-lg '>
+        {images.map((photo, index) => (
           <img
-            src='/images/executives/past/Official.jpg' 
-            alt='NUESA Overview'
-            className='w-full h-64 md:h-80 object-cover rounded-xl shadow-md'
+            key={index}
+            src={photo}
+            alt={photo}
+            className={`rounded-lg shadow-lg w-full h-full object-fill aspect-square  object-center absolute transition-opacity duration-500 ${
+              index === currentSlide ? "opacity-100" : "opacity-0"
+            }`}
           />
-        </div>
-        
+        ))}
+      </div>
+
       {/* Right: Text */}
       <div className='w-full md:w-1/2 text-center md:text-left'>
         <h2 className='text-3xl md:text-4xl font-bold text-green mb-6'>

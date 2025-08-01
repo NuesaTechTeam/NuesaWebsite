@@ -1,10 +1,11 @@
-import { Layout } from "./components";
+import { Layout, ScrollToTop } from "./components";
 import { About, Blog, Error, Events, Executives, Home, ContactUs, Projects, Academics } from "./pages";
 import { Route, Routes } from "react-router-dom";
 
 function App() {
   return (
     <Layout>
+      <ScrollToTop />
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path='/about' element={<About />} />
