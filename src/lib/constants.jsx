@@ -309,7 +309,7 @@ export const currentExecutivesData = [
     position: "President",
     department: "Electrical/Electronics Engineering",
     year: "500 Level",
-    image: "/images/executives/current/Kienabere.webp",
+    image: "/images/executives/current/Kienabere.jpg",
     bio: " I’m a passionate student leader and all-round people person who enjoys creating meaningful experiences and building connections that last. When I’m not leading or learning, I’m either on the football pitch or rooting for Man City or Barça. I’m also learning French adding a little joie de vivre to the mix and always chasing growth, purpose, and good vibes.",
     achievements: [
       "President of the NUESA 25/26 administration.",
@@ -328,7 +328,7 @@ export const currentExecutivesData = [
     position: "Vice President",
     department: "Biomedical Engineering",
     year: "400 Level",
-    image: "/images/executives/current/Chinenye.webp",
+    image: "/images/executives/current/Chinenye.jpg",
     bio: "I am a friendly, smiling face who is always willing to engage and offer support to the best of my abilities. I believe in fostering a supportive environment where every student feels seen and heard.",
     achievements: [
       "Assistant General Secretary, BESA 2024/2025",
@@ -349,7 +349,7 @@ export const currentExecutivesData = [
     position: "General Secretary",
     department: "Aeronautical and Astronautical Engineering ",
     year: "500 Level",
-    image: "/images/executives/current/Daniel.webp?height=300&width=300",
+    image: "/images/executives/current/Daniel.jpg",
     bio: "I am an aerospace enthusiast with a track record of leading tech-driven initiatives, founding the DACTION Initiative to promote sustainability and education, and collaborating remotely with U.S.-based organizations on youth-led development and advocacy projects",
     achievements: [
       "President and Founder, DACTION Initiative",
@@ -367,7 +367,7 @@ export const currentExecutivesData = [
     position: "Financial Secretary",
     department: "Mechatronics engineering ",
     year: "500 Level",
-    image: "/images/executives/current/Mustee.JPG?height=300&width=300",
+    image: "/images/executives/current/Mustee.jpg",
     bio: "I’m goal-oriented and driven, consistently striving to achieve my ambitions with dedication and hard work",
     achievements: ["Class representative, Mechatronics department, 500l"],
     social: {
@@ -381,7 +381,7 @@ export const currentExecutivesData = [
     position: "Assistant General Secretary",
     department: "Mechatronics Engineering",
     year: "400 Level",
-    image: "/images/executives/current/Prosper.jpg?height=300&width=300",
+    image: "/images/executives/current/Prosper.jpg",
     bio: "I am a Mechatronics Engineering student at Afe Babalola University, passionate about automation, innovation, and sustainable development. I run an online business, hold leadership roles, and I’m building a brand in trading and tech. I’m focused on growth, excellence, and contributing to the future of Industry 4.0.",
     achievements: [],
     social: {
@@ -395,7 +395,7 @@ export const currentExecutivesData = [
     position: "Public Relations Officer",
     department: "Mechanical Engineering",
     year: "500 Level",
-    image: "/images/executives/current/Smallz.jpg?height=300&width=300",
+    image: "/images/executives/current/Smallz.jpg",
     bio: "The best in the world",
     achievements: [],
     social: {
@@ -409,7 +409,7 @@ export const currentExecutivesData = [
     position: "Treasurer",
     department: "Computer Engineering",
     year: "400 Level",
-    image: "/images/executives/current/Chiemerie.webp?height=300&width=300",
+    image: "/images/executives/current/Chiemerie.jpg",
     bio: "I’m a hardworking person with standards. I love connecting with new and great minds and making people around me happier. ",
     achievements: [],
     social: {
@@ -423,7 +423,7 @@ export const currentExecutivesData = [
     position: "Social Director (Male)",
     department: "Mechatronics Engineering",
     year: "500 Level",
-    image: "/images/executives/current/Dtroiy.jpg?height=300&width=300",
+    image: "/images/executives/current/Dtroiy.jpg",
     bio: "Organizing social events and activities that foster community among engineering students. David ensures that NUESA members have opportunities to network and build relationships outside the classroom.",
     achievements: [],
     social: {
@@ -451,7 +451,7 @@ export const currentExecutivesData = [
     position: "Sport Director (Male)",
     department: "Mechatronics engineering ",
     year: "500 Level",
-    image: "/images/executives/current/Lawrence.jpg?height=300&width=300",
+    image: "/images/executives/current/Lawrence.jpg",
     bio: "A very simple person",
     achievements: [
       "ABUAD football league board member for over 3 years",
@@ -471,7 +471,7 @@ export const currentExecutivesData = [
     position: "Sport Director (Female)",
     department: "Mechatronics Engineering",
     year: "500 Level",
-    image: "/images/executives/current/Ese.jpg?height=300&width=300",
+    image: "/images/executives/current/Ese.jpg",
     bio: "Encourages female student involvement in sports. Eseoghene empowers women in engineering to participate in wellness and competition.",
     achievements: [],
     social: {
@@ -485,7 +485,7 @@ export const currentExecutivesData = [
     position: "Welfare Officer",
     department: "Mechatronics Engineering",
     year: "500 Level",
-    image: "/images/executives/current/Karissa.jpg?height=300&width=300",
+    image: "/images/executives/current/Karissa.jpg",
     bio: "I’m a tall and easygoing person. Friendly by nature, slightly dramatic by choice. I love good conversations, and being around people who don’t take life too seriously (but still get things done). I’m approachable, open-minded, always down for something fun and I’m the type to hype you up for no reason.",
     achievements: [
       "2022/2023 NUESA Welfare Committee",
@@ -502,7 +502,7 @@ export const currentExecutivesData = [
     position: "Chief of Staff",
     department: "Mechatronics Engineering",
     year: "500 Level",
-    image: "/images/executives/current/Charles.jpg?height=300&width=300",
+    image: "/images/executives/current/Charles.jpg",
     bio: " I am a passionate Mechatronics Engineering student, skilled in robotics and web development, driven by innovation, leadership, and a desire to make meaningful impact through technology, project management and leadership.",
     achievements: ["NUESA Treasurer 2024/2025"],
     social: {
@@ -516,7 +516,7 @@ export const currentExecutivesData = [
     position: "Director of Academics",
     department: "Electrical/Electronics Engineering",
     year: "400 Level",
-    image: "/images/executives/current/Araoluwa.jpg?height=300&width=300",
+    image: "/images/executives/current/Araoluwa.jpg",
     bio: " I’m a thoughtful and purpose driven person who values good connections and balances ambition with empathy and a strive to grow and be better.",
     achievements: ["Treasurer of APWEN 2024/2025"],
     social: {
@@ -530,7 +530,7 @@ export const currentExecutivesData = [
     position: "Director of Events",
     department: "Mechanical Engineering",
     year: "500 Level",
-    image: "/images/executives/current/Azike.jpg?height=300&width=300",
+    image: "/images/executives/current/Azike.jpg",
     bio: "Yet hardworking and poised, I'm all about getting down to business.",
     achievements: [
       "Produced the most attended Engineering Gala in history",
@@ -548,7 +548,7 @@ export const currentExecutivesData = [
     position: "Technical Secretary",
     department: "Electrical/Electronics Engineering",
     year: "500 Level",
-    image: "/images/executives/current/Nasir.jpg?height=300&width=300",
+    image: "/images/executives/current/Nasir.jpg",
     bio: "I’m a final-year Electrical Electronics Engineering student with a strong passion for technology, AI, and innovation. I enjoy writing code and developing practical solutions to real-world problems through programming.",
     achievements: [
       "Built and contributed to several tech projects, including an AI-powered study app and academic tools.",
@@ -565,7 +565,7 @@ export const currentExecutivesData = [
     position: "Director of External affairs",
     department: "Electrical Engineering",
     year: "500 Level",
-    image: "/images/executives/current/Destiny.jpg?height=300&width=300",
+    image: "/images/executives/current/Destiny.jpg",
     bio: "I am eager to work as an individual and also as part of a team to achieve meaningful change.",
     achievements: [],
     social: {
@@ -579,7 +579,7 @@ export const currentExecutivesData = [
     position: "Creative director",
     department: "Mechanical Engineering",
     year: "500 Level",
-    image: "/images/executives/current/Oba.webp?height=300&width=300",
+    image: "/images/executives/current/Oba.jpg",
     bio: " I endlessly bring beautiful ideas to life.",
     achievements: [],
     social: {
@@ -593,7 +593,7 @@ export const currentExecutivesData = [
     position: "Editor in Chief ",
     department: "Mechanical Engineering",
     year: "500 Level",
-    image: "/images/executives/current/Bayo.jpg?height=300&width=300",
+    image: "/images/executives/current/Bayo.jpg",
     bio: " I’m a calm collected guy that enjoys doing things for the plot. I enjoy listen to music and also anything that has to do with being creative.",
     achievements: ["Assistant General Secretary, NUESA 2024/2025"],
     social: {
