@@ -48,9 +48,9 @@ const AboutHome = () => {
   ];
 
   const images = [
-    "/images/executives/current/Kienabere.webp",
-    "/images/executives/current/Chinenye.webp",
-    "/images/executives/current/Daniel.webp",
+    "/images/executives/current/Kienabere.jpg",
+    "/images/executives/current/Chinenye.jpg",
+    "/images/executives/current/Daniel.jpg",
     "/images/executives/current/Ese.jpg",
     "/images/executives/current/Karissa.jpg",
     "/images/executives/current/Prosper.jpg",
