@@ -60,11 +60,11 @@ const ExecHome = () => {
           </div>
           <div className='text-center'>
             <div className='text-3xl font-bold text-green mb-2'>9</div>
-            <div className='text-gray-700 text-sm'>Enginnering Departments</div>
+            <div className='text-gray-700 text-sm'>Engineering Departments</div>
           </div>
           <div className='text-center'>
             <div className='text-3xl font-bold text-green mb-2'>1000+</div>
-            <div className='text-gray-700 text-sm'>Studnets Served</div>
+            <div className='text-gray-700 text-sm'>Students Served</div>
           </div>
           <div className='text-center'>
             <div className='text-3xl font-bold text-green mb-2'>2025</div>

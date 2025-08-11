@@ -566,8 +566,11 @@ export const currentExecutivesData = [
     department: "Electrical Engineering",
     year: "500 Level",
     image: "/images/executives/current/Destiny.jpg",
-    bio: "I am eager to work as an individual and also as part of a team to achieve meaningful change.",
-    achievements: [],
+    bio: "I am eager to work as an individual and also as part of a team to achieve meaningful change. I also enjoy networking with others and providing solutions to problems of our colleagues through shared collaboration.",
+    achievements: [
+      "Member of ASVA (Abuad Salt Valley Assiciates)24/25",
+      "Member of Study Smart 23/24",
+    ],
     social: {
       whatsapp: "#",
       snapchat: "#",
