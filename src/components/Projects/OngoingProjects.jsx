@@ -19,20 +19,6 @@ const ongoing = [
   image: "/images/projects/website.jpg",
 },
 
-  // {
-  //   title: "Common Room Lounge",
-  //   summary: "Furnished lounge for engineering students.",
-  //   year: 2022,
-  //   students: 12,
-  //   image: "/images/lounge.jpg",
-  // },
-  // {
-  //   title: "Ventilation System",
-  //   summary: "Fans installed across classrooms.",
-  //   year: 2015,
-  //   students: 3,
-  //   image: "/images/fans.jpg",
-  // },
 ];
 
 const OngoingProjects = () => {

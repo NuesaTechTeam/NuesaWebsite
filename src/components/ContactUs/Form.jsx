@@ -12,15 +12,15 @@ const Form = () => {
 
   const contactLinks = [
     {
-      value: "+1012 3456 789",
+      value: "09045699816",
       icon: <Phone />,
     },
     {
-      value: "demo@gmail.com",
+      value: "hello@nuesaabuad.ng",
       icon: <Mail />,
     },
     {
-      value: "E26 - E27, Engineering College, ABUAD,  Ado-Ekiti, Ekiti State",
+      value: "E26 - E27, Engineering College, ABUAD, Km 8.5 Afe Babalola Way, Ado-Ekiti, Ekiti State.",
       icon: <MapPin />,
     },
   ];

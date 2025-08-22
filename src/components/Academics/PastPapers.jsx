@@ -4,22 +4,34 @@ import Filters from "./Filters";
 
 const pastPapers = [
   {
-    course: "Engineering Mathematics I",
-    level: "100L",
-    year: "2023",
-    link: "/past-papers/eng-math-1-2023.pdf",
-  },
-  {
-    course: "Fluid Mechanics",
-    level: "200L",
-    year: "2022",
-    link: "/past-papers/fluid-mechanics-2022.pdf",
-  },
-  {
-    course: "Signals & Systems",
+    course: "AESA PQ First Semester",
     level: "300L",
+    year: "2023",
+    link: "https://drive.google.com/uc?export=download&id=1oqMbK8ehiXgkn1H2kxeawkzgkuugGGAU",
+  },
+  {
+    course: "Aeronautics PQ Second Semester",
+    level: "300L",
+    year: "2022",
+    link: "https://drive.google.com/uc?export=download&id=1jxHoJ8VqIrHmizbHqC9oW6-AVC3fgyx4",
+  },
+  {
+    course: "Aeronautics PQ First Semester",
+    level: "400L",
     year: "2021",
-    link: "/past-papers/signals-systems-2021.pdf",
+    link: "https://drive.google.com/uc?export=download&id=1mcqI1XmYrBdc7VpRriv5JEwPhkCaZYIj",
+  },
+  {
+    course: "Aeronautics PQ First Semester",
+    level: "500L",
+    year: "2021",
+    link: "https://drive.google.com/uc?export=download&id=17iGCOIFd-CuICMDQYdX-0x5iYnmzvGfn",
+  },
+  {
+    course: "Aeronautics PQ Second Semester",
+    level: "500L",
+    year: "2021",
+    link: "https://drive.google.com/uc?export=download&id=1BcZQ9QIT91nki8YyZWjWh9AAFNITSA_p",
   },
 ];
 

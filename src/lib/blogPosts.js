@@ -1,59 +1,25 @@
 export const blogPosts = [
   {
-    id: 1,
-    title: "Meet the Engineer of the Month",
-    category: "Featured",
-    excerpt: "Highlighting outstanding engineering student contributions this month.",
-    content: "Full content for this post...",
-    image: "/images/engineer-month.jpg",
-    author: "NUESA Editorial",
-    date: "June 2025",
-    isFeatured: true,
-  },
-  {
-  id: 7,
-  title: "How to Prepare for Engineering Exams",
-  category: "Academic Tips",
-  excerpt: "Ace your next engineering exam with proven tips, practical strategies, and a focused study routine tailored to technical courses.",
-  content: `Engineering exams can be intense, but with the right approach, you can master even the toughest subjects. Here's a practical guide to help you prepare:
+  id: 1,
+  title: "Welcome to the NUESA Blog!",
+  category: "Featured",
+  excerpt: "A message from the Editorial Chief introducing the purpose of our blog.",
+  content: `Dear Students,
 
-**1. Understand the Exam Format**
-Know what's expected. Is it mostly theory, problem-solving, or a mix? Understanding this helps you focus your revision.
+On behalf of the NUESA Editorial Team, I’m excited to welcome you to our official blog page. This space is designed especially for you — a hub where we share academic tips, articles on engineering trends, project ideas, event recaps, as well as career and internship insights.
 
-**2. Gather All Materials Early**
-Get your notes, textbooks, lecture slides, and past questions together. Organize them into topics or modules.
+We also encourage contributions from fellow students! If you have an article, idea, or experience to share, you can submit it for a chance to be featured here after review by our Editorial Team.
 
-**3. Focus on Concepts, Not Just Formulas**
-Instead of cramming formulas, understand why they work. Engineering is built on applied logic — understanding beats memorizing.
+This blog is for us, by us — let’s learn, inspire, and grow together as engineers.
 
-**4. Solve Past Questions**
-This is a game-changer. Patterns often repeat. Time yourself and practice like it’s the real thing.
-
-**5. Use Online Resources**
-YouTube, Khan Academy, NPTEL, and course PDFs can simplify complex ideas. Don’t just rely on class notes.
-
-**6. Create a Study Plan**
-Don’t leave it to chance. Map out what to study daily. Prioritize tougher topics first.
-
-**7. Take Breaks**
-Use the Pomodoro technique (25 min study, 5 min break). It improves focus and prevents burnout.
-
-**8. Join Study Groups**
-Explaining to others helps you understand better. Just make sure the group is focused.
-
-**9. Use Flashcards & Concept Maps**
-Visual tools like mind maps and flashcards make it easier to recall tricky definitions or workflows.
-
-**10. Get Enough Sleep Before the Exam**
-Pulling an all-nighter may work once, but consistent rest is key to memory retention and mental clarity.
-
----
-
-Engineering is tough — but you’re tougher 💪. Start early, be consistent, and believe in your preparation. Success is just an equation away!`,
-  image: "/images/exam-prep.jpg",
-  author: "Nikola Tesla",
+Sincerely,  
+Adebayo Emmanuel Ayotomiwa 
+Editorial Chief, NUESA`,
+  image: "/images/executives/current/Bayo.jpg",
+  author: "Editor in Chief, NUESA",
   date: "June 2025",
-  isFeatured: false
+  isFeatured: true,
 },
+
   
 ];

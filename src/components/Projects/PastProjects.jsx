@@ -19,7 +19,7 @@ const projects = [
   },
   {
     title: "Common Room Lounge",
-    summary: "Sofas and Couches for Engineering Students to chill.",
+    summary: "Sofas and Couches for Engineering Students to relax between classes.",
     status: "past",
     year: 2022,
     image: "/images/projects/2022-2023-1.webp",

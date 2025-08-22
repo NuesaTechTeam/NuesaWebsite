@@ -18,10 +18,10 @@ const disciplines = [
     description:
       "Focuses on the design, analysis, and manufacturing of mechanical systems.",
     courses: [
-      "Thermodynamics",
-      "Fluid Mechanics",
-      "Manufacturing Processes",
-      "Machine Design",
+      "Mechanics of Machines",
+      "Production Engineering",
+      "Internal Combustion Engines",
+      "Heat and Mass Transfer",
     ],
   },
   {
@@ -30,10 +30,10 @@ const disciplines = [
     description:
       "Deals with the planning, design, and construction of infrastructure like roads, bridges, and buildings.",
     courses: [
-      "Structural Analysis",
-      "Surveying",
+      "Theory of Structures",
+      "Hydraulics Engineering",
+      "Structural Engineering",
       "Geotechnical Engineering",
-      "Transportation Engineering",
     ],
   },
   {
@@ -43,9 +43,9 @@ const disciplines = [
       "Covers the generation, transmission, and utilization of electrical power and electronic systems.",
     courses: [
       "Circuit Theory",
-      "Power Systems",
+      "Control Theory and Systems",
       "Digital Electronics",
-      "Control Systems",
+      "Embedded Systems",
     ],
   },
   {
@@ -55,9 +55,9 @@ const disciplines = [
       "Combines computer science and electrical engineering to develop computer systems and hardware.",
     courses: [
       "Computer Architecture",
-      "Microprocessors",
-      "Data Structures",
-      "Operating Systems",
+      "Prototyping Techniques",
+      "Control Theory and Systems",
+      "Artificial Neural Network",
     ],
   },
   {
@@ -78,10 +78,10 @@ const disciplines = [
     description:
       "Integrates mechanical, electrical, and computer engineering to design smart systems.",
     courses: [
-      "Sensors & Actuators",
-      "Robotics",
-      "Control Systems",
-      "Embedded Systems",
+      "Reservoir Engineering",
+      "Petroleum Geology",
+      "Drilling Technology",
+      "Oil and Pollution Control",
     ],
   },
   {
@@ -91,8 +91,8 @@ const disciplines = [
       "Applies engineering principles to the medical field for healthcare solutions.",
     courses: [
       "Biomedical Instrumentation",
-      "Medical Imaging",
-      "Biomechanics",
+      "Thermodynamics of Biological Systems",
+      "Biomedical Electronics Engineering",
       "Anatomy for Engineers",
     ],
   },
@@ -114,10 +114,10 @@ const disciplines = [
     description:
       "Applies physical sciences, life sciences, and mathematics to convert raw materials into valuable products.",
     courses: [
-      "Chemical Process Principles",
-      "Transport Phenomena",
-      "Reaction Engineering",
-      "Process Design & Control",
+      "Aerodynamics",
+      "Aircraft and Spacecraft Propulsion",
+      "Aircraft Maintenance Management",
+      "Aircraft Stability and Control",
     ],
   },
 ];
