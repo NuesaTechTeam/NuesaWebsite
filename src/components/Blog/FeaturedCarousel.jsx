@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { X } from "lucide-react";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 
 const FeaturedCarousel = ({ posts }) => {
@@ -65,13 +66,13 @@ const FeaturedCarousel = ({ posts }) => {
       <AnimatePresence>
         {selectedPost && (
           <motion.div
-            className="fixed inset-0 bg-black/50 z-50 flex justify-center items-center px-4"
+            className="fixed inset-0 bg-black/50 z-5 flex justify-center items-center px-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
             <motion.div
-              className="bg-white max-w-3xl w-full rounded-xl shadow-xl overflow-y-auto max-h-[90vh] relative"
+              className="bg-white max-w-3xl w-full rounded-xl shadow-xl overflow-y-auto max-h-[78vh] relative"
               initial={{ scale: 0.9, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
@@ -79,9 +80,9 @@ const FeaturedCarousel = ({ posts }) => {
             >
               <button
                 onClick={() => setSelectedPost(null)}
-                className="absolute top-4 right-4 text-gray-500 hover:text-red-500"
+                className="absolute top-4 right-4 text-gray-700 hover:text-red-500 cursor-pointer"
               >
-                <X className="w-5 h-5" />
+                <X className="w-7 h-7" />
               </button>
               <img
                 src={selectedPost.image}

@@ -1,7 +1,15 @@
 import { Calendar, Newspaper } from "lucide-react";
 import { newsArticles } from "../../lib/constants";
+import { useState } from "react";
 
 const News = () => {
+  const [showNews, setShowNews] = useState(false)
+  const [news, setNews] = useState(false)
+
+  const handleClick = (news) => {
+    setShowNews(true)
+    setNews(news)
+  }
 
   const hasNews = newsArticles && newsArticles.length > 0;
 
@@ -79,25 +87,25 @@ const News = () => {
     </div>
   );
   return (
-    <section className='py-15'>
-      <div className='max-w-7xl mx-auto'>
+    <section className="py-15">
+      <div className="max-w-7xl mx-auto">
         {/* header */}
-        <div className='text-center mb-16'>
-          <h2 className='text-4xl md:text-5xl font-bold text-green mb-4'>
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-bold text-green mb-4">
             {hasNews ? "Latest News & Updates" : "News & Updates"}
           </h2>
-          <p className='text-xl text-gray-700 max-w-3xl mx-auto'>
+          <p className="text-xl text-gray-700 max-w-3xl mx-auto">
             {hasNews
               ? "Stay informed with the latest developments, achievements, and announcements from our engineering college"
               : "Your source for the latest developments, achievements, and announcements from our engineering college"}
           </p>
-          <div className='w-24 h-1 bg-green mx-auto mt-8'></div>
+          <div className="w-24 h-1 bg-green mx-auto mt-8"></div>
         </div>
 
         {hasNews ? (
           <>
             {/* news grid */}
-            <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8'>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
               {newsArticles.map((article, index) => (
                 <article
                   key={article.id}
@@ -105,57 +113,85 @@ const News = () => {
                     index === 0 ? "md:col-span-2 lg:col-span-1" : ""
                   }`}
                 >
-                  <div className='bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-green-200 transform hover:-translate-y-2'>
-                    <div className='relative overflow-hidden'>
+                  <div className="bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-gray-100 hover:border-green-200 transform hover:-translate-y-2">
+                    <div className="relative overflow-hidden">
                       <img
                         src={article.image}
                         alt={article.title}
-                        className='w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500'
+                        className="w-full h-64 object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     </div>
-                    <div className='p-6'>
-                      <h3 className='text-xl font-bold text-gray-900 mb-3 group-hover:text-green-600 transition-colors line-clamp-2'>
+                    <div className="p-6">
+                      <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-green-600 transition-colors line-clamp-2">
                         {article.title}
                       </h3>
-                      <p className='text-gray-700 mb-4 leading-relaxed line-clamp-3'>
+                      <p className="text-gray-700 mb-4 leading-relaxed line-clamp-3">
                         {article.excerpt}
                       </p>
 
-                      <div className='flex items-center justify-between text-sm text-gray-500'>
-                        <div className='flex items-center '>
-                          <div className='flex items-center space-x-1'>
-                            <Calendar className='size-5' />
+                      <div className="flex items-center justify-between text-sm text-gray-500">
+                        <div className="flex items-center ">
+                          <div className="flex items-center space-x-1">
+                            <Calendar className="size-5" />
                             <span>{article.date}</span>
                           </div>
                         </div>
                       </div>
+                      <button
+                        onClick={() => handleClick(article)}
+                        className="mt-4 bg-green-600 text-white px-3 py-1 rounded cursor-pointer"
+                      >
+                        Read Full Article
+                      </button>
                     </div>
                   </div>
                 </article>
               ))}
             </div>
 
-            <div className='text-center mt-10'>
-              <button className='bg-green hover:bg-green-600 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg'>
+            <div className="text-center mt-10">
+              <button className="bg-green hover:bg-green-600 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
                 View All News Articles
               </button>
             </div>
+
+            {/* Overlay */}
+            {showNews && (
+              <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50">
+                <div className="relative w-11/12 h-[78vh] bg-white rounded-lg shadow-lg overflow-hidden">
+                  {/* Close button */}
+                  <button
+                    onClick={() => setShowNews(false)}
+                    className="absolute top-1.5 right-2 bg-red-600 text-white px-3 py-1 rounded cursor-pointer"
+                  >
+                    ✕
+                  </button>
+
+                  {/* PDF inside iframe */}
+                  <iframe
+                    src={news.link}
+                    className="w-full h-full"
+                    title="Full Article"
+                  />
+                </div>
+              </div>
+            )}
           </>
         ) : (
           <>
             {/* No news fallback */}
             <NoNewsGrid />
 
-            <div className='text-center mt-10'>
-              <div className='flex flex-col sm:flex-row gap-4 justify-center items-center'>
-                <button className='bg-green hover:bg-green-600 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg'>
+            <div className="text-center mt-10">
+              <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+                <button className="bg-green hover:bg-green-600 text-white px-8 py-4 rounded-full font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
                   Subscribe to Updates
                 </button>
-                <button className='bg-white hover:bg-gray-50 text-green border-2 border-green px-8 py-4 rounded-full font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg'>
+                <button className="bg-white hover:bg-gray-50 text-green border-2 border-green px-8 py-4 rounded-full font-semibold transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg">
                   Contact Us
                 </button>
               </div>
-              <p className='text-sm text-gray-500 mt-4'>
+              <p className="text-sm text-gray-500 mt-4">
                 Have news to share? We'd love to hear from you!
               </p>
             </div>

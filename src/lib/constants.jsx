@@ -171,15 +171,16 @@ export const eventsData = [
 ];
 
 export const newsArticles = [
-  // {
-  //   id: 1,
-  //   title: "Engineering Students Win National Robotics Championship",
-  //   excerpt:
-  //     "Our team of brilliant engineering students has secured first place in the National Robotics Championship, showcasing innovative solutions in autonomous systems.",
-  //   date: "March 10, 2025",
-  //   image:
-  //     "https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=250&fit=crop",
-  // },
+  {
+    id: 1,
+    title: "NUESA News August edition",
+    excerpt:
+      "Stay updated with the latest news and events from the NUESA community in our August newsletter.",
+    date: "August 30, 2025",
+    image:
+      "/images/news/august-news.jpg",
+      link: "/documents/august-news.pdf"
+  },
   // {
   //   id: 2,
   //   title: "New AI Research Lab Opens on Campus",
