@@ -37,6 +37,10 @@ export const navbarLinks = [
     url: "/blog",
   },
   {
+    title: "Dinner",
+    url: "/dinner",
+  },
+  {
     title: "Contact Us",
     url: "/contactus",
   },
@@ -167,6 +171,18 @@ export const eventsData = [
     category: "Cultural",
     status: "past",
     featured: false,
+  },
+  {
+    id: 6,
+    title: "Casablanca",
+    date: "Coming Soon",
+    time: "06:00 PM - 10:30 PM",
+    venue: "Alfa Belgore Hall, ABUAD",
+    description: "Annual dinner and awards night.",
+    image: "/images/events/nuesa-dinner-2025.jpg",
+    category: "Mafia",
+    status: "upcoming",
+    featured: true,
   },
 ];
 

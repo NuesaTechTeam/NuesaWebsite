@@ -17,6 +17,7 @@ const Event = () => {
     Cultural: "bg-purple-500",
     Professional: "bg-yellow-500",
     Exhibition: "bg-indigo-500",
+    Mafia: "bg-red-500"
   };
 
   const categories = [
@@ -68,6 +69,13 @@ const Event = () => {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
+      if (isNaN(date.getTime())) {
+        return {
+          month: "COMING",
+          day: "SOON",
+          weekday: "SOON",
+        };
+      }
     return {
       month: date.toLocaleDateString("en-US", { month: "short" }).toUpperCase(),
       day: date.getDate(),

@@ -24,6 +24,7 @@ const EventsHome = () => {
     Competition: "bg-red-100 text-red-800 border-red-200",
     Professional: "bg-yellow-100 text-yellow-800 border-yellow-200",
     Cultural: "bg-purple-100 text-purple-800 border-purple-200",
+    Mafia: "bg-red-100 text-red-800 border-red-200",
   };
 
   useEffect(() => {
@@ -38,7 +39,22 @@ const EventsHome = () => {
   }, [featuredEvents.length]);
 
   const formatDate = (dateStr) => {
+    if(dateStr === "Coming Soon") {
+      return {
+        month: "COMING",
+        day: "SOON",
+        weekday: "SOON",
+      };
+    }
     const date = new Date(dateStr);
+
+      if (isNaN(date.getTime())) {
+        return {
+          month: "COMING",
+          day: "SOON",
+          weekday: "SOON",
+        };
+      }
     return {
       month: date.toLocaleDateString("en-US", { month: "short" }).toUpperCase(),
       day: date.getDate(),

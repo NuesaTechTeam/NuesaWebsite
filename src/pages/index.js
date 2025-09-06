@@ -7,5 +7,6 @@ import Executives from "./Executives.jsx"
 import Home from "./Home.jsx"
 import Projects from "./Projects.jsx"
 import Academics from "./Academics.jsx"
+import Dinner from "./Dinner.jsx"
 
-export {About, Blog, ContactUs, Events, Error, Executives, Home, Projects, Academics}
+export {About, Blog, ContactUs, Events, Error, Executives, Home, Projects, Academics, Dinner}
