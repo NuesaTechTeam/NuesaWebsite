@@ -15,7 +15,7 @@ This blog is for us, by us — let’s learn, inspire, and grow together as engi
 Sincerely,  
 Adebayo Emmanuel Ayotomiwa 
 Editorial Chief, NUESA`,
-  image: "/images/executives/current/Bayo.jpg",
+  image: "/images/blog/logo.jpg",
   author: "Editor in Chief, NUESA",
   date: "June 2025",
   isFeatured: true,
