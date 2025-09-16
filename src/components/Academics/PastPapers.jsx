@@ -4,6 +4,56 @@ import Filters from "./Filters";
 
 const pastPapers = [
   {
+    course: "100L PHY103 First Semester Tutorial Questions",
+    level: "100L",
+    link: "https://drive.google.com/uc?export=download&id=1U2nlCFukKbbcHJpxVP1LOeX6orhB8JID",
+  },
+  {
+    course: "100L First Semester General PQ 1",
+    level: "100L",
+    link: "https://drive.google.com/uc?export=download&id=13V22nqSyGUX9NTq3LFB5zWuz6OydnLUK",
+  },
+  {
+    course: "100L First Semester General PQ 2",
+    level: "100L",
+    link: "https://drive.google.com/uc?export=download&id=1yTSo9oViRa75Z8BZ0gIyxCOwMlS4Qwjk",
+  },
+  {
+    course: "AESA 100L PQ",
+    level: "100L",
+    link: "https://drive.google.com/uc?export=download&id=10xqC40YJNqhNEO3ywFv-0lEo7PW9yv6N",
+  },
+  {
+    course: "PHY 102 CBT EXAMINATION QUESTIONS 2014-2015",
+    level: "100L",
+    link: "https://docs.google.com/document/d/1BizPWsiU5zs2uQGCMis-L6SC13aowrWx/export?format=pdf",
+  },
+  {
+    course: "NEW CHM 102 PQ",
+    level: "100L",
+    link: "https://drive.google.com/uc?export=download&id=1EVv552IHF4LHtkuNrhH4LpB89l4d-834",
+  },
+  {
+    course: "CHM 102 PQ",
+    level: "100L",
+    link: "https://drive.google.com/uc?export=download&id=1lAyi796BuvfB9vm5lioR8hIgVQf8PWZB",
+  },
+  {
+    course: "100L Second Semester General PQ",
+    level: "100L",
+    link: "https://drive.google.com/uc?export=download&id=13VgGLJstDyln9H_xEcZ0Pn9ZxNpGHI1Z",
+  },
+  {
+    course: "200L First Semester General PQ",
+    level: "200L",
+    link: "https://drive.google.com/uc?export=download&id=1YaVCAQjB0SvHEepH-fsHJyJrVajeLqFJ",
+  },
+  {
+    course: "200L Second Semester PQ",
+    level: "200L",
+    link: "https://drive.google.com/uc?export=download&id=1XzkPvocuv9WUoFVclpTCLpA-HfvJVELT",
+  },
+  {
     course: "AESA PQ First Semester",
     level: "300L",
     link: "https://drive.google.com/uc?export=download&id=1oqMbK8ehiXgkn1H2kxeawkzgkuugGGAU",
@@ -112,6 +162,101 @@ const pastPapers = [
     course: "Civil Engineering 400L First Semester PQ",
     level: "400L",
     link: "https://drive.google.com/uc?export=download&id=1XyhYmmtGa8d4M7xypwskhM_E5w9c8lU_",
+  },
+  {
+    course: "Civil Engineering 500L First Semester PQ",
+    level: "500L",
+    link: "https://drive.google.com/uc?export=download&id=11XtqkyWnMuCdUY-M1yvSabJ3EHtW38kA",
+  },
+  {
+    course: "Civil Engineering 500L Second Semester PQ",
+    level: "500L",
+    link: "https://drive.google.com/uc?export=download&id=1hXujLsOkZi-7vWlcsJziYf82DaBISpGa",
+  },
+  {
+    course: "Computer Engineering 400L PQ",
+    level: "400L",
+    link: "https://drive.google.com/uc?export=download&id=1B3KOmXqMC3QvEPNGfm8Yv6T0ypbt1ovn",
+  },
+  {
+    course: "Computer Engineering 500L PQ",
+    level: "500L",
+    link: "https://drive.google.com/uc?export=download&id=1TTJ7ce2GR4CdqA0mkDV4WP69DU3Vzg1X",
+  },
+  {
+    course: "Computer Engineering 500L PQ",
+    level: "500L",
+    link: "https://drive.google.com/uc?export=download&id=1TTJ7ce2GR4CdqA0mkDV4WP69DU3Vzg1X",
+  },
+  {
+    course: "Electrical Engineering 300L First Semester PQ",
+    level: "300L",
+    link: "https://drive.google.com/uc?export=download&id=16f9gq4al8RqCwBtCcOTYyALdLefeTPNU",
+  },
+  {
+    course: "Electrical Engineering 300L Second Semester PQ",
+    level: "300L",
+    link: "https://drive.google.com/uc?export=download&id=1PZ3eq9zwsqZtvyRlzIgWmtoA8WbXUKDi",
+  },
+  {
+    course: "Electrical Engineering 400L PQ",
+    level: "400L",
+    link: "https://drive.google.com/uc?export=download&id=1nU6IjdvSJmq5q8UThWBqIkZfK0rVQvna",
+  },
+  {
+    course: "Electrical Engineering 500L First Semester PQ",
+    level: "500L",
+    link: "https://drive.google.com/uc?export=download&id=1tSIfldG9po_vhG-qtKV66dpFmdupRucU",
+  },
+  {
+    course: "Electrical Engineering 500L Second Semester PQ",
+    level: "500L",
+    link: "https://drive.google.com/uc?export=download&id=1KCbFWQQcyJDPHez26NIw5jnTnh-gcb_R",
+  },
+  {
+    course: "Mechanical Engineering 300L Second Semester PQ",
+    level: "300L",
+    link: "https://drive.google.com/uc?export=download&id=1bmGZ5Y0MTcNb1dC-Ylej5q2EFTLgx9LI",
+  },
+  {
+    course: "Mechanical Engineering 400L PQ",
+    level: "400L",
+    link: "https://drive.google.com/uc?export=download&id=10O11RGjyr-1g00-btYHBtw8xPfXcVuva",
+  },
+  {
+    course: "Mechatronics Engineering 400L PQ",
+    level: "400L",
+    link: "https://drive.google.com/uc?export=download&id=1sJTAgRzXwBJEFaA7mTk3QyG1iNSm5U8y",
+  },
+  {
+    course: "Mechatronics Engineering 500L First Semester PQ 1",
+    level: "500L",
+    link: "https://drive.google.com/uc?export=download&id=1GYuQtSwV67NU8JVvdtqu_8F0_Q2X7dCX",
+  },
+  {
+    course: "Mechatronics Engineering 500L First Semester PQ 2",
+    level: "500L",
+    link: "https://drive.google.com/uc?export=download&id=1q3YnJivgi52wxmvUSMHmcOBjI_kwfdbv",
+  },
+  {
+    course: "Mechatronics Engineering 500L Second Semester PQ",
+    level: "500L",
+    link: "https://drive.google.com/uc?export=download&id=1PI_MqJKnjOPhozYiV8Y6WOumNyqf7KvV",
+  },
+  {
+    course: "Petroleum Engineering 400L PQ",
+    level: "400L",
+    link: "https://drive.google.com/uc?export=download&id=1Ccoh79TjtkEmpEWTSWgDeCtkaAj34ivM",
+  },
+  {
+    course: "Petroleum Engineering 500L First Semester PQ",
+    level: "500L",
+    link: "https://drive.google.com/uc?export=download&id=1aeouE_VbLOHf5F8Tllcr5VoEzylDSxOD",
+  },
+  {
+    course: "Petroleum Engineering 500L Second Semester PQ",
+    level: "500L",
+    link: "https://drive.google.com/uc?export=download&id=1J2yRSpf4s1GxnYpCbEXROkLcmB2tcyPq",
   },
 ];
 
