@@ -36,10 +36,10 @@ export const navbarLinks = [
     title: "Blog",
     url: "/blog",
   },
-  {
-    title: "Dinner",
-    url: "/dinner",
-  },
+  // {
+  //   title: "Dinner",
+  //   url: "/dinner",
+  // },
   {
     title: "Contact Us",
     url: "/contactus",
@@ -49,26 +49,26 @@ export const navbarLinks = [
 export const socialLinks = [
   {
     title: "Twitter",
-    icon: <BsTwitterX size={24} className=' hover:text-blue-500' />,
+    icon: <BsTwitterX size={24} className=" hover:text-blue-500" />,
     link: "https://x.com/nuesa_abuad?s=21",
     color: "",
   },
   {
     title: "Snapchat",
-    icon: <BsSnapchat size={24} className=' hover:text-yellow-400' />,
-    link: "https://snapchat.com/t/LFnYiU0W",
+    icon: <BsSnapchat size={24} className=" hover:text-yellow-400" />,
+    link: "https://www.snapchat.com/add/nuesa_abuad01",
     color: "",
   },
   {
     title: "Instagram",
-    icon: <BsInstagram size={24} className=' hover:text-pink-500' />,
+    icon: <BsInstagram size={24} className=" hover:text-pink-500" />,
     link: "https://www.instagram.com/nuesaabuad?igsh=MThyYzg3aXN5ZHg2bQ==",
     color: "",
   },
   {
     title: "WhatsApp",
-    icon: <BsWhatsapp size={24} className=' hover:text-green-500' />,
-    link: "/",
+    icon: <BsWhatsapp size={24} className=" hover:text-green-500" />,
+    link: "https://wa.me/2349153002715?text=Hello%20I%20am%20contacting%20about%20NUESA",
     color: "",
   },
 ];
@@ -111,12 +111,12 @@ export const eventsData = [
   {
     id: 1,
     title: "Career Path in Fintech: The Journey",
-    date: "September 7, 2024",
-    time: "11:30 AM - 13:30 PM",
+    date: "August 23, 2025",
+    time: "1:30 PM - 3:30 PM",
     venue: "Google Meet",
     description:
       "A webinar session hosting 2 guests with a wealth of experience in the fintech sector.",
-    image: "/images/events/career-path-in-fintech.jpg",
+    image: "/images/events/career-gps.jpg",
     category: "Professional",
     status: "past",
     featured: false,
@@ -137,11 +137,11 @@ export const eventsData = [
   {
     id: 3,
     title: "Fresher's Orientation",
-    date: "October 12, 2024",
-    time: "09:30 AM - 12:00 PM",
-    venue: "Engineering Auditorium",
+    date: "August 30, 2025",
+    time: "07:30 PM - 9:00 PM",
+    venue: "Google Meet",
     description:
-      "Hands-on workshops on emerging technologies and engineering practices led by industry experts.",
+      "Introducing the incoming freshers to the new life in engineering college with resumption essentials",
     image: "/images/events/freshers-orientation.jpg",
     category: "Academic",
     status: "past",

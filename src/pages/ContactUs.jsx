@@ -2,7 +2,7 @@ import { Form, Faq } from "../components/ContactUs";
 
 const ContactUs = () => {
   return (
-    <div className='min-h-screen py-12 px-4 sm:px-6 lg:px-8'>
+    <div className='min-h-screen py-12  sm:px-6 lg:px-8'>
       <div>
         {/* header for contact us form */}
         <div className='maw-w-7xl mx-auto'>

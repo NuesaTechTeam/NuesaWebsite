@@ -12,11 +12,11 @@ const Form = () => {
 
   const contactLinks = [
     {
-      value: "09045699816",
+      value: "09153002715",
       icon: <Phone />,
     },
     {
-      value: "hello@nuesaabuad.ng",
+      value: "nuesatechteam2025@gmail.com",
       icon: <Mail />,
     },
     {
@@ -35,14 +35,34 @@ const Form = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("Form Submitted: ", formData);
+    const { name,phoneNo, message } = formData;
+
+      if (
+        !name ||
+        !phoneNo ||
+        !message
+      ) {
+        alert("Please fill in all fields");
+        return;
+      }
+
+
+    const targetNumber = "2349153002715";
+
+     const text = `Hello, my name is ${name}. ${message}`;
+
+      const encodedText = encodeURIComponent(text);
+
+      const whatsappLink = `https://wa.me/${targetNumber}?text=${encodedText}`;
+
+      window.open(whatsappLink, "_blank");
   };
 
   return (
     <div className='bg-white rounded-2xl shadow-xl overflow-hidden'>
       <div className='grid grid-cols-1 lg:grid-cols-2'>
         <div
-          className='bg-white text-white p-8 lg:p-12 relative overflow-hidden bg-contain bg-center bg-no-repeat'
+          className='bg-white text-white p-8 px-4 lg:p-12 relative overflow-hidden bg-contain bg-center bg-no-repeat'
           style={{ backgroundImage: `url(${logo})`  }}
         >
           <div className='absolute inset-0 bg-green opacity-92'></div>
