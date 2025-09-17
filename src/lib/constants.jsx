@@ -184,6 +184,18 @@ export const eventsData = [
     status: "upcoming",
     featured: true,
   },
+  {
+    id: 7,
+    title: "Nuesalympics",
+    date: "Coming Soon",
+    time: "02:00 PM - 5:30 PM",
+    venue: "Pavilion, ABUAD",
+    description: "A very first olympics competition by NUESA",
+    image: "/images/events/nuesa-olympics.jpg",
+    category: "sport",
+    status: "upcoming",
+    featured: true,
+  },
 ];
 
 export const newsArticles = [
