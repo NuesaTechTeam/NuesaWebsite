@@ -83,59 +83,72 @@ const notesList = [
     course: "200 Level",
     link: "https://drive.google.com/uc?export=download&id=1JnOsdwJzJsO4lLmBFdA351ekWwXUc5Se",
   },
+  {
+    title: "Atomic Structure Class",
+    course: "200 Level",
+    link: "https://docs.google.com/presentation/d/1BWc3QfhikwuJqoBeO-0zwyyrmgKjlPcS/export/pdf",
+  },
+  {
+    title: "Auxiliary and Modal Verbs",
+    course: "200 Level",
+    link: "https://docs.google.com/presentation/d/1m6TZkRJo6XBppRX_iGmhP235-vqGnxX2/export/pdf",
+  },
+  {
+    title: "Classification of Engineering Materials",
+    course: "200 Level",
+    link: "https://docs.google.com/presentation/d/1eIKjBMaIQVawu9zL_2QqPijbRmdm1YWg/export/pdf",
+  },
+  {
+    title: "Engineering Drawing",
+    course: "200 Level",
+    link: "https://docs.google.com/presentation/d/1SQSq3Xw2hV_n5ZiF9E4hDVQlhUuBiWq7/export/pdf",
+  },
+  {
+    title: "First Conjugation Verbs in Present Tense",
+    course: "200 Level",
+    link: "https://docs.google.com/presentation/d/1_pzKA1t7717TpE0mw6vxkcN-jZISVaMh/export/pdf",
+  },
+  {
+    title: "Ovie's Mechanics Note 1",
+    course: "200 Level",
+    link: "https://drive.google.com/uc?export=download&id=1FDIZPeMQ9Avm511JFwT3v-VZP_bVQoTn",
+  },
+  {
+    title: "Ovie's Thermodynamics Note",
+    course: "200 Level",
+    link: "https://drive.google.com/uc?export=download&id=1my2ksufg9M4tRgT3fBM1P4mzwrV0wYWB",
+  },
+  {
+    title: "Mechanical Actuation Systems",
+    course: "200 Level",
+    link: "https://drive.google.com/uc?export=download&id=15FkJ_ThWM9BLAWkkJtfFsk9x4ryag733",
+  },
+  {
+    title: "A Textbook of Fluid Mechanics and Hydraulic Machines",
+    course: "200 Level",
+    link: "https://drive.google.com/uc?export=download&id=1hk8erKrSUgpPGAlWtL8o7FQABi26U22p",
+  },
+  {
+    title: "Fluid Mechanics and Hydraulic Machines by Dr.R.K Bansal",
+    course: "200 Level",
+    link: "https://drive.google.com/uc?export=download&id=1F8elTgeOi_vBhYbjA0u5VcydGH-srgWL",
+  },
+  {
+    title: "Introduction to Visual Basic",
+    course: "200 Level",
+    link: "https://docs.google.com/presentation/d/1MS_JmyhK01uGgN5GWFGHU-BTm-vgPGaH/export/pdf",
+  },
+  {
+    title: "Introduction to C",
+    course: "200 Level",
+    link: "https://docs.google.com/document/d/1vqeQF9g-7UE9tW8vXXlMYV_cwDK1G5iM/export?format=docx",
+  },
   // {
-  //   title: "Science of Materials",
+  //   title: "Variables",
   //   course: "200 Level",
   //   link: "https://docs.google.com/presentation/d/1Sf8WMCuHPG5vlbNfT3ZpuhxK2FxPdMxp/export/pdf",
-  // },{
-  //   title: "Science of Materials",
-  //   course: "200 Level",
-  //   link: "https://docs.google.com/presentation/d/1Sf8WMCuHPG5vlbNfT3ZpuhxK2FxPdMxp/export/pdf",
-  // },{
-  //   title: "Science of Materials",
-  //   course: "200 Level",
-  //   link: "https://docs.google.com/presentation/d/1Sf8WMCuHPG5vlbNfT3ZpuhxK2FxPdMxp/export/pdf",
-  // },{
-  //   title: "Science of Materials",
-  //   course: "200 Level",
-  //   link: "https://docs.google.com/presentation/d/1Sf8WMCuHPG5vlbNfT3ZpuhxK2FxPdMxp/export/pdf",
-  // },{
-  //   title: "Science of Materials",
-  //   course: "200 Level",
-  //   link: "https://docs.google.com/presentation/d/1Sf8WMCuHPG5vlbNfT3ZpuhxK2FxPdMxp/export/pdf",
-  // },{
-  //   title: "Science of Materials",
-  //   course: "200 Level",
-  //   link: "https://docs.google.com/presentation/d/1Sf8WMCuHPG5vlbNfT3ZpuhxK2FxPdMxp/export/pdf",
-  // },{
-  //   title: "Science of Materials",
-  //   course: "200 Level",
-  //   link: "https://docs.google.com/presentation/d/1Sf8WMCuHPG5vlbNfT3ZpuhxK2FxPdMxp/export/pdf",
-  // },{
-  //   title: "Science of Materials",
-  //   course: "200 Level",
-  //   link: "https://docs.google.com/presentation/d/1Sf8WMCuHPG5vlbNfT3ZpuhxK2FxPdMxp/export/pdf",
-  // },{
-  //   title: "Science of Materials",
-  //   course: "200 Level",
-  //   link: "https://docs.google.com/presentation/d/1Sf8WMCuHPG5vlbNfT3ZpuhxK2FxPdMxp/export/pdf",
-  // },{
-  //   title: "Science of Materials",
-  //   course: "200 Level",
-  //   link: "https://docs.google.com/presentation/d/1Sf8WMCuHPG5vlbNfT3ZpuhxK2FxPdMxp/export/pdf",
-  // },{
-  //   title: "Science of Materials",
-  //   course: "200 Level",
-  //   link: "https://docs.google.com/presentation/d/1Sf8WMCuHPG5vlbNfT3ZpuhxK2FxPdMxp/export/pdf",
-  // },{
-  //   title: "Science of Materials",
-  //   course: "200 Level",
-  //   link: "https://docs.google.com/presentation/d/1Sf8WMCuHPG5vlbNfT3ZpuhxK2FxPdMxp/export/pdf",
-  // },{
-  //   title: "Science of Materials",
-  //   course: "200 Level",
-  //   link: "https://docs.google.com/presentation/d/1Sf8WMCuHPG5vlbNfT3ZpuhxK2FxPdMxp/export/pdf",
-  // },{
+  // },
+  // {
   //   title: "Science of Materials",
   //   course: "200 Level",
   //   link: "https://docs.google.com/presentation/d/1Sf8WMCuHPG5vlbNfT3ZpuhxK2FxPdMxp/export/pdf",
