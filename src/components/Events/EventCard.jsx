@@ -9,6 +9,7 @@ const EventCard = ({ event, isPast, isVisible, isEven }) => {
       Cultural: "bg-purple-500",
       Professional: "bg-yellow-500",
       Exhibition: "bg-indigo-500",
+      Mafia: "bg-red-500"
     };
   return (
     <div
