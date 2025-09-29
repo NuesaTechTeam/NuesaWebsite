@@ -139,7 +139,7 @@ const ContactHome = () => {
                     </div>
                     <div>
                       <p className="font-medium text-green">Email</p>
-                      <p className="text-gray-700">
+                      <p className="text-gray-700 text-sm">
                         nuesatechteam2025@gmail.com
                       </p>
                     </div>

@@ -198,6 +198,14 @@ export const eventsData = [
   },
 ];
 
+export const timeTables = [
+  {
+    id: 1,
+    title: "100L Engineering College Timetable",
+    link: "/documents/timetables/100l-timetable.pdf",
+  }
+]
+
 export const newsArticles = [
   {
     id: 1,

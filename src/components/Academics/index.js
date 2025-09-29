@@ -5,6 +5,7 @@ import SubmitResource from "./SubmitResource";
 import Filters from "./Filters";
 import ResourceCard from "./ResourceCard";
 import AcademicsHome from "./AcademicsHome";
+import TimeTables from "./TimeTables";
 
 export {
   Tutorials,
@@ -13,5 +14,6 @@ export {
   SubmitResource,
   Filters,
   ResourceCard,
-  AcademicsHome
+  AcademicsHome,
+  TimeTables,
 };

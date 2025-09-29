@@ -2,6 +2,7 @@ import React from "react";
 import Tutorials from "../components/Academics/Tutorials";
 import PastPapers from "../components/Academics/PastPapers";
 import Notes from "../components/Academics/Notes";
+import { TimeTables } from "../components/Academics";
 
 const Academics = () => {
   return (
@@ -17,6 +18,7 @@ const Academics = () => {
       </header>
 
       <main className="space-y-20">
+        <TimeTables />
         <Tutorials />
         <PastPapers />
         <Notes />
