@@ -36,10 +36,10 @@ export const navbarLinks = [
     title: "Blog",
     url: "/blog",
   },
-  // {
-  //   title: "Dinner",
-  //   url: "/dinner",
-  // },
+  {
+    title: "Dinner",
+    url: "/dinner",
+  },
   {
     title: "Contact Us",
     url: "/contactus",
@@ -175,7 +175,7 @@ export const eventsData = [
   {
     id: 6,
     title: "Casablanca",
-    date: "Coming Soon",
+    date: "November 29, 2025",
     time: "06:00 PM - 10:30 PM",
     venue: "Alfa Belgore Hall, ABUAD",
     description: "Annual dinner and awards night.",

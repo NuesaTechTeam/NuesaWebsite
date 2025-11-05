@@ -110,7 +110,7 @@ const Dinner = () => {
                 <div className="flex space-x-6 text-sm text-gray-400">
                   <span className="flex items-center">
                     <Calendar className="w-4 h-4 mr-2" />
-                    Coming Soon
+                    29TH NOVEMBER, 2025
                   </span>
                   <span className="flex items-center">
                     <Users className="w-4 h-4 mr-2" />
@@ -217,7 +217,7 @@ const Dinner = () => {
       <footer className="relative z-10 border-t border-red-800/20 px-6 py-8">
         <div className="max-w-6xl mx-auto text-center text-red-500/70">
           <p className="font-lora">
-            &copy; 2024 NUESA ABUAD. All rights reserved.
+            &copy; 2025 NUESA ABUAD. All rights reserved.
           </p>
         </div>
       </footer>
