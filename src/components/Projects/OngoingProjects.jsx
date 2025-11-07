@@ -3,7 +3,7 @@ import ProjectCarousel from "./ProjectCarousel";
 
 const ongoing = [
 {
-  title: "NUESA Website",
+  title: "The Engineering Hub",
   summary:
     "The \"Engineering Hub\" is an application to aid students in the college of engineering.\nIt has amazing features, which include, the academic schedule for students per session,\neasy access to notes and textbooks for various lectures, past questions, and,\nAI generated questions based on study materials and past questions that can be used\nto prepare for tests and examinations.",
   year: 2025,

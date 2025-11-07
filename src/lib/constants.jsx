@@ -203,7 +203,22 @@ export const timeTables = [
     id: 1,
     title: "100L Engineering College Timetable",
     link: "/documents/timetables/100l-timetable.pdf",
-  }
+  },
+  {
+    id: 2,
+    title: "Complete 2025/2026 Engineering College Timetable",
+    link: "/documents/timetables/Engineering-Timetable.pdf",
+  },
+  {
+    id: 3,
+    title: "Industrial Training Report Format",
+    link: "/documents/timetables/Industrial-Training-Report-Format.pdf",
+  },
+  {
+    id: 4,
+    title: "SIWES Student's Evaluation Form",
+    link: "/documents/timetables/SIWES Student's Evaluation Form.pdf",
+  },
 ]
 
 export const newsArticles = [
@@ -216,6 +231,16 @@ export const newsArticles = [
     image:
       "/images/news/august-news.jpg",
       link: "/documents/august-news.pdf"
+  },
+  {
+    id: 1,
+    title: "NUESA News October edition",
+    excerpt:
+      "Stay updated with the latest news and events from the NUESA community in our October newsletter.",
+    date: "October 30, 2025",
+    image:
+      "/images/news/october-news.jpg",
+      link: "/documents/october-news.pdf"
   },
   // {
   //   id: 2,
@@ -249,39 +274,135 @@ export const newsArticles = [
 export const galleryPhotos = [
   {
     id: 1,
-    src: "/images/events/tech-fusion.jpg",
-    title: "TechFest 2024 - Opening Ceremony",
-    eventDate: "October 2024",
+    src: "/images/events/photogallery/nuesa-apwen-1.JPG",
+    title: "NUESA X APWEN",
+    eventDate: "October 2025",
   },
   {
     id: 2,
-    src: "/images/events/college.jpg",
-    title: "Engineering Symposium - Keynote Speech",
-    eventDate: "September 2024",
+    src: "/images/events/photogallery/nuesa-apwen2.JPG",
+    title: "NUESA X APWEN",
+    eventDate: "October 2025",
   },
   {
     id: 3,
-    src: "/images/events/tech-fusion.jpg",
-    title: "Hackathon 2024 - Team Collaboration",
-    eventDate: "August 2024",
+    src: "/images/events/photogallery/nuesa-apwen3.JPG",
+    title: "NUESA X APWEN",
+    eventDate: "October 2025",
   },
   {
     id: 4,
-    src: "/images/events/salam-odo-nuwa.jpg",
-    title: "Cultural Night - Dance Performance",
-    eventDate: "July 2024",
+    src: "/images/events/photogallery/nuesa-apwen4.JPG",
+    title: "NUESA X APWEN",
+    eventDate: "October 2025",
   },
   {
     id: 5,
-    src: "/images/events/career-path-in-fintech.jpg",
-    title: "Industry Connect - Networking Session",
-    eventDate: "June 2024",
+    src: "/images/events/photogallery/nuesa-apwen5.JPG",
+    title: "NUESA X APWEN",
+    eventDate: "October 2025",
   },
   {
     id: 6,
-    src: "/images/events/career-path-in-fintech.jpg",
-    title: "Science Exhibition - Project Showcase",
-    eventDate: "May 2024",
+    src: "/images/events/photogallery/nuesa-apwen6.JPG",
+    title: "NUESA X APWEN",
+    eventDate: "October 2025",
+  },
+  {
+    id: 7,
+    src: "/images/events/photogallery/nuesa-apwen7.JPG",
+    title: "NUESA X APWEN",
+    eventDate: "October 2025",
+  },
+  {
+    id: 8,
+    src: "/images/events/photogallery/nuesa-apwen8.JPG",
+    title: "NUESA X APWEN",
+    eventDate: "October 2025",
+  },
+  {
+    id: 9,
+    src: "/images/events/photogallery/nuesa-apwen9.JPG",
+    title: "NUESA X APWEN",
+    eventDate: "October 2025",
+  },
+  {
+    id: 10,
+    src: "/images/events/photogallery/nuesa-apwen10.JPG",
+    title: "NUESA X APWEN",
+    eventDate: "October 2025",
+  },
+  {
+    id: 11,
+    src: "/images/events/photogallery/nuesa-apwen11.JPG",
+    title: "NUESA X APWEN",
+    eventDate: "October 2025",
+  },
+  {
+    id: 12,
+    src: "/images/events/photogallery/nuesa-apwen12.JPG",
+    title: "NUESA X APWEN",
+    eventDate: "October 2025",
+  },
+  {
+    id: 13,
+    src: "/images/events/photogallery/lead-conf1.JPG",
+    title: "2025 INTERNATIONAL LEADERSHIP CONFERENCE ON LEADERSHIP, GOVERNANCE, SUSTAINABLE CHANGE AND WEALTH CREATION [2.0]",
+    eventDate: "October 2025",
+  },
+  {
+    id: 14,
+    src: "/images/events/photogallery/lead-conf2.JPG",
+    title: "2025 INTERNATIONAL LEADERSHIP CONFERENCE ON LEADERSHIP, GOVERNANCE, SUSTAINABLE CHANGE AND WEALTH CREATION [2.0]",
+    eventDate: "October 2025",
+  },
+  {
+    id: 15,
+    src: "/images/events/photogallery/lead-conf3.JPG",
+    title: "2025 INTERNATIONAL LEADERSHIP CONFERENCE ON LEADERSHIP, GOVERNANCE, SUSTAINABLE CHANGE AND WEALTH CREATION [2.0]",
+    eventDate: "October 2025",
+  },
+  {
+    id: 16,
+    src: "/images/events/photogallery/lead-conf4.JPG",
+    title: "Meeting with the Deputy Vice Chancellor (Adminstration) Prof. Olasupo Ijabadeniyi and Deputy Vice Chancellor (Academics) Prof. Olayinka Christopher ",
+    eventDate: "October 2025",
+  },
+  {
+    id: 17,
+    src: "/images/events/photogallery/lead-conf5.JPG",
+    title: "Meeting with the Deputy Vice Chancellor (Adminstration) Prof. Olasupo Ijabadeniyi and Deputy Vice Chancellor (Academics) Prof. Olayinka Christopher",
+    eventDate: "October 2025",
+  },
+  {
+    id: 18,
+    src: "/images/events/photogallery/lead-conf6.JPG",
+    title: "2025 INTERNATIONAL LEADERSHIP CONFERENCE ON LEADERSHIP, GOVERNANCE, SUSTAINABLE CHANGE AND WEALTH CREATION [2.0]",
+    eventDate: "October 2025",
+  },
+  {
+    id: 19,
+    src: "/images/events/photogallery/lead-conf7.jpeg",
+    title: "2025 INTERNATIONAL LEADERSHIP CONFERENCE ON LEADERSHIP, GOVERNANCE, SUSTAINABLE CHANGE AND WEALTH CREATION [2.0]",
+    eventDate: "October 2025",
+  },
+  {
+    id: 20,
+    src: "/images/events/photogallery/lead-conf8.jpeg",
+    title: "2025 INTERNATIONAL LEADERSHIP CONFERENCE ON LEADERSHIP, GOVERNANCE, SUSTAINABLE CHANGE AND WEALTH CREATION [2.0]",
+    eventDate: "October 2025",
+  },
+  {
+    id: 21,
+    src: "/images/events/photogallery/lead-conf9.jpeg",
+    title: "2025 INTERNATIONAL LEADERSHIP CONFERENCE ON LEADERSHIP, GOVERNANCE, SUSTAINABLE CHANGE AND WEALTH CREATION [2.0]",
+    eventDate: "October 2025",
+  },
+  {
+    id: 22,
+    src: "/images/events/photogallery/lead-conf10.jpeg",
+    title: "2025 INTERNATIONAL LEADERSHIP CONFERENCE ON LEADERSHIP, GOVERNANCE, SUSTAINABLE CHANGE AND WEALTH CREATION [2.0]",
+    eventDate: "October 2025",
   },
 ];
 
@@ -404,7 +525,7 @@ export const currentExecutivesData = [
     position: "Financial Secretary",
     department: "Mechatronics engineering ",
     year: "500 Level",
-    image: "/images/executives/current/Mustee.jpg",
+    image: "/images/executives/current/Mustee.JPG",
     bio: "I’m goal-oriented and driven, consistently striving to achieve my ambitions with dedication and hard work",
     achievements: ["Class representative, Mechatronics department, 500l"],
     social: {
