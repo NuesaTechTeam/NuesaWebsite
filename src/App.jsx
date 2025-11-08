@@ -1,5 +1,5 @@
 import { Layout, ScrollToTop } from "./components";
-import { About, Blog, Error, Events, Executives, Home, ContactUs, Projects, Academics, Dinner } from "./pages";
+import { About, Blog, Error, Events, Executives, Home, ContactUs, Projects, Academics, Dinner, Videos } from "./pages";
 import { Route, Routes } from "react-router-dom";
 
 function App() {
@@ -16,6 +16,7 @@ function App() {
         <Route path='/academics' element={<Academics />} />
         <Route path='/contactus' element={<ContactUs />} />
         <Route path='/dinner' element={<Dinner />} />
+        <Route path='/videos' element={<Videos />} />
         <Route path='*' element={<Error />} />
       </Routes>
     </Layout>
