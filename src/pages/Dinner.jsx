@@ -110,7 +110,7 @@ const Dinner = () => {
                 <div className="flex space-x-6 text-sm text-gray-400">
                   <span className="flex items-center">
                     <Calendar className="w-4 h-4 mr-2" />
-                    22ND NOVEMBER, 2025
+                    23RD NOVEMBER, 2025
                   </span>
                   <span className="flex items-center">
                     <Users className="w-4 h-4 mr-2" />
