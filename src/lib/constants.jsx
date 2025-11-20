@@ -41,6 +41,10 @@ export const navbarLinks = [
     url: "/dinner",
   },
   {
+    title: "H.E.A.R.T",
+    url: "/heart",
+  },
+  {
     title: "Videos",
     url: "/videos",
   },

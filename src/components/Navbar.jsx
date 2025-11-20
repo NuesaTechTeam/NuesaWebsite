@@ -77,7 +77,7 @@ const Navbar = () => {
           <img src={logo} alt='nuesa abuad' height={40} width={20} />
           <h1>NUESA ABUAD</h1>
         </Link>
-        <div className='hidden md:flex items-center gap-x-4'>
+        <div className='hidden md:flex items-center gap-x-4 overflow-x-scroll scrollbar-hidden'>
           {navbarLinks.map((link) => (
             <Link
               key={link.title}

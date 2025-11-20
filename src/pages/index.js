@@ -9,5 +9,6 @@ import Projects from "./Projects.jsx"
 import Academics from "./Academics.jsx"
 import Dinner from "./Dinner.jsx"
 import Videos from "./Videos.jsx"
+import HeartPage from "./Heart.jsx"
 
-export {About, Blog, ContactUs, Events, Error, Executives, Home, Projects, Academics, Dinner, Videos}
+export {About, Blog, ContactUs, Events, Error, Executives, Home, Projects, Academics, Dinner, Videos, HeartPage}
