@@ -32,7 +32,7 @@ const TimeTables = () => {
           <Calendar className="w-4 h-4" />
           Academic Schedule
         </div>
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+        <h2 className="text-4xl md:text-5xl font-black text-green-900 mb-6 tracking-tight">
           College Timetables
         </h2>
         <p className="text-gray-500 text-sm max-w-md mx-auto leading-relaxed">

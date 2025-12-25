@@ -45,13 +45,7 @@ const Academics = () => {
         </div>
 
         <div className="relative z-10">
-          <motion.div
-            className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-green-100 text-green-700 text-xs font-bold uppercase tracking-wider mb-4 border border-green-200"
-            whileHover={{ scale: 1.05 }}
-          >
-            <Database className="w-3 h-3" />
-            Academic Library v2.0
-          </motion.div>
+
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-green-900 mb-6 tracking-tight">
             NUESA Academic Resources
           </h1>
