@@ -3,41 +3,41 @@ import { useNavigate } from "react-router-dom";
 
 
 const features = [
-    {
-      icon: BookOpen,
-      title: "Study Notes",
-      description: "Comprehensive notes across all engineering departments and courses",
-      color: "bg-green-100 text-green-600"
-    },
-    {
-      icon: FileText,
-      title: "Past Questions",
-      description: "Access previous exam questions from different academic levels",
-      color: "bg-green-100 text-green-600"
-    },
-    {
-      icon: Play,
-      title: "Video Tutorials",
-      description: "Curated tutorial links covering various topics and courses",
-      color: "bg-green-100 text-green-600"
-    }
-  ];
+  {
+    icon: BookOpen,
+    title: "Study Notes",
+    description: "Comprehensive notes across all engineering departments and courses",
+    color: "bg-green-100 text-green-600"
+  },
+  {
+    icon: FileText,
+    title: "Past Questions",
+    description: "Access previous exam questions from different academic levels",
+    color: "bg-green-100 text-green-600"
+  },
+  {
+    icon: Play,
+    title: "Video Tutorials",
+    description: "Curated tutorial links covering various topics and courses",
+    color: "bg-green-100 text-green-600"
+  }
+];
 
-  const stats = [
-    { number: "50+", label: "Study Materials" },
-    { number: "9+", label: "Departments" },
-    { number: "100+", label: "Students Helped" },
-  ];
+const stats = [
+  { number: "50+", label: "Study Materials" },
+  { number: "9+", label: "Departments" },
+  { number: "100+", label: "Students Helped" },
+];
 
 
-  
+
 const AcademicsHome = () => {
 
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    const handleAcademicsButton = () => {
-      navigate("/academics");
-    };
+  const handleAcademicsButton = () => {
+    navigate("/academics");
+  };
   return (
     <section className='bg-white py-8 lg:px-4 border-t-1 border-green-200'>
       <div className='max-w-7xl mx-auto'>
@@ -112,9 +112,9 @@ const AcademicsHome = () => {
               connect with peers, and achieve your academic goals.
             </p>
 
-                      <button
-            onClick={handleAcademicsButton}
-                          className='group bg-green hover:bg-green-700 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl'>
+            <button
+              onClick={handleAcademicsButton}
+              className='group bg-green hover:bg-green-700 text-white font-semibold py-4 px-8 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl'>
               <span className='flex items-center'>
                 Explore Academic Resources
                 <ArrowRight className='ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300' />
