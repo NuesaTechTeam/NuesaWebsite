@@ -2,25 +2,25 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence, LayoutGroup } from "framer-motion";
 import { Search, Filter, Loader2, BookOpen, Eye, AlertCircle, ChevronRight, Hash, X, Lock, Unlock } from "lucide-react";
-import { searchDocuments } from "../../lib/api";
+import { searchDocuments, getCourses } from "../../lib/api";
 import DropdownFilter from "./DropdownFilter";
 
 const SkeletonCard = () => (
   <div className="bg-white rounded-xl border border-gray-100 p-6 flex flex-col justify-between animate-pulse">
     <div>
       <div className="flex justify-between mb-4">
-        <div className="w-10 h-10 bg-gray-100 rounded-lg"></div>
-        <div className="w-12 h-5 bg-gray-100 rounded"></div>
+        <div className="w-10 h-10 bg-gray-300 rounded-lg"></div>
+        <div className="w-12 h-5 bg-gray-300 rounded"></div>
       </div>
-      <div className="h-6 bg-gray-100 rounded w-3/4 mb-4"></div>
+      <div className="h-6 bg-gray-300 rounded w-3/4 mb-4"></div>
       <div className="flex gap-2">
-        <div className="w-16 h-5 bg-gray-50 rounded"></div>
-        <div className="w-16 h-5 bg-gray-50 rounded"></div>
+        <div className="w-16 h-5 bg-gray-200 rounded"></div>
+        <div className="w-16 h-5 bg-gray-200 rounded"></div>
       </div>
     </div>
-    <div className="mt-8 pt-4 border-t border-gray-50 flex justify-between">
-      <div className="w-10 h-4 bg-gray-50 rounded"></div>
-      <div className="w-20 h-4 bg-gray-50 rounded"></div>
+    <div className="mt-8 pt-4 border-t border-gray-100 flex justify-between">
+      <div className="w-10 h-4 bg-gray-200 rounded"></div>
+      <div className="w-20 h-4 bg-gray-200 rounded"></div>
     </div>
   </div>
 );
@@ -35,6 +35,7 @@ const ResourceExplorer = () => {
   const [nextCursor, setNextCursor] = useState(null);
   const [totalCount, setTotalCount] = useState(0);
   const [isPQLocked, setIsPQLocked] = useState(false);
+  const [isAdvancedSearch, setIsAdvancedSearch] = useState(false);
   const cache = React.useRef({});
 
   const levels = ["All", "100", "200", "300", "400", "500", "GENERAL"];
@@ -60,6 +61,7 @@ const ResourceExplorer = () => {
     let trimmed = query.trim();
 
     // Flexible Regex: 3 letters + optional spaces + 2-4 digits
+    // I HATE REGEX SO MUCH :(
     const courseCodePattern = /^([a-zA-Z]{3})\s*(\d{2,4})$/;
     const match = trimmed.match(courseCodePattern);
 
@@ -73,23 +75,103 @@ const ResourceExplorer = () => {
   const fetchDocs = useCallback(async (isLoadMore = false) => {
     setLoading(true);
     setError(null);
+
+    // Clear documents immediately if it's a new search to show skeletons
+    if (!isLoadMore) {
+      setDocuments([]);
+    }
+
     try {
-
       const normalizedQuery = normalizeQuery(searchQuery);
-      // When locked, we ignore the user's text input and strictly search for "PQ" within the selected filters
-      const finalQuery = isPQLocked ? "PQ" : normalizedQuery;
+      // console.log(`[ResourceExplorer] Search Query: "${searchQuery}" -> Normalized: "${normalizedQuery}"`);
 
-      const params = {
-        course_code: finalQuery,
-        level: selectedLevel === "All" ? "" : selectedLevel,
-        department_code: selectedDept === "All" ? "" : departments.find(d => d.name === selectedDept)?.code,
+      const deptCode = selectedDept === "All" ? "" : departments.find(d => d.name === selectedDept)?.code;
+      const lvl = selectedLevel === "All" ? "" : selectedLevel;
+      // console.log(`[ResourceExplorer] Filters - Level: "${lvl}", Dept: "${deptCode}"`);
+
+      let params = {
+        level: lvl,
+        department_code: deptCode,
         cursor: isLoadMore ? nextCursor : null,
       };
 
+      if (isPQLocked) {
+        // console.log("[ResourceExplorer] PQ Lock active. Searching for course_code='PQ'");
+        params.course_code = "PQ";
+      } else {
+        let finalCourseCode = null;
+        let finalKeyword = null;
+
+        if (searchQuery) {
+          const courseCodePattern = /^([a-zA-Z]{3})\s*(\d{2,4})$/;
+          const match = normalizedQuery.match(courseCodePattern);
+
+          // Fast/Default Path: Regex Only
+          if (!isAdvancedSearch) {
+            console.log("[ResourceExplorer] using Default (Fast) Search Mode.");
+            if (match) {
+              console.log("[ResourceExplorer] Input matches course code pattern. Using course_code.");
+              finalCourseCode = normalizedQuery;
+            } else {
+              console.log("[ResourceExplorer] Input does not match course code pattern. Using keyword 'q'.");
+              finalKeyword = normalizedQuery;
+            }
+          }
+          // Advanced Path: API Lookup logic
+          else {
+            console.log("[ResourceExplorer] using Advanced (Intelligent) Search Mode.");
+
+            // Always attempt lookup in Advanced Mode to be "Deep"
+            try {
+              console.log("[ResourceExplorer] Attempting to resolve query as course name via API...");
+              const courses = await getCourses({
+                q: searchQuery,
+                level: lvl,
+                department_code: deptCode
+              });
+
+              const simpleQuery = normalizedQuery.replace(/\s+/g, '');
+              const courseMatch = courses.find(c => c.code.replace(/\s+/g, '') === simpleQuery);
+
+              if (courseMatch) {
+                console.log(`[ResourceExplorer] Found matching course: ${courseMatch.code}`);
+                finalCourseCode = courseMatch.code;
+              } else {
+                console.log("[ResourceExplorer] No matching course found. Using as keyword.");
+                // If regex matched but API didn't find it, we might still want to use it as course_code?
+                // But "Advanced" implies we only show REAL courses.
+                // However, let's fallback to regex match if API fails?
+                // Actually, let's fallback to Keyword if API fails, UNLESS regex was strong?
+                // Let's stick to: Try API. If fail, use 'q'.
+                // EXCEPT if the user explicitly typed format 'EEE 313', maybe we should respect it?
+                // Let's start with pure API lookup. If not found -> q.
+                // Wait, if I type "EEE 313" and API returns nothing (maybe network error or new course?), 
+                // defaulting to 'q' is safer than 'course_code' if it doesn't exist.
+                finalKeyword = normalizedQuery;
+              }
+            } catch (e) {
+              console.warn("[ResourceExplorer] Course resolution failed", e);
+              // Fallback logic
+              if (match) {
+                finalCourseCode = normalizedQuery;
+              } else {
+                finalKeyword = normalizedQuery;
+              }
+            }
+          }
+        }
+
+        if (finalCourseCode) params.course_code = finalCourseCode;
+        if (finalKeyword) params.q = finalKeyword;
+      }
+
+      console.log("[ResourceExplorer] Final Search Params:", params);
       const cacheKey = JSON.stringify(params);
 
       // Check cache for initial fetches (non-pagination)
+      // Note: We cleared documents above. If cache hits, we restore them.
       if (!isLoadMore && cache.current[cacheKey]) {
+        console.log("[ResourceExplorer] Returning cached results.");
         const cached = cache.current[cacheKey];
         setDocuments(cached.documents);
         setNextCursor(cached.next_cursor);
@@ -99,6 +181,7 @@ const ResourceExplorer = () => {
       }
 
       const data = await searchDocuments(params);
+      console.log("[ResourceExplorer] API Response received:", data);
 
       // Cache successful initial fetches
       if (!isLoadMore) {
@@ -110,17 +193,19 @@ const ResourceExplorer = () => {
       setTotalCount(data.total);
     } catch (err) {
       setError("Failed to fetch documents. Please try again.");
-      console.error(err);
+      console.error("[ResourceExplorer] Error fetching documents:", err);
     } finally {
       setLoading(false);
     }
-  }, [searchQuery, selectedLevel, selectedDept, nextCursor, departments, isPQLocked]);
+  }, [searchQuery, selectedLevel, selectedDept, nextCursor, departments, isPQLocked, isAdvancedSearch]);
+
 
   const clearFilters = () => {
     setSearchQuery("");
     setSelectedLevel("All");
     setSelectedDept("All");
     setIsPQLocked(false);
+    setIsAdvancedSearch(false);
   };
 
   // Effect for Filters/Search - Only fetch if cursor is null (initial load or filter change)
@@ -131,7 +216,8 @@ const ResourceExplorer = () => {
       fetchDocs(false);
     }, 500);
     return () => clearTimeout(timer);
-  }, [searchQuery, selectedLevel, selectedDept, isPQLocked]); // Removed fetchDocs from deps to avoid loop on nextCursor update
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchQuery, selectedLevel, selectedDept, isPQLocked, isAdvancedSearch]);
 
   // Animation Variants
   const containerVariants = {
@@ -182,34 +268,51 @@ const ResourceExplorer = () => {
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-600 transition-colors w-6 h-6" />
           <input
             type="text"
-            placeholder={isPQLocked ? "Search locked to Past Questions" : "Enter course code (e.g. EEE 313, GEE 211)..."}
+            placeholder={isPQLocked ? "Search locked to Past Questions" : (isAdvancedSearch ? "Deep Search (slower)..." : "Quick Search keywords/codes...")}
             value={isPQLocked ? "PQ" : searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             disabled={isPQLocked}
-            className={`w-full pl-14 pr-28 py-5 rounded-2xl border-2 outline-none transition-all shadow-sm text-lg font-bold 
+            className={`w-full pl-14 pr-44 py-5 rounded-2xl border-2 outline-none transition-all shadow-sm text-lg font-bold 
               ${isPQLocked
                 ? 'bg-gray-100/50 border-gray-100 text-gray-400 cursor-not-allowed italic'
                 : 'border-green-50 focus:ring-4 focus:ring-green-500/10 focus:border-green-500 placeholder:text-gray-400 text-gray-800'
               }`}
           />
 
-          <button
-            onClick={() => setIsPQLocked(!isPQLocked)}
-            className={`absolute right-14 top-1/2 -translate-y-1/2 p-2 rounded-xl transition-all duration-300 flex items-center gap-2 font-bold text-xs ${isPQLocked ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-500 hover:bg-gray-200 border border-transparent'}`}
-            title={isPQLocked ? "Unlock standard search" : "Lock search to Past Questions"}
-          >
-            {isPQLocked ? (
-              <>
-                <Lock className="w-3.5 h-3.5" />
-                <span>PQ Only</span>
-              </>
-            ) : (
-              <>
-                <Unlock className="w-3.5 h-3.5" />
-                <span>PQ</span>
-              </>
-            )}
-          </button>
+          {loading && documents.length === 0 && (
+            <div className="absolute right-48 top-1/2 -translate-y-1/2">
+              <Loader2 className="w-5 h-5 text-green-500 animate-spin" />
+            </div>
+          )}
+
+          <div className="absolute right-14 top-1/2 -translate-y-1/2 flex items-center gap-2">
+            <button
+              onClick={() => setIsAdvancedSearch(!isAdvancedSearch)}
+              className={`p-2 rounded-xl transition-all duration-300 flex items-center gap-2 font-bold text-xs ${isAdvancedSearch ? 'bg-blue-100 text-blue-700 border border-blue-200' : 'bg-gray-50 text-gray-400 hover:bg-gray-100 border border-transparent'}`}
+              title={isAdvancedSearch ? "Disable Advanced Search" : "Enable Advanced Search (slower)"}
+            >
+              <span className="hidden sm:inline">Advanced</span>
+              {isAdvancedSearch ? <img src="https://api.iconify.design/solar:stars-bold-duotone.svg" className="w-4 h-4" alt="on" /> : <img src="https://api.iconify.design/solar:stars-linear.svg" className="w-4 h-4 opacity-50" alt="off" />}
+            </button>
+
+            <button
+              onClick={() => setIsPQLocked(!isPQLocked)}
+              className={`p-2 rounded-xl transition-all duration-300 flex items-center gap-2 font-bold text-xs ${isPQLocked ? 'bg-green-100 text-green-700 border border-green-200' : 'bg-gray-100 text-gray-500 hover:bg-gray-200 border border-transparent'}`}
+              title={isPQLocked ? "Unlock standard search" : "Lock search to Past Questions"}
+            >
+              {isPQLocked ? (
+                <>
+                  <Lock className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">PQ Only</span>
+                </>
+              ) : (
+                <>
+                  <Unlock className="w-3.5 h-3.5" />
+                  <span className="hidden sm:inline">PQ</span>
+                </>
+              )}
+            </button>
+          </div>
           {(searchQuery || selectedLevel !== "All" || selectedDept !== "All") && (
             <button
               onClick={clearFilters}
