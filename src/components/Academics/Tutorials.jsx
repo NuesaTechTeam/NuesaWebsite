@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
 import { FaChalkboardTeacher } from "react-icons/fa";
 import Filters from "./Filters";
 
@@ -64,64 +66,96 @@ const tutorialData = [
 const Tutorials = () => {
   const [selectedDept, setSelectedDept] = useState("All");
   const departments = [
-  "All",
-  "Civil Engineering",
-  "Computer Engineering",
-  "Aeronautical Engineering",
-  "Chemical Engineering",
-  "Petroleum Engineering",
-  "Mechanical Engineering",
-  "Mechatronics Engineering",
-  "Electrical Engineering",
-  "Biomedical Engineering",
-];
+    "All", "Civil Engineering", "Computer Engineering", "Aeronautical Engineering", "Chemical Engineering", "Petroleum Engineering", "Mechanical Engineering", "Mechatronics Engineering", "Electrical Engineering", "Biomedical Engineering"
+  ];
 
   const filtered = selectedDept === "All"
     ? tutorialData
     : tutorialData.filter(tut => tut.department === selectedDept);
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.1 }
+    }
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1, y: 0,
+      transition: { type: "spring", damping: 25, stiffness: 100 }
+    }
+  };
+
   return (
-    <section className="max-w-7xl mx-auto py-12 px-2">
-      <h2 className="text-3xl md:text-4xl font-bold text-green-700 mb-6 text-center">
-        Tutorials
-      </h2>
-      <p className="text-center text-gray-600 mb-6 max-w-2xl mx-auto text-sm">
-        Access tutorials provided and gotten from Youtube.
-      </p>
+    <section className="max-w-7xl mx-auto py-20 px-4">
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        className="text-center mb-12"
+      >
+        <h2 className="text-4xl md:text-5xl font-black text-green-800 mb-4 tracking-tight">
+          Featured Tutorials
+        </h2>
+        <p className="text-gray-600 max-w-2xl mx-auto text-lg mb-10">
+          Handpicked learning paths from top engineering educators on YouTube.
+        </p>
 
-      <Filters
-        filterOptions={departments}
-        selected={selectedDept}
-        setSelected={setSelectedDept}
-      />
+        <Filters
+          filterOptions={departments}
+          selected={selectedDept}
+          setSelected={setSelectedDept}
+        />
+      </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <motion.div
+        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-50px" }}
+      >
         {filtered.map((tutorial, index) => (
-          <div
+          <motion.div
             key={index}
-            className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition"
+            variants={cardVariants}
+            className="group bg-white rounded-2xl shadow-xl shadow-green-900/5 p-8 border border-green-50 hover:border-green-200 transition-all duration-500 hover:-translate-y-2 flex flex-col justify-between"
           >
-            <div className="flex items-center gap-3 mb-2">
-              <FaChalkboardTeacher className="text-green-600 text-xl" />
-              <h3 className="text-lg font-semibold text-green-800">
-                {tutorial.title}
-              </h3>
+            <div>
+              <div className="flex items-start gap-4 mb-6">
+                <div className="p-3 bg-green-50 text-green-600 rounded-xl group-hover:bg-green-600 group-hover:text-white transition-all duration-300">
+                  <FaChalkboardTeacher className="text-2xl" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-800 group-hover:text-green-700 transition-colors leading-tight">
+                  {tutorial.title}
+                </h3>
+              </div>
+              <p className="text-gray-600 text-sm leading-relaxed mb-6 font-medium line-clamp-3">
+                {tutorial.description}
+              </p>
+              <div className="flex items-center gap-3 text-xs font-bold text-gray-400 uppercase tracking-wider mb-8">
+                <span className="bg-gray-50 px-2 py-1 rounded">👤 {tutorial.tutor}</span>
+                <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+                <span>{tutorial.date}</span>
+              </div>
             </div>
-            <p className="text-sm text-gray-700 mb-2">{tutorial.description}</p>
-            <p className="text-xs text-gray-500">
-              👤 {tutorial.tutor} | {tutorial.date}
-            </p>
-            <a
+
+            <motion.a
               href={tutorial.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block mt-4 text-green-600 text-sm font-medium hover:underline"
+              className="inline-flex items-center justify-center gap-2 bg-green-50 text-green-700 hover:bg-green-600 hover:text-white px-6 py-3 rounded-xl text-sm font-black transition-all duration-300 shadow-sm border border-green-100"
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
             >
-              Watch Tutorial →
-            </a>
-          </div>
+              Watch Lecture Series
+            </motion.a>
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
     </section>
   );
 };
