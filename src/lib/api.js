@@ -5,13 +5,13 @@ const UPLOAD_SECRET = import.meta.env.VITE_UPLOAD_SECRET;
  * Search for documents.
  * @param {Object} params - Search parameters (q, level, department_code, semester, course_code, limit, cursor)
  */
-export const searchDocuments = async (params = {}) => {
+export const searchDocuments = async (params = {}, signal) => {
   const query = new URLSearchParams();
   Object.entries(params).forEach(([key, value]) => {
     if (value) query.append(key, value);
   });
 
-  const response = await fetch(`${BASE_URL}/api/search?${query.toString()}`);
+  const response = await fetch(`${BASE_URL}/api/search?${query.toString()}`, { signal });
   if (!response.ok) {
     throw new Error(`Search failed: ${response.statusText}`);
   }

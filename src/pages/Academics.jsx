@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Tutorials from "../components/Academics/Tutorials";
 import PastPapers from "../components/Academics/PastPapers";
 import Notes from "../components/Academics/Notes";
-import { TimeTables, ResourceExplorer, SubmitResource } from "../components/Academics";
+import { TimeTables, ResourceExplorer } from "../components/Academics";
 import { Info, Database, History } from "lucide-react";
 
 const Academics = () => {
@@ -136,8 +136,6 @@ const Academics = () => {
                 Legacy Search
               </button>
             </div>
-
-            <SubmitResource />
           </motion.div>
         </div>
       </main>
