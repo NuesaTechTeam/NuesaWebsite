@@ -70,7 +70,7 @@ const HeartPage = () => {
         "https://res.cloudinary.com/dtamm3ss1/image/upload/v1763637369/l5ixdpmiqox87a9snlkq.jpg",
     },
     {
-      name: "Oluwagbeniga Oluwasanmi",
+      name: "Oluwagbemiga Oluwasanmi Ogungboye",
       department: "Computer Engineering",
       role: "Financial Secretary",
       message: "Creating safe spaces together",
