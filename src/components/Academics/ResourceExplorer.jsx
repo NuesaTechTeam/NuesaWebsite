@@ -7,21 +7,23 @@ import ResourceCard from "./ResourceCard";
 import { useResourceSearch } from "../../hooks/useResourceSearch";
 
 const SkeletonCard = () => (
-  <div className="bg-white rounded-xl border border-gray-100 p-6 flex flex-col justify-between animate-pulse">
+  <div className="bg-white rounded-lg border border-gray-200 p-5 flex flex-col justify-between animate-pulse h-[160px]">
     <div>
-      <div className="flex justify-between mb-4">
-        <div className="w-10 h-10 bg-gray-300 rounded-lg"></div>
-        <div className="w-12 h-5 bg-gray-300 rounded"></div>
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex gap-2">
+          <div className="w-8 h-8 bg-gray-100 rounded-md"></div>
+          <div className="w-12 h-8 bg-gray-100 rounded-md"></div>
+        </div>
+        <div className="w-12 h-3 bg-gray-100 rounded"></div>
       </div>
-      <div className="h-6 bg-gray-300 rounded w-3/4 mb-4"></div>
-      <div className="flex gap-2">
-        <div className="w-16 h-5 bg-gray-200 rounded"></div>
-        <div className="w-16 h-5 bg-gray-200 rounded"></div>
+      <div className="space-y-2">
+        <div className="w-full h-4 bg-gray-100 rounded"></div>
+        <div className="w-2/3 h-4 bg-gray-100 rounded"></div>
       </div>
     </div>
-    <div className="mt-8 pt-4 border-t border-gray-100 flex justify-between">
-      <div className="w-10 h-4 bg-gray-200 rounded"></div>
-      <div className="w-20 h-4 bg-gray-200 rounded"></div>
+    <div className="mt-4 pt-4 border-t border-gray-50 flex justify-between">
+      <div className="w-24 h-3 bg-gray-100 rounded"></div>
+      <div className="w-12 h-3 bg-gray-100 rounded"></div>
     </div>
   </div>
 );
@@ -67,12 +69,12 @@ const ResourceExplorer = () => {
   };
 
   const cardVariants = {
-    hidden: { opacity: 0, y: 20, scale: 0.95 },
+    hidden: { opacity: 0, y: 10 },
     visible: {
-      opacity: 1, y: 0, scale: 1,
-      transition: { type: "spring", damping: 20, stiffness: 100 }
+      opacity: 1, y: 0,
+      transition: { duration: 0.4, ease: "easeOut" }
     },
-    exit: { opacity: 0, scale: 0.95, transition: { duration: 0.2 } }
+    exit: { opacity: 0, scale: 0.98, transition: { duration: 0.2 } }
   };
 
   return (

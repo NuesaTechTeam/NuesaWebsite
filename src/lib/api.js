@@ -1,5 +1,5 @@
 const BASE_URL = "https://textbooks-1093886938384.europe-west1.run.app";
-const UPLOAD_SECRET = import.meta.env.VITE_UPLOAD_SECRET;
+const API_KEY = import.meta.env.VITE_API_KEY;
 
 /**
  * Search for documents.
@@ -11,7 +11,12 @@ export const searchDocuments = async (params = {}, signal) => {
     if (value) query.append(key, value);
   });
 
-  const response = await fetch(`${BASE_URL}/api/search?${query.toString()}`, { signal });
+  const response = await fetch(`${BASE_URL}/api/search?${query.toString()}`, {
+    headers: {
+      "X-API-Key": API_KEY,
+    },
+    signal
+  });
   if (!response.ok) {
     throw new Error(`Search failed: ${response.statusText}`);
   }
@@ -33,7 +38,7 @@ export const uploadDocument = async (file, metadata) => {
   const response = await fetch(`${BASE_URL}/api/upload`, {
     method: "POST",
     headers: {
-      "X-Upload-Secret": UPLOAD_SECRET,
+      "X-API-Key": API_KEY,
     },
     body: formData,
   });
@@ -55,7 +60,11 @@ export const getCourses = async (params = {}) => {
     if (value) query.append(key, value);
   });
 
-  const response = await fetch(`${BASE_URL}/api/courses?${query.toString()}`);
+  const response = await fetch(`${BASE_URL}/api/courses?${query.toString()}`, {
+    headers: {
+      "X-API-Key": API_KEY,
+    },
+  });
   if (!response.ok) {
     throw new Error(`Failed to fetch courses: ${response.statusText}`);
   }
