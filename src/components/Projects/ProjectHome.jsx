@@ -10,6 +10,7 @@ const ongoingProjects = [
     year: 2025,
     students: 2,
     image: "/images/projects/nuesa-app.jpg",
+    link: "https://engineeringhub.nuesaabuad.ng/",
   },
   {
     title: "NUESA Website",
@@ -18,7 +19,7 @@ const ongoingProjects = [
     year: 2025,
     students: 2,
     image: "/images/projects/website.jpg",
-    },
+  },
 ]
 
 
@@ -57,28 +58,28 @@ const pastProjects = [
 
 const ProjectHome = () => {
 
-    const [currentSlide, setCurrentSlide] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
-    const nextSlide = () => {
-      setCurrentSlide((prev) => (prev + 1) % ongoingProjects.length);
-    };
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % ongoingProjects.length);
+  };
 
-    const prevSlide = () => {
-      setCurrentSlide(
-        (prev) => (prev - 1 + ongoingProjects.length) % ongoingProjects.length
-      );
-    };
+  const prevSlide = () => {
+    setCurrentSlide(
+      (prev) => (prev - 1 + ongoingProjects.length) % ongoingProjects.length
+    );
+  };
 
-    useEffect(() => {
-      const timer = setInterval(nextSlide, 5000);
-      return () => clearInterval(timer);
-    }, []);
-  
-    const navigate = useNavigate();
+  useEffect(() => {
+    const timer = setInterval(nextSlide, 5000);
+    return () => clearInterval(timer);
+  }, []);
 
-    const handleProjectButton = () => {
-      navigate("/projects");
-    };
+  const navigate = useNavigate();
+
+  const handleProjectButton = () => {
+    navigate("/projects");
+  };
 
   return (
     <section className='bg-white py-8 lg:px-4 border-t-1 border-green-200'>
@@ -153,6 +154,17 @@ const ProjectHome = () => {
                               <Users className='w-4 h-4 mr-1' />
                               {project.students} members
                             </div>
+                            {project.link && (
+                              <a
+                                href={project.link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-semibold rounded-lg hover:bg-green-700 transition-colors shadow-sm gap-2"
+                              >
+                                Visit Project
+                                <ArrowRight className="w-4 h-4" />
+                              </a>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -167,9 +179,8 @@ const ProjectHome = () => {
               <button
                 key={index}
                 onClick={() => setCurrentSlide(index)}
-                className={`w-3 h-3 rounded-full transition-colors ${
-                  index === currentSlide ? "bg-green-700" : "bg-gray-300"
-                }`}
+                className={`w-3 h-3 rounded-full transition-colors ${index === currentSlide ? "bg-green-700" : "bg-gray-300"
+                  }`}
               />
             ))}
           </div>
@@ -217,14 +228,14 @@ const ProjectHome = () => {
 
         <div className='text-center'>
           <button
-          onClick={handleProjectButton}
+            onClick={handleProjectButton}
             className='inline-flex items-center px-8 py-4 bg-green text-white font-semibold rounded-lg hover:bg-green-700 duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all cursor-pointer'>
             View All Projects
             <ArrowRight className='ml-2 w-5 h-5' />
           </button>
         </div>
       </div>
-    </section>
+    </section >
   );
 }
 export default ProjectHome
