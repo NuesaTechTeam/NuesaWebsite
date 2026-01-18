@@ -238,7 +238,7 @@ export const newsArticles = [
     date: "August 30, 2025",
     image:
       "/images/news/august-news.jpg",
-      link: "/documents/august-news.pdf"
+    link: "/documents/august-news.pdf"
   },
   {
     id: 1,
@@ -248,7 +248,7 @@ export const newsArticles = [
     date: "October 30, 2025",
     image:
       "/images/news/october-news.jpg",
-      link: "/documents/october-news.pdf"
+    link: "/documents/october-news.pdf"
   },
   // {
   //   id: 2,

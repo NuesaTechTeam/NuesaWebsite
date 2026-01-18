@@ -11,4 +11,4 @@ import Dinner from "./Dinner.jsx"
 import Videos from "./Videos.jsx"
 import HeartPage from "./Heart.jsx"
 
-export {About, Blog, ContactUs, Events, Error, Executives, Home, Projects, Academics, Dinner, Videos, HeartPage}
+export { About, Blog, ContactUs, Events, Error, Executives, Home, Projects, Academics, Dinner, Videos, HeartPage }

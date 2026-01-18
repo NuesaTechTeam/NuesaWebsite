@@ -108,11 +108,11 @@ const ResourceExplorer = () => {
           <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-600 transition-colors w-6 h-6" />
           <input
             type="text"
-            placeholder={isPQLocked ? "Search locked to Past Questions" : "Quick Search keywords/codes..."}
+            placeholder={isPQLocked ? "Search locked to Past Questions" : "Quick Search for course codes: eg 'EEE 509' "}
             value={isPQLocked ? "PQ" : searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             disabled={isPQLocked}
-            className={`w-full pl-14 pr-32 py-5 rounded-2xl border-2 outline-none transition-all shadow-sm text-lg font-bold 
+            className={`w-full pl-14 pr-32 py-5 rounded-2xl border-2 outline-none transition-all shadow-sm text-lg font-bold
               ${isPQLocked
                 ? 'bg-gray-100/50 border-gray-100 text-gray-400 cursor-not-allowed italic'
                 : 'border-green-50 focus:ring-4 focus:ring-green-500/10 focus:border-green-500 placeholder:text-gray-400 text-gray-800'
@@ -183,7 +183,7 @@ const ResourceExplorer = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
         >
-          Found <span className="text-green-700 font-bold">{totalCount}</span> specialized {totalCount === 1 ? 'resource' : 'resources'}
+          Found <span className="text-green-700 font-bold">{totalCount || documents.length}</span> specialized {(totalCount || documents.length) === 1 ? 'resource' : 'resources'}
         </motion.span>
       </div>
 

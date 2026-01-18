@@ -86,16 +86,9 @@ export const useResourceSearch = () => {
                 params.course_code = "PQ";
             } else {
                 if (searchQuery) {
-                    const courseCodePattern = /^([a-zA-Z]{3})\s*(\d{2,4})$/;
-                    const match = normalizedQuery.match(courseCodePattern);
-
-                    if (match) {
-                        // If input looks like a course code, assume it is one
-                        params.course_code = normalizedQuery;
-                    } else {
-                        // Otherwise treat as general keyword
-                        params.q = normalizedQuery;
-                    }
+                    const normalizedQuery = normalizeQuery(searchQuery);
+                    // Use 'q' for both course codes and keywords as per Direct Mode requirements
+                    params.course_code = normalizedQuery;
                 }
             }
 
@@ -107,7 +100,7 @@ export const useResourceSearch = () => {
                 const cached = cache.current[cacheKey];
                 setDocuments(cached.documents);
                 setNextCursor(cached.next_cursor);
-                setTotalCount(cached.total);
+                setTotalCount(cached.total || (cached.documents ? cached.documents.length : 0));
                 setLoading(false);
                 return;
             }
@@ -123,7 +116,8 @@ export const useResourceSearch = () => {
 
             setDocuments(prev => isLoadMore ? [...prev, ...data.documents] : data.documents);
             setNextCursor(data.next_cursor);
-            setTotalCount(data.total);
+            // Fallback for total since backend might return 0 incorrectly in Browsing Mode
+            setTotalCount(data.total || (isLoadMore ? documents.length + data.documents.length : data.documents.length));
         } catch (err) {
             if (err.name === 'AbortError') {
                 // Ignore abort errors
