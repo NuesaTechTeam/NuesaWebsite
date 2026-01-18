@@ -21,11 +21,11 @@ def search_documents(params):
         print(f"Error searching docs: {e}")
         return None
 
-print("\n--- Testing Direct Mode (EEE 313) ---")
-res = search_documents({'q': 'EEE 313'})
+print("\n Testing EEE 313 Search")
+res = search_documents({'course_code': 'EEE 313'})
 
-print("\n--- Testing Browsing Mode (department_code 'EEE') ---")
+print("\nTesting 'EEE'")
 search_documents({'department_code': 'EEE', 'limit': 10})
 
-print("\n--- Testing Browsing Mode (level '300') ---")
+print("\nTesting 300 lvl search")
 search_documents({'level': '300', 'limit': 10})
