@@ -26,7 +26,7 @@ const TimeTables = () => {
   };
 
   return (
-    <section className="max-w-7xl mx-auto py-16 px-4">
+    <section className="w-full py-16">
       <div className="flex flex-col items-center justify-center mb-12 text-center">
         <div className="inline-flex items-center gap-2 text-green-700 font-semibold text-sm mb-3 uppercase tracking-wide px-4 py-1.5 bg-green-50 rounded-full border border-green-100">
           <Calendar className="w-4 h-4" />

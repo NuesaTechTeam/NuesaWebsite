@@ -449,7 +449,7 @@ const Notes = () => {
   );
 
   return (
-    <section className="max-w-7xl mx-auto py-12 px-2">
+    <section className="w-full py-12">
       <h2 className="text-3xl md:text-4xl font-bold text-green-700 mb-6 text-center">
         Notes & Textbooks
       </h2>
@@ -523,11 +523,10 @@ const Notes = () => {
             <button
               key={i}
               onClick={() => setPage(i + 1)}
-              className={`px-4 py-2 rounded-full text-sm ${
-                i + 1 === page
+              className={`px-4 py-2 rounded-full text-sm ${i + 1 === page
                   ? "bg-green-600 text-white"
                   : "bg-green-100 text-green-800 hover:bg-green-200"
-              }`}
+                }`}
             >
               {i + 1}
             </button>

@@ -1,5 +1,6 @@
 import { useState, useCallback, useRef, useMemo, useEffect } from "react";
 import { searchDocuments } from "../lib/api";
+import coursesData from "../../courses.json";
 
 export const useResourceSearch = () => {
     const [documents, setDocuments] = useState([]);
@@ -11,6 +12,7 @@ export const useResourceSearch = () => {
     const [nextCursor, setNextCursor] = useState(null);
     const [totalCount, setTotalCount] = useState(0);
     const [isPQLocked, setIsPQLocked] = useState(false);
+    const [matchedCourse, setMatchedCourse] = useState(null);
 
     // Cache for search results
     const cache = useRef({});
@@ -37,24 +39,37 @@ export const useResourceSearch = () => {
     const abortControllerRef = useRef(null);
 
     /**
-     * Normalizes search input for course codes.
+     * Normalizes search input for course codes and maps titles.
      */
-    const normalizeQuery = (query) => {
-        if (!query) return "";
-        let trimmed = query.trim();
+    const normalizeQueryData = (query) => {
+        if (!query) return { code: "", course: null };
+        let trimmed = query.trim().toUpperCase();
 
-        // Flexible Regex: 3 letters + optional spaces + 2-4 digits
-        const courseCodePattern = /^([a-zA-Z]{3})\s*(\d{2,4})$/;
+        // 1. Flexible Regex: 3 letters + optional spaces + 2-4 digits
+        const courseCodePattern = /^([A-Z]{3})\s*(\d{2,4})$/;
         const match = trimmed.match(courseCodePattern);
 
         if (match) {
-            return `${match[1].toUpperCase()} ${match[2]}`;
+            const exactCode = `${match[1]} ${match[2]}`;
+            const exactCourse = coursesData.find(c => c.code === exactCode) || null;
+            return { code: exactCode, course: exactCourse };
         }
 
-        return trimmed.toUpperCase();
+        // 2. Title search
+        // Check if the query is at least 3 characters to avoid false positives on small words
+        if (trimmed.length >= 3) {
+            const matchingCourse = coursesData.find(c =>
+                c.title && c.title.includes(trimmed)
+            );
+            if (matchingCourse) {
+                return { code: matchingCourse.code, course: matchingCourse };
+            }
+        }
+
+        return { code: trimmed, course: null };
     };
 
-    const fetchDocs = useCallback(async (isLoadMore = false) => {
+    const fetchDocs = useCallback(async (isLoadMore = false, overrideQuery = null) => {
         // If it's a new search (not load more), cancel any pending previous search
         if (!isLoadMore) {
             if (abortControllerRef.current) {
@@ -72,7 +87,10 @@ export const useResourceSearch = () => {
         }
 
         try {
-            const normalizedQuery = normalizeQuery(searchQuery);
+            const currentQuery = overrideQuery !== null ? overrideQuery : searchQuery;
+            const { code: normalizedQuery, course: foundCourse } = normalizeQueryData(currentQuery);
+            setMatchedCourse(foundCourse);
+
             const deptCode = selectedDept === "All" ? "" : departments.find(d => d.name === selectedDept)?.code;
             const lvl = selectedLevel === "All" ? "" : selectedLevel;
 
@@ -85,9 +103,8 @@ export const useResourceSearch = () => {
             if (isPQLocked) {
                 params.course_code = "PQ";
             } else {
-                if (searchQuery) {
-                    const normalizedQuery = normalizeQuery(searchQuery);
-                    // Use 'q' for both course codes and keywords as per Direct Mode requirements
+                if (currentQuery) {
+                    // Use the mapped course code (or the original query)
                     params.course_code = normalizedQuery;
                 }
             }
@@ -140,7 +157,7 @@ export const useResourceSearch = () => {
             // Reset cursor for new searches/filters
             setNextCursor(null);
             fetchDocs(false);
-        }, 500);
+        }, 300);
 
         return () => {
             clearTimeout(timer);
@@ -148,7 +165,8 @@ export const useResourceSearch = () => {
                 abortControllerRef.current.abort();
             }
         };
-    }, [searchQuery, selectedLevel, selectedDept, isPQLocked]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [selectedLevel, selectedDept, isPQLocked]);
 
     return {
         documents,
@@ -164,6 +182,7 @@ export const useResourceSearch = () => {
         totalCount,
         isPQLocked,
         setIsPQLocked,
+        matchedCourse,
         fetchDocs,
         levels,
         departments,

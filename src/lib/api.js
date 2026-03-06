@@ -1,4 +1,4 @@
-const BASE_URL = "https://textbooks-1093886938384.europe-west1.run.app";
+const BASE_URL = "https://nuesa-textbooks-98807055984.us-central1.run.app/";
 const API_KEY = import.meta.env.VITE_API_KEY;
 
 /**
@@ -70,3 +70,44 @@ export const getCourses = async (params = {}) => {
   }
   return response.json();
 };
+
+/**
+ * Send feedback email (suggestions or complaints)
+ * @param {string} type - "Suggestion" or "Complaint"
+ * @param {Object} data - Feedback details
+ */
+export const sendFeedbackEmail = async (type, data) => {
+  const targetEmail = "awun8191@gmail.com";
+  const subjectStr = type === "Suggestion" ? "NUESA FEEDBACK: SUGGESTION" : "NUESA FEEDBACK: COMPLAINT";
+
+  const textBody = `
+You have received a new ${type.toLowerCase()}.
+
+Contact Information:
+${data.isAnonymous ? "unknown" : `${data.contactMethod}: ${data.contactInfo}`}
+
+Details:
+${data.details}
+  `.trim();
+
+  const response = await fetch("https://email-service-98807055984.us-central1.run.app/email/send/text", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-API-Key": "okay",
+    },
+    body: JSON.stringify({
+      subject: subjectStr,
+      to_emails: targetEmail,
+      text_body: textBody,
+    }),
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.detail || `Failed to send ${type.toLowerCase()}`);
+  }
+
+  return response.json();
+};
+

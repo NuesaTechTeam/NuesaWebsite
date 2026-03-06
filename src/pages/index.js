@@ -10,5 +10,9 @@ import Academics from "./Academics.jsx"
 import Dinner from "./Dinner.jsx"
 import Videos from "./Videos.jsx"
 import HeartPage from "./Heart.jsx"
+import Feedback from "./Feedback.jsx"
+import Complaints from "./Complaints.jsx"
+import Suggestions from "./Suggestions.jsx"
+import Library from "./Library.jsx"
 
-export { About, Blog, ContactUs, Events, Error, Executives, Home, Projects, Academics, Dinner, Videos, HeartPage }
+export { About, Blog, ContactUs, Events, Error, Executives, Home, Projects, Academics, Dinner, Videos, HeartPage, Feedback, Complaints, Suggestions, Library }

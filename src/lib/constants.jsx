@@ -36,6 +36,10 @@ export const navbarLinks = [
     title: "Blog",
     url: "/blog",
   },
+  {
+    title: "Library",
+    url: "/library",
+  },
   // {
   //   title: "Dinner",
   //   url: "/dinner",

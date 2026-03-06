@@ -269,7 +269,7 @@ const PastPapers = () => {
     : pastPapers.filter(paper => paper.level === selectedLevel);
 
   return (
-    <section className="max-w-7xl mx-auto py-12 px-2">
+    <section className="w-full py-12">
       <h2 className="text-3xl md:text-4xl font-bold text-green-700 mb-6 text-center">
         Past Questions & Solutions
       </h2>
