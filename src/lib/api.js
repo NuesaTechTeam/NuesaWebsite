@@ -77,7 +77,7 @@ export const getCourses = async (params = {}) => {
  * @param {Object} data - Feedback details
  */
 export const sendFeedbackEmail = async (type, data) => {
-  const targetEmail = "awun8191@gmail.com";
+  const targetEmail = "drsomelina@gmail.com";
   const subjectStr = type === "Suggestion" ? "NUESA FEEDBACK: SUGGESTION" : "NUESA FEEDBACK: COMPLAINT";
 
   const textBody = `
