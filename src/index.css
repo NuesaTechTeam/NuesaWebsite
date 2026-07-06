@@ -163,6 +163,12 @@ body::-webkit-scrollbar {
   }
 }
 
+/* Skeleton shimmer */
+@keyframes shimmer {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
 /* Z-index utilities — nav above content, modals above nav */
 .z-nav { z-index: 1000; }
 .z-nav-dropdown { z-index: 1010; }

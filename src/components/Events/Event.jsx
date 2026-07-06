@@ -1,41 +1,18 @@
 import { useEffect, useRef, useState } from "react";
 import EventCard from "./EventCard";
 import { eventsData } from "../../lib/constants";
-import { Calendar, ChevronDown, Clock, Filter } from "lucide-react";
+import { Calendar, Clock, Filter } from "lucide-react";
 
 const Event = () => {
   const [visibleEvents, setVisibleEvents] = useState(new Set());
   const [activeFilter, setActiveFilter] = useState("upcoming");
-  const [selectedCategory, setSelectedCategory] = useState("all");
   const timelineRef = useRef(null);
   const eventRefs = useRef([]);
 
-  const categoryColors = {
-    Technical: "bg-blue-500",
-    Academic: "bg-green-500",
-    Competition: "bg-red-500",
-    Cultural: "bg-purple-500",
-    Professional: "bg-yellow-600",
-    Exhibition: "bg-indigo-500",
-    Mafia: "bg-red-600",
-    Sport: "bg-emerald-600",
-  };
-
-  const categories = [
-    "all",
-    ...new Set(eventsData.map((event) => event.category)),
-  ];
-
-  // filter events based on filter and category chosen
+  // filter events based on status only
   const filteredEvents = eventsData
-    .filter((event) => {
-      const matchesStatus = event.status === activeFilter;
-      const matchesCategory =
-        selectedCategory === "all" || event.category === selectedCategory;
-      return matchesCategory && matchesStatus;
-    })
+    .filter((event) => event.status === activeFilter)
     .sort((a, b) => {
-      // sort events by date, upcoming ascending, past desencending
       const dateA = new Date(a.date);
       const dateB = new Date(b.date);
       return activeFilter === "upcoming" ? dateA - dateB : dateB - dateA;
@@ -44,7 +21,7 @@ const Event = () => {
   useEffect(() => {
     setVisibleEvents(new Set());
     eventRefs.current = [];
-  }, [activeFilter, selectedCategory]);
+  }, [activeFilter]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -107,7 +84,7 @@ const Event = () => {
         </div>
         {/* filters */}
         <div className='max-w-4xl mx-auto mb-16'>
-          <div className='flex justify-center mb-8'>
+          <div className='flex justify-center'>
             <div className='bg-gray-50 rounded-lg p-1.5 border border-gray-200'>
               <div className='flex space-x-1'>
                 <button
@@ -133,30 +110,6 @@ const Event = () => {
                   <span>Past</span>
                 </button>
               </div>
-            </div>
-          </div>
-
-          <div className='flex justify-center'>
-            <div className='relative'>
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className='bg-white border border-gray-200 rounded-lg px-5 py-3 pr-12 text-gray-700 font-semibold appearance-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-green-500 min-w-48'
-              >
-                <option value='all' className='bg-gray-50 hover:bg-gray-400'>
-                  All Categories
-                </option>
-                {categories.slice(1).map((category) => (
-                  <option
-                    value={category}
-                    key={category}
-                    className='bg-gray-50 hover:bg-gray-400'
-                  >
-                    {category}
-                  </option>
-                ))}
-              </select>
-              <ChevronDown className='absolute right-3 top-1/2 transform -translate-y-1/2 size-7 text-gray-500 pointer-events-none' />
             </div>
           </div>
         </div>
@@ -190,11 +143,9 @@ const Event = () => {
                   <div
                     className={`absolute left-0 md:left-1/2 w-6 h-6 rounded-full border-4 border-white transform md:-translate-x-3 z-10 transition duration-700 ${
                       isVisible
-                        ? `${
-                            isPast
-                              ? "bg-gray-500"
-                              : categoryColors[event.category]
-                          } scale-100`
+                        ? isPast
+                          ? "bg-gray-500 scale-100"
+                          : "bg-green scale-100"
                         : "bg-gray-600 scale-75"
                     }`}
                   >
@@ -252,7 +203,7 @@ const Event = () => {
                 No Events Found
               </h3>
               <p className='text-gray-700'>
-                No events match your current filter selection.
+                No events are currently available in this category.
               </p>
             </div>
           </div>

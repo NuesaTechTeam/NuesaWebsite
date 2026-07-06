@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { FaChalkboardTeacher } from "react-icons/fa";
 import Filters from "./Filters";
@@ -136,23 +135,21 @@ const Tutorials = () => {
               <p className="text-gray-600 text-sm leading-relaxed mb-6 font-medium line-clamp-3">
                 {tutorial.description}
               </p>
-              <div className="flex items-center gap-3 text-xs font-bold text-gray-400 uppercase tracking-wider mb-8">
-                <span className="bg-gray-50 px-2 py-1 rounded">👤 {tutorial.tutor}</span>
+              <div className="flex items-center gap-3 text-xs font-bold text-gray-500 uppercase tracking-wider mb-8">
+                <span className="bg-gray-50 px-2 py-1 rounded">{tutorial.tutor}</span>
                 <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
                 <span>{tutorial.date}</span>
               </div>
             </div>
 
-            <motion.a
+            <a
               href={tutorial.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 bg-green-50 text-green-700 hover:bg-green-600 hover:text-white px-6 py-3 rounded-xl text-sm font-black transition duration-300 shadow-sm border border-green-100"
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              className="inline-flex items-center justify-center gap-2 bg-green-50 text-green-700 hover:bg-green-600 hover:text-white px-6 py-3 rounded-xl text-sm font-black transition duration-200 shadow-sm border border-green-100 active:scale-[0.97]"
             >
               Watch Lecture Series
-            </motion.a>
+            </a>
           </motion.div>
         ))}
       </motion.div>

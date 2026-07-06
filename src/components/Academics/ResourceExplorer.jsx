@@ -79,7 +79,7 @@ const ResourceExplorer = () => {
     <section className="w-full pb-24 pt-4 overflow-visible">
       {/* Search and Filters */}
       <motion.div
-        className="relative z-10 bg-white/60 backdrop-blur-2xl rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-white p-6 md:p-10 mb-16 overflow-visible"
+        className="relative z-10 bg-white/60 backdrop-blur-2xl rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-6 md:p-10 mb-16 overflow-visible"
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: "spring", damping: 25 }}
@@ -111,7 +111,7 @@ const ResourceExplorer = () => {
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
               <button
                 onClick={() => setIsPQLocked(!isPQLocked)}
-                className={`px-3 py-2 rounded-xl transition duration-300 flex items-center gap-1.5 font-bold text-[11px] uppercase tracking-wider ${isPQLocked ? 'bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-200' : 'bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 border border-transparent'}`}
+                className={`px-3 py-2 rounded-xl transition duration-300 flex items-center gap-1.5 font-bold text-[11px] uppercase tracking-wider ${isPQLocked ? 'bg-amber-100 text-amber-800 hover:bg-amber-200 border border-amber-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-800 border border-transparent'}`}
                 title={isPQLocked ? "Unlock standard search" : "Lock search to Past Questions"}
               >
                 {isPQLocked ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
@@ -155,7 +155,7 @@ const ResourceExplorer = () => {
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
         >
-          <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+          <div className={`w-2 h-2 rounded-full ${loading ? 'animate-pulse bg-green-500' : 'bg-green-500'}`} />
           <span className="text-sm text-gray-500 font-semibold tracking-wide">
             Found <span className="text-gray-900 font-bold">{totalCount || documents.length}</span> results
           </span>
@@ -242,7 +242,7 @@ const ResourceExplorer = () => {
             <button
               onClick={() => fetchDocs(true)}
               disabled={loading}
-              className="group relative inline-flex items-center gap-3 bg-white border border-gray-200 text-gray-800 px-8 py-4 rounded-2xl font-bold hover:border-green-300 hover:text-green-700 hover:shadow-lg hover:shadow-green-900/5 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden shadow-sm"
+              className="group relative inline-flex items-center gap-3 bg-white border border-gray-200 text-gray-800 px-8 py-4 rounded-2xl font-bold hover:border-green-300 hover:text-green-700 hover:shadow-lg hover:shadow-green-900/5 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 text-green-600 animate-spin" />

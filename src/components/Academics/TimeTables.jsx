@@ -3,7 +3,7 @@ import React from 'react'
 import { motion } from 'framer-motion';
 import { timeTables } from '../../lib/constants';
 import { Worker, Viewer } from '@react-pdf-viewer/core';
-import { Download, ExternalLink, Calendar, FileText } from 'lucide-react';
+import { Download, ExternalLink, FileText } from 'lucide-react';
 import "@react-pdf-viewer/core/lib/styles/index.css";
 import workerUrl from "pdfjs-dist/build/pdf.worker.min.js?url";
 
@@ -28,14 +28,10 @@ const TimeTables = () => {
   return (
     <section className="w-full py-16">
       <div className="flex flex-col items-center justify-center mb-12 text-center">
-        <div className="inline-flex items-center gap-2 text-green-700 font-semibold text-sm mb-3 uppercase tracking-wide px-4 py-1.5 bg-green-50 rounded-full border border-green-100">
-          <Calendar className="w-4 h-4" />
-          Academic Schedule
-        </div>
         <h2 className="text-4xl md:text-5xl font-black text-green-900 mb-6 tracking-tight">
           College Timetables
         </h2>
-        <p className="text-gray-500 text-sm max-w-md mx-auto leading-relaxed">
+        <p className="text-gray-600 text-sm max-w-md mx-auto leading-relaxed">
           Swipe through to find your class schedule and download essential academic documents.
         </p>
       </div>
@@ -83,12 +79,14 @@ const TimeTables = () => {
                 </div>
 
                 <div className="flex gap-2">
-                  <button
-                    onClick={() => window.open(timetable.link, "_blank")}
+                  <a
+                    href={timetable.link}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="flex-1 py-2 px-3 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium hover:bg-gray-50 hover:text-gray-900 transition-colors flex items-center justify-center gap-2"
                   >
                     View
-                  </button>
+                  </a>
                   <a
                     href={timetable.link}
                     download
