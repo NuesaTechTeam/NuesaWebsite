@@ -1,0 +1,173 @@
+@import "tailwindcss";
+
+@theme {
+  /* Fonts — only what's actually used */
+  --font-poppins: "Poppins", sans-serif;
+  --font-lora: "Lora", serif;
+  --font-montserrat: "Montserrat", sans-serif;
+  --font-dm: "DM Sans", sans-serif;
+  --font-playfair: "Playfair", serif;
+  --font-neue: "Bebas Neue", cursive;
+  --font-cinzel: "Cinzel", serif;
+
+  /* Colors */
+  --color-green: #0f5132;
+  --color-green-50: #eefaf3;
+  --color-green-100: #d8f3e3;
+  --color-green-200: #b4e7c7;
+  --color-green-300: #80d4a1;
+  --color-green-400: #4caf50;
+  --color-green-500: #2b8454;
+  --color-green-600: #0f5132;
+  --color-green-700: #0d3c1f;
+  --color-green-800: #0a2d17;
+  --color-green-900: #071f10;
+  --color-green-950: #030e07;
+  --color-green-light: #4caf50;
+  --color-green-dark: #0d3c1f;
+}
+
+@layer base {
+  p {
+    font-family: var(--font-montserrat);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  label {
+    font-family: var(--font-dm);
+  }
+
+  button {
+    font-family: var(--font-poppins);
+    /* Active press feedback */
+    transition: transform 160ms ease-out, background-color 200ms ease-out,
+      color 200ms ease-out, box-shadow 200ms ease-out;
+  }
+
+  button:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+
+  /* Remove active scale on mobile to avoid stuck states */
+  @media (hover: none) and (pointer: coarse) {
+    button:active:not(:disabled) {
+      transform: none;
+    }
+  }
+}
+
+@layer utilities {
+  .scrollbar-hidden {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+
+body {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  font-family: var(--font-montserrat);
+  @apply text-gray-700
+}
+
+body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Accordion animations */
+@keyframes slideDown {
+  from {
+    height: 0;
+  }
+
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+
+  to {
+    height: 0;
+  }
+}
+
+.animate-slideUp {
+  animation: slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+.animate-slideDown {
+  animation: slideDown 300ms cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+@layer utilities {
+  .animate-fadeIn {
+    animation: fadeIn 0.3s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95);
+    }
+
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+}
+
+/* Reduced motion — fade-only, no transforms */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.15s !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Keep opacity-based transitions for comprehension */
+  button:active:not(:disabled) {
+    transform: none;
+  }
+
+  .hover\:scale-105:hover {
+    transform: none !important;
+  }
+
+  .hover\:scale-110:hover {
+    transform: none !important;
+  }
+
+  .group-hover\:scale-105:hover {
+    transform: none !important;
+  }
+
+  [class*="hover:translate"] {
+    transform: none !important;
+  }
+}
+
+/* Z-index utilities — nav above content, modals above nav */
+.z-nav { z-index: 1000; }
+.z-nav-dropdown { z-index: 1010; }
+.z-mobile-menu { z-index: 990; }
+.z-modal { z-index: 2000; }
+.z-modal-backdrop { z-index: 1999; }
+.z-toast { z-index: 3000; }
+.z-tooltip { z-index: 4000; }
