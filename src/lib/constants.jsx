@@ -213,6 +213,32 @@ export const eventsData = [
     status: "upcoming",
     featured: true,
   },
+  {
+    id: 8,
+    title: "Code Red Party",
+    date: "February 26, 2026",
+    time: "",
+    venue: "",
+    description:
+      "Come and relax with friends, enjoy great music, and have an unforgettable evening at the Code Red Party.",
+    image: "/images/events/code_red_party.jpg",
+    category: "Social",
+    status: "past",
+    featured: false,
+  },
+  {
+    id: 9,
+    title: "HSE Training",
+    date: "July 3, 2026",
+    time: "",
+    venue: "",
+    description:
+      "An online training session focused on health, safety, and job readiness for engineering students preparing for industrial training.",
+    image: "/images/events/HSE_traininng.jpeg",
+    category: "Academic",
+    status: "past",
+    featured: false,
+  },
 ];
 
 export const timeTables = [

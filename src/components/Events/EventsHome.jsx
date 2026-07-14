@@ -28,6 +28,7 @@ const EventsHome = () => {
     Academic: "bg-green-100 text-green-800 border-green-200",
     Exhibition: "bg-slate-100 text-slate-800 border-slate-200",
     Sport: "bg-orange-100 text-orange-800 border-orange-200",
+    Social: "bg-pink-100 text-pink-800 border-pink-200",
   };
 
   useEffect(() => {

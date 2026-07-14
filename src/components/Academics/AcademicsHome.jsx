@@ -1,5 +1,5 @@
 import { ArrowRight, BookOpen, FileText, GraduationCap, Play, Star, Users } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 
 const features = [
@@ -114,6 +114,15 @@ const AcademicsHome = () => {
 
             <div className='mt-4 text-sm text-gray-600'>
               Free access for all NUESA members
+            </div>
+
+            <div className='mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-semibold'>
+              <Link to='/library' className='text-green-700 hover:text-green-900 hover:underline'>
+                NUESA ABUAD Digital Library
+              </Link>
+              <Link to='/heart' className='text-red-700 hover:text-red-900 hover:underline'>
+                H.E.A.R.T. Student Welfare &amp; Counseling
+              </Link>
             </div>
           </div>
         </div>

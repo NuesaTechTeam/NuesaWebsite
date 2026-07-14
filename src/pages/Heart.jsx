@@ -24,8 +24,36 @@ import useSEO from "../hooks/useSEO";
 
 const HeartPage = () => {
   useSEO({
-    title: "H.E.A.R.T Initiative",
-    description: "Welcome to H.E.A.R.T (Helping Engineers Achieve, Resilience, and Togetherness), the welfare, counseling, and academic support initiative of NUESA ABUAD."
+    title: "NUESA H.E.A.R.T. | Student Welfare & Counseling at ABUAD",
+    description: "Discover H.E.A.R.T (Helping Everyone Achieve Resilience Together), the official welfare, counseling, and academic support initiative of NUESA ABUAD for engineering students.",
+    keywords: "Nuesa Heart, Nuesa Heart Abuad, Abuad engineering counseling, engineering mental health, student welfare, NUESA ABUAD support, academic resilience",
+    ogImage: "/images/nuesa-heart.png",
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "WebPage",
+      "name": "NUESA HEART Initiative",
+      "description": "Helping Everyone Achieve Resilience Together (H.E.A.R.T) is the welfare, counseling, and academic support initiative of NUESA ABUAD, providing a safe space for mental wellness and peer support.",
+      "url": "https://nuesaabuad.ng/heart",
+      "provider": {
+        "@type": "EducationalOrganization",
+        "name": "Nigerian Universities Engineering Students Association (NUESA) ABUAD Chapter",
+        "url": "https://nuesaabuad.ng"
+      },
+      "mainEntity": {
+        "@type": "Service",
+        "name": "H.E.A.R.T Welfare & Counseling Support",
+        "description": "Counseling, peer mentoring, and mental wellness support for engineering students at Afe Babalola University.",
+        "provider": {
+          "@type": "EducationalOrganization",
+          "name": "NUESA ABUAD Technical Team & Welfare Committee"
+        },
+        "serviceType": "Mental Wellness & Academic Counseling",
+        "audience": {
+          "@type": "Audience",
+          "audienceType": "Engineering Students at Afe Babalola University (ABUAD)"
+        }
+      }
+    }
   });
 
   const [currentQuote, setCurrentQuote] = useState(0);
@@ -219,7 +247,7 @@ const HeartPage = () => {
               className="w-16 h-16 mr-4"
             />
             <h1 className="text-5xl md:text-6xl font-bold text-gray-900">
-              H.E.A.R.T
+              NUESA H.E.A.R.T. Initiative
             </h1>
           </div>
           <p className="text-2xl md:text-3xl text-red-600 font-semibold mb-8">

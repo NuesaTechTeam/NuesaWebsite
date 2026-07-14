@@ -35,8 +35,31 @@ const SkeletonCard = () => (
 
 const Library = () => {
     useSEO({
-        title: "Library",
-        description: "Browse NUESA ABUAD's digital library containing textbooks, past questions, and lecture notes for all engineering departments and levels."
+        title: "NUESA ABUAD Digital Library | Engineering Textbooks & Past Questions",
+        description: "Access NUESA ABUAD's digital library. Download engineering textbooks, past questions, lecture notes, and study materials for all levels and departments at Afe Babalola University.",
+        keywords: "NUESA Abuad library, Abuad engineering past questions, ABUAD engineering textbooks, Afe Babalola University engineering library, engineering courses study materials",
+        ogImage: "/images/blog/logo.jpg",
+        structuredData: {
+            "@context": "https://schema.org",
+            "@type": "CollectionPage",
+            "name": "NUESA ABUAD Digital Library",
+            "description": "Access NUESA ABUAD's digital library. Download engineering textbooks, past questions, lecture notes, and study materials for all levels and departments at Afe Babalola University.",
+            "url": "https://nuesaabuad.ng/library",
+            "about": {
+                "@type": "Thing",
+                "name": "Engineering Education & Academic Resources"
+            },
+            "provider": {
+                "@type": "EducationalOrganization",
+                "name": "Nigerian Universities Engineering Students Association (NUESA) ABUAD Chapter",
+                "url": "https://nuesaabuad.ng"
+            },
+            "potentialAction": {
+                "@type": "SearchAction",
+                "target": "https://nuesaabuad.ng/library?q={search_term_string}",
+                "query-input": "required name=search_term_string"
+            }
+        }
     });
 
     const shouldReduceMotion = useReducedMotion();
@@ -172,10 +195,10 @@ const Library = () => {
                         <span className="text-sm font-bold text-gray-800 tracking-wide uppercase">NUESA Digital Library</span>
                     </motion.div>
                     <h1 className="text-5xl md:text-7xl font-extrabold text-gray-950 tracking-tight leading-tight mb-6">
-                        Discover academic<br />excellence.
+                        NUESA ABUAD Digital Library
                     </h1>
                     <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto font-medium leading-relaxed">
-                        Access thousands of curated textbooks, past questions, and lecture notes tailored for engineering students.
+                        Engineering textbooks, past questions, lecture notes, and study materials for ABUAD engineering students.
                     </p>
                 </motion.div>
 

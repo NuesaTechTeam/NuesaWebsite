@@ -11,6 +11,7 @@ const EventCard = ({ event, isPast, isVisible, isEven }) => {
     Exhibition: "bg-indigo-500",
     Mafia: "bg-red-600",
     Sport: "bg-emerald-600",
+    Social: "bg-pink-500",
   };
 
   const categoryColor = categoryColors[event.category] ?? "bg-green-700";
@@ -85,30 +86,34 @@ const EventCard = ({ event, isPast, isVisible, isEven }) => {
               />
               <span className='text-sm'>{event.date}</span>
             </div>
-            <div
-              className={`flex items-center ${
-                isPast ? "text-gray-600" : "text-gray-500"
-              }`}
-            >
-              <Clock
-                className={`w-4 h-4 mr-2 ${
-                  isPast ? "text-gray-400" : "text-green-400"
+            {event.time && (
+              <div
+                className={`flex items-center ${
+                  isPast ? "text-gray-600" : "text-gray-500"
                 }`}
-              />
-              <span className='text-sm'>{event.time}</span>
-            </div>
-            <div
-              className={`flex items-center ${
-                isPast ? "text-gray-600" : "text-gray-500"
-              }`}
-            >
-              <MapPin
-                className={`w-4 h-4 mr-2 ${
-                  isPast ? "text-gray-400" : "text-red-400"
+              >
+                <Clock
+                  className={`w-4 h-4 mr-2 ${
+                    isPast ? "text-gray-400" : "text-green-400"
+                  }`}
+                />
+                <span className='text-sm'>{event.time}</span>
+              </div>
+            )}
+            {event.venue && (
+              <div
+                className={`flex items-center ${
+                  isPast ? "text-gray-600" : "text-gray-500"
                 }`}
-              />
-              <span className='text-sm'>{event.venue}</span>
-            </div>
+              >
+                <MapPin
+                  className={`w-4 h-4 mr-2 ${
+                    isPast ? "text-gray-400" : "text-red-400"
+                  }`}
+                />
+                <span className='text-sm'>{event.venue}</span>
+              </div>
+            )}
           </div>
           {hasAction ? (
             event.registrationUrl ? (

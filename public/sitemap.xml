@@ -1,67 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://nuesaabuad.org/</loc>
+    <loc>https://nuesaabuad.ng/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://nuesaabuad.org/about</loc>
+    <loc>https://nuesaabuad.ng/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nuesaabuad.org/events</loc>
+    <loc>https://nuesaabuad.ng/events</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nuesaabuad.org/executives</loc>
+    <loc>https://nuesaabuad.ng/executives</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
-    <loc>https://nuesaabuad.org/projects</loc>
+    <loc>https://nuesaabuad.ng/projects</loc>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nuesaabuad.org/blog</loc>
+    <loc>https://nuesaabuad.ng/blog</loc>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
   <url>
-    <loc>https://nuesaabuad.org/academics</loc>
+    <loc>https://nuesaabuad.ng/academics</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://nuesaabuad.org/library</loc>
+    <loc>https://nuesaabuad.ng/library</loc>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://nuesaabuad.org/contactus</loc>
+    <loc>https://nuesaabuad.ng/contactus</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://nuesaabuad.org/dinner</loc>
+    <loc>https://nuesaabuad.ng/dinner</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
   <url>
-    <loc>https://nuesaabuad.org/videos</loc>
+    <loc>https://nuesaabuad.ng/videos</loc>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
   <url>
-    <loc>https://nuesaabuad.org/heart</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
+    <loc>https://nuesaabuad.ng/heart</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.85</priority>
   </url>
   <url>
-    <loc>https://nuesaabuad.org/feedback</loc>
+    <loc>https://nuesaabuad.ng/feedback</loc>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://nuesaabuad.org/sitemap.xml
+Sitemap: https://nuesaabuad.ng/sitemap.xml

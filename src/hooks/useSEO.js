@@ -1,64 +1,128 @@
 import { useEffect } from "react";
 
-export const useSEO = ({ title, description, keywords }) => {
+const SITE_URL = "https://nuesaabuad.ng";
+
+export const useSEO = ({ title, description, keywords, ogImage, canonicalPath, structuredData }) => {
   useEffect(() => {
+    // 1. Keep track of previous document title
     const prevTitle = document.title;
-    if (title) {
-      document.title = `${title} | NUESA ABUAD`;
-    } else {
-      document.title = "NUESA ABUAD | Engineering Student Association";
-    }
 
-    let metaDescription = document.querySelector('meta[name="description"]');
-    let createdDesc = false;
-    let prevDescription = "";
-    if (metaDescription) {
-      prevDescription = metaDescription.getAttribute("content") || "";
-      if (description) {
-        metaDescription.setAttribute("content", description);
+    // Set Document Title
+    const formattedTitle = title ? `${title} | NUESA ABUAD` : "NUESA ABUAD | Nigerian Universities Engineering Students Association";
+    document.title = formattedTitle;
+
+    // Base URL for absolute meta tags
+    const origin = SITE_URL;
+    const path = canonicalPath || window.location.pathname;
+    const fullUrl = `${origin}${path}`;
+
+    // Default values if not provided
+    const defaultDesc = "The official student platform for the Nigerian Universities Engineering Students Association (NUESA) Afe Babalola University chapter. Access digital library textbooks, past questions, academic resources, event details, and student portals.";
+    const defaultKeywords = "NUESA, ABUAD, engineering students, Afe Babalola University, engineering resources, library textbooks, past questions, engineering portal, student association";
+    const defaultImage = `${origin}/images/blog/logo.jpg`;
+
+    const targetDesc = description || defaultDesc;
+    const targetKeywords = keywords || defaultKeywords;
+    const targetImage = ogImage ? (ogImage.startsWith("http") ? ogImage : `${origin}${ogImage.startsWith("/") ? "" : "/"}${ogImage}`) : defaultImage;
+
+    // Helper to update or create meta tags
+    const tagsToManage = [];
+
+    const manageMeta = (nameOrProperty, value) => {
+      const isProperty = nameOrProperty.startsWith("og:");
+      const attribute = isProperty ? "property" : "name";
+      let element = document.querySelector(`meta[${attribute}="${nameOrProperty}"]`);
+      let created = false;
+      let prevValue = "";
+
+      if (element) {
+        prevValue = element.getAttribute("content") || "";
+        element.setAttribute("content", value);
+      } else {
+        element = document.createElement("meta");
+        element.setAttribute(attribute, nameOrProperty);
+        element.setAttribute("content", value);
+        document.head.appendChild(element);
+        created = true;
       }
-    } else if (description) {
-      metaDescription = document.createElement("meta");
-      metaDescription.name = "description";
-      metaDescription.content = description;
-      document.head.appendChild(metaDescription);
-      createdDesc = true;
-    }
 
-    let metaKeywords = document.querySelector('meta[name="keywords"]');
-    let createdKeys = false;
-    let prevKeywords = "";
-    if (metaKeywords) {
-      prevKeywords = metaKeywords.getAttribute("content") || "";
-      if (keywords) {
-        metaKeywords.setAttribute("content", keywords);
+      tagsToManage.push({ element, created, prevValue, type: "meta" });
+    };
+
+    // Helper to update or create link tags
+    const manageLink = (rel, value) => {
+      let element = document.querySelector(`link[rel="${rel}"]`);
+      let created = false;
+      let prevValue = "";
+
+      if (element) {
+        prevValue = element.getAttribute("href") || "";
+        element.setAttribute("href", value);
+      } else {
+        element = document.createElement("link");
+        element.rel = rel;
+        element.href = value;
+        document.head.appendChild(element);
+        created = true;
       }
-    } else if (keywords) {
-      metaKeywords = document.createElement("meta");
-      metaKeywords.name = "keywords";
-      metaKeywords.content = keywords;
-      document.head.appendChild(metaKeywords);
-      createdKeys = true;
+
+      tagsToManage.push({ element, created, prevValue, type: "link" });
+    };
+
+    // Apply Meta Tags
+    manageMeta("title", formattedTitle);
+    manageMeta("description", targetDesc);
+    manageMeta("keywords", targetKeywords);
+
+    // Open Graph
+    manageMeta("og:title", formattedTitle);
+    manageMeta("og:description", targetDesc);
+    manageMeta("og:image", targetImage);
+    manageMeta("og:url", fullUrl);
+
+    // Twitter
+    manageMeta("twitter:title", formattedTitle);
+    manageMeta("twitter:description", targetDesc);
+    manageMeta("twitter:image", targetImage);
+    manageMeta("twitter:url", fullUrl);
+
+    // Canonical Link
+    manageLink("canonical", fullUrl);
+
+    // Inject Structured Data (JSON-LD)
+    let jsonLdScript = null;
+    if (structuredData) {
+      jsonLdScript = document.createElement("script");
+      jsonLdScript.type = "application/ld+json";
+      jsonLdScript.text = JSON.stringify(structuredData);
+      document.head.appendChild(jsonLdScript);
     }
 
+    // Cleanup
     return () => {
       document.title = prevTitle;
-      if (metaDescription) {
-        if (createdDesc) {
-          document.head.removeChild(metaDescription);
-        } else {
-          metaDescription.setAttribute("content", prevDescription);
+
+      // Cleanup injected meta and link tags
+      tagsToManage.forEach(({ element, created, prevValue, type }) => {
+        if (element) {
+          if (created) {
+            document.head.removeChild(element);
+          } else {
+            if (type === "meta") {
+              element.setAttribute("content", prevValue);
+            } else if (type === "link") {
+              element.setAttribute("href", prevValue);
+            }
+          }
         }
-      }
-      if (metaKeywords) {
-        if (createdKeys) {
-          document.head.removeChild(metaKeywords);
-        } else {
-          metaKeywords.setAttribute("content", prevKeywords);
-        }
+      });
+
+      // Cleanup JSON-LD structured data
+      if (jsonLdScript && document.head.contains(jsonLdScript)) {
+        document.head.removeChild(jsonLdScript);
       }
     };
-  }, [title, description, keywords]);
+  }, [title, description, keywords, ogImage, canonicalPath, JSON.stringify(structuredData)]);
 };
 
 export default useSEO;

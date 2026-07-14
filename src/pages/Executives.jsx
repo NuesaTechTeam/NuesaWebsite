@@ -29,7 +29,7 @@ const Executives = () => {
         "name": "NUESA ABUAD",
         "logo": {
           "@type": "ImageObject",
-          "url": "https://nuesaabuad.org/images/blog/logo.jpg"
+          "url": "https://nuesaabuad.ng/images/blog/logo.jpg"
         }
       },
       "mainEntity": {
@@ -46,7 +46,7 @@ const Executives = () => {
               "@type": "Organization",
               "name": "NUESA ABUAD"
             },
-            "image": exco.image.startsWith("http") ? exco.image : `https://nuesaabuad.org${exco.image}`
+          "image": exco.image.startsWith("http") ? exco.image : `https://nuesaabuad.ng${exco.image}`
           }
         }))
       }
