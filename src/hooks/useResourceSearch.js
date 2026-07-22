@@ -4,7 +4,8 @@ import coursesData from "../../courses.json";
 
 export const useResourceSearch = () => {
     const [documents, setDocuments] = useState([]);
-    const [loading, setLoading] = useState(false);
+    // Start loading=true so skeleton UI shows before the first fetch, not "Nothing Found"
+    const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedLevel, setSelectedLevel] = useState("All");
@@ -14,8 +15,11 @@ export const useResourceSearch = () => {
     const [isPQLocked, setIsPQLocked] = useState(false);
     const [matchedCourse, setMatchedCourse] = useState(null);
 
-    // Cache for search results
     const cache = useRef({});
+    const abortControllerRef = useRef(null);
+    // Monotonically-increasing counter. Each call to fetchDocs gets its own
+    // generation number. Only the latest generation may commit state changes.
+    const fetchGenRef = useRef(0);
 
     const levels = ["All", "100", "200", "300", "400", "500", "GENERAL"];
 
@@ -32,31 +36,18 @@ export const useResourceSearch = () => {
         { name: "Biomedical", code: "BME" },
     ], []);
 
-    /**
-     * Normalizes search input for course codes.
-     */
-    /* eslint-disable react-hooks/exhaustive-deps */
-    const abortControllerRef = useRef(null);
-
-    /**
-     * Normalizes search input for course codes and maps titles.
-     */
     const normalizeQueryData = (query) => {
         if (!query) return { code: "", course: null };
-        let trimmed = query.trim().toUpperCase();
+        const trimmed = query.trim().toUpperCase();
 
-        // 1. Flexible Regex: 3 letters + optional spaces + 2-4 digits
         const courseCodePattern = /^([A-Z]{3})\s*(\d{2,4})$/;
         const match = trimmed.match(courseCodePattern);
-
         if (match) {
             const exactCode = `${match[1]} ${match[2]}`;
             const exactCourse = coursesData.find(c => c.code === exactCode) || null;
             return { code: exactCode, course: exactCourse };
         }
 
-        // 2. Title search
-        // Check if the query is at least 3 characters to avoid false positives on small words
         if (trimmed.length >= 3) {
             const matchingCourse = coursesData.find(c =>
                 c.title && c.title.includes(trimmed)
@@ -69,27 +60,41 @@ export const useResourceSearch = () => {
         return { code: trimmed, course: null };
     };
 
+    // Always-current state snapshot — lets fetchDocs stay stable (empty deps)
+    // without stale-closure issues.
+    const stateRef = useRef({});
+    stateRef.current = { searchQuery, selectedLevel, selectedDept, isPQLocked, nextCursor, departments };
+
     const fetchDocs = useCallback(async (isLoadMore = false, overrideQuery = null, overrideFilters = {}) => {
-        // If it's a new search (not load more), cancel any pending previous search
-        if (!isLoadMore) {
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
-            }
-            abortControllerRef.current = new AbortController();
+        // Cancel any in-flight request
+        if (abortControllerRef.current) {
+            abortControllerRef.current.abort();
         }
+        const controller = new AbortController();
+        abortControllerRef.current = controller;
+        const myGen = ++fetchGenRef.current;
+
+        // Helper: is this fetch still the latest?
+        const isStale = () => myGen !== fetchGenRef.current;
 
         setLoading(true);
         setError(null);
+        if (!isLoadMore) setDocuments([]);
 
-        // Clear documents immediately if it's a new search to show skeletons
-        if (!isLoadMore) {
-            setDocuments([]);
-        }
+        let shouldClearLoading = true; // always clear loading at the end
 
         try {
-            const currentQuery = overrideQuery !== null ? overrideQuery : searchQuery;
-            const { code: normalizedQuery, course: foundCourse } = normalizeQueryData(currentQuery);
-            setMatchedCourse(foundCourse);
+            const {
+                searchQuery: currentQuery,
+                selectedLevel,
+                selectedDept,
+                isPQLocked,
+                nextCursor,
+                departments,
+            } = stateRef.current;
+
+            const q = overrideQuery !== null ? overrideQuery : currentQuery;
+            const { code: normalizedQuery, course: foundCourse } = normalizeQueryData(q);
 
             const levelValue = overrideFilters.level ?? selectedLevel;
             const deptValue = overrideFilters.department ?? selectedDept;
@@ -97,79 +102,82 @@ export const useResourceSearch = () => {
             const deptCode = deptValue === "All" ? "" : departments.find(d => d.name === deptValue)?.code;
             const lvl = levelValue === "All" ? "" : levelValue;
 
-            let params = {
+            const params = {
                 level: lvl,
                 department_code: deptCode,
                 cursor: isLoadMore ? nextCursor : null,
             };
-
             if (pqLocked) {
                 params.course_code = "PQ";
-            } else {
-                if (currentQuery) {
-                    // Use the mapped course code (or the original query)
-                    params.course_code = normalizedQuery;
-                }
+            } else if (q) {
+                params.course_code = normalizedQuery;
             }
 
             const cacheKey = JSON.stringify(params);
 
-            // Check cache for initial fetches (non-pagination)
-            // Check BEFORE network call
+            // Return cached result immediately if available
             if (!isLoadMore && cache.current[cacheKey]) {
-                const cached = cache.current[cacheKey];
-                setDocuments(cached.documents);
-                setNextCursor(cached.next_cursor);
-                setTotalCount(cached.total || (cached.documents ? cached.documents.length : 0));
-                setLoading(false);
+                if (!isStale()) {
+                    const cached = cache.current[cacheKey];
+                    setMatchedCourse(foundCourse);
+                    setDocuments(cached.documents);
+                    setNextCursor(cached.next_cursor);
+                    setTotalCount(cached.total || cached.documents?.length || 0);
+                }
+                return; // loading will be cleared in finally
+            }
+
+            const data = await searchDocuments(params, controller.signal);
+
+            // A newer fetch has superseded this one — don't commit stale results
+            if (isStale()) {
+                shouldClearLoading = false; // the newer fetch manages its own loading
                 return;
             }
 
-            // Pass the signal to the API
-            const signal = isLoadMore ? null : abortControllerRef.current?.signal;
-            const data = await searchDocuments(params, signal);
+            setMatchedCourse(foundCourse);
+            if (!isLoadMore && data) cache.current[cacheKey] = data;
 
-            // Cache successful initial fetches
-            if (!isLoadMore) {
-                cache.current[cacheKey] = data;
-            }
+            const docs = data?.documents || [];
+            setDocuments(prev => isLoadMore ? [...prev, ...docs] : docs);
+            setNextCursor(data?.next_cursor || null);
+            setTotalCount(data?.total || docs.length);
 
-            setDocuments(prev => isLoadMore ? [...prev, ...data.documents] : data.documents);
-            setNextCursor(data.next_cursor);
-            // Fallback for total since backend might return 0 incorrectly in Browsing Mode
-            setTotalCount(data.total || (isLoadMore ? documents.length + data.documents.length : data.documents.length));
         } catch (err) {
-            if (err.name === 'AbortError') {
-                // Ignore abort errors
-                console.log("[ResourceSearch] Request aborted");
+            if (err.name === "AbortError") {
+                // This fetch was cancelled because a newer one started.
+                // The newer fetch manages loading state — don't touch it.
+                shouldClearLoading = false;
                 return;
             }
-            setError("Failed to fetch documents. Please try again.");
-            console.error("[ResourceSearch] Error fetching documents:", err);
+            if (!isStale()) {
+                setError("Failed to fetch documents. Please try again.");
+                console.error("[ResourceSearch] fetch error:", err);
+            } else {
+                shouldClearLoading = false;
+            }
         } finally {
-            // Only turn off loading if we weren't aborted (or if we are loading more, which isn't aborted usually)
-            if (isLoadMore || (abortControllerRef.current && !abortControllerRef.current.signal.aborted)) {
+            if (shouldClearLoading) {
                 setLoading(false);
             }
         }
-    }, [searchQuery, selectedLevel, selectedDept, nextCursor, departments, isPQLocked]);
+    }, []); // stable — reads live state via stateRef
 
-    // Active Synchronization Effect
+    // Re-fetch whenever search/filter state changes.
+    // When there is no search query (initial load or filter change), call
+    // fetchDocs synchronously so React 18 StrictMode's effect cleanup cannot
+    // cancel a setTimeout(fn, 0) before it fires — which would leave the page
+    // perpetually blank. Typed queries use a 300 ms debounce.
     useEffect(() => {
-        const timer = setTimeout(() => {
-            // Reset cursor for new searches/filters
-            setNextCursor(null);
+        setNextCursor(null);
+        if (!searchQuery) {
+            // Synchronous — not cancellable by cleanup
             fetchDocs(false);
-        }, 300);
-
-        return () => {
-            clearTimeout(timer);
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
-            }
-        };
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [selectedLevel, selectedDept, isPQLocked]);
+            return;
+        }
+        const timer = setTimeout(() => fetchDocs(false), 300);
+        return () => clearTimeout(timer);
+    }, [searchQuery, selectedLevel, selectedDept, isPQLocked, fetchDocs]);
 
     return {
         documents,
@@ -189,6 +197,6 @@ export const useResourceSearch = () => {
         fetchDocs,
         levels,
         departments,
-        setNextCursor // Exported mainly for internal reset logic if needed, or we can handle it inside
+        setNextCursor,
     };
 };
