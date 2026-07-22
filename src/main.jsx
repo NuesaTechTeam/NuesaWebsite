@@ -7,23 +7,16 @@ import { BrowserRouter } from 'react-router-dom';
 
 import AOS from 'aos';
 import 'aos/dist/aos.css';
-import { useEffect } from 'react';
 
-const Root = () => {
-  useEffect(() => {
-    AOS.init({
-      duration: 800,
-      once: true,
-    });
-  }, []);
+AOS.init({
+  duration: 800,
+  once: true,
+});
 
-  return (
-    <GlobalProvider>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </GlobalProvider>
-  );
-};
-
-createRoot(document.getElementById('root')).render(<Root />);
+createRoot(document.getElementById('root')).render(
+  <GlobalProvider>
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  </GlobalProvider>
+);
