@@ -226,10 +226,6 @@ const HeartPage = () => {
       setSelectedCounselor("");
     };
 
-    const handleGoogleFormContact = () => {
-      window.open("https://forms.gle/tJXHvaVaYtq9d5pR6", "_blank");
-    };
-
     const handleJoinHeart = () => {
       window.open("https://forms.gle/tJXHvaVaYtq9d5pR6", "_blank");
     };

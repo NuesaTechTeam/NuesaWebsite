@@ -1,6 +1,6 @@
 // src/components/Academics/SubmitResource.jsx
 import React, { useState } from "react";
-// eslint-disable-next-line no-unused-vars
+ 
 import { motion, AnimatePresence } from "framer-motion";
 import { X, Upload, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
 import { uploadDocument } from "../../lib/api";

@@ -274,7 +274,7 @@ export const getCourses = async (params = {}) => {
  * @param {Object} data - Feedback details
  */
 export const sendFeedbackEmail = async (type, data) => {
-  const targetEmail = "drsomelina@gmail.com";
+  const targetEmail = import.meta.env.VITE_FEEDBACK_EMAIL || "drsomelina@gmail.com";
   const subjectStr = type === "Suggestion" ? "NUESA FEEDBACK: SUGGESTION" : "NUESA FEEDBACK: COMPLAINT";
 
   const textBody = `
@@ -291,7 +291,7 @@ ${data.details}
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "X-API-Key": "okay",
+      "X-API-Key": API_KEY,
     },
     body: JSON.stringify({
       subject: subjectStr,

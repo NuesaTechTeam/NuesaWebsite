@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { FaWhatsapp, FaArrowRight } from "react-icons/fa";
-// eslint-disable-next-line no-unused-vars
+ 
 import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import ReactQuill from "react-quill";

@@ -1,5 +1,5 @@
 import React from 'react'
-/* eslint-disable no-unused-vars */
+ 
 import { motion } from 'framer-motion';
 import { timeTables } from '../../lib/constants';
 import { Worker, Viewer } from '@react-pdf-viewer/core';

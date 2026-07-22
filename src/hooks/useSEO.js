@@ -3,6 +3,8 @@ import { useEffect } from "react";
 const SITE_URL = "https://nuesaabuad.ng";
 
 export const useSEO = ({ title, description, keywords, ogImage, canonicalPath, structuredData }) => {
+  const structuredDataString = structuredData ? JSON.stringify(structuredData) : "";
+
   useEffect(() => {
     // 1. Keep track of previous document title
     const prevTitle = document.title;
@@ -94,7 +96,7 @@ export const useSEO = ({ title, description, keywords, ogImage, canonicalPath, s
     if (structuredData) {
       jsonLdScript = document.createElement("script");
       jsonLdScript.type = "application/ld+json";
-      jsonLdScript.text = JSON.stringify(structuredData);
+      jsonLdScript.text = structuredDataString;
       document.head.appendChild(jsonLdScript);
     }
 
@@ -122,7 +124,7 @@ export const useSEO = ({ title, description, keywords, ogImage, canonicalPath, s
         document.head.removeChild(jsonLdScript);
       }
     };
-  }, [title, description, keywords, ogImage, canonicalPath, JSON.stringify(structuredData)]);
+  }, [title, description, keywords, ogImage, canonicalPath, structuredData, structuredDataString]);
 };
 
 export default useSEO;
