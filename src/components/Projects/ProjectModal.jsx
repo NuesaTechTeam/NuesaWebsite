@@ -1,4 +1,5 @@
 import { ExternalLink, X } from "lucide-react";
+import { FaGooglePlay } from "react-icons/fa";
 
 const ProjectModal = ({ isOpen, onClose, project }) => {
   if (!isOpen || !project) return null;
@@ -51,17 +52,30 @@ const ProjectModal = ({ isOpen, onClose, project }) => {
             {project.summary}
           </p>
 
-          {project.link && (
-            <a
-              href={project.link}
-              target='_blank'
-              rel='noopener noreferrer'
-              className='mt-6 inline-flex items-center gap-2 rounded-lg bg-green px-5 py-3 font-semibold text-white transition-colors duration-200 hover:bg-green-dark'
-            >
-              Visit Project
-              <ExternalLink className='h-4 w-4' />
-            </a>
-          )}
+          <div className='mt-6 flex flex-wrap items-center gap-3'>
+            {project.appLink && (
+              <a
+                href={project.appLink}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='inline-flex items-center gap-2 rounded-lg bg-green px-5 py-3 font-semibold text-white transition-colors duration-200 hover:bg-green-dark'
+              >
+                <FaGooglePlay className='h-4 w-4' />
+                Download App
+              </a>
+            )}
+            {project.link && (
+              <a
+                href={project.link}
+                target='_blank'
+                rel='noopener noreferrer'
+                className='inline-flex items-center gap-2 rounded-lg border border-green px-5 py-3 font-semibold text-green transition-colors duration-200 hover:bg-green hover:text-white'
+              >
+                Try Online
+                <ExternalLink className='h-4 w-4' />
+              </a>
+            )}
+          </div>
         </div>
       </div>
     </div>

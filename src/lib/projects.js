@@ -7,6 +7,7 @@ export const ongoingProjects = [
     students: 2,
     image: "/images/projects/nuesa-app.jpg",
     link: "https://engineeringhub.nuesaabuad.ng/",
+    appLink: "https://play.google.com/store/apps/details?id=com.engineeringhub.engineeringhub&pcampaignid=web_share",
   },
   {
     title: "NUESA Website",

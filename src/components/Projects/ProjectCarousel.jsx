@@ -1,5 +1,6 @@
 import { ChevronLeft, ChevronRight, ExternalLink, Pause, Play } from "lucide-react";
 import { useEffect, useState } from "react";
+import { FaGooglePlay } from "react-icons/fa";
 import ProjectModal from "./ProjectModal";
 
 const ProjectCarousel = ({ projects }) => {
@@ -51,23 +52,50 @@ const ProjectCarousel = ({ projects }) => {
             </div>
 
             <div className='flex flex-wrap items-center gap-3'>
-              <button
-                type='button'
-                onClick={() => setModalProject(active)}
-                className='rounded-lg border border-green px-5 py-2.5 font-semibold text-green transition-colors duration-200 hover:bg-green hover:text-white'
-              >
-                View Details
-              </button>
-              {active.link && (
-                <a
-                  href={active.link}
-                  target='_blank'
-                  rel='noopener noreferrer'
-                  className='inline-flex items-center gap-2 rounded-lg bg-green px-5 py-2.5 font-semibold text-white transition-colors duration-200 hover:bg-green-dark'
-                >
-                  Visit Project
-                  <ExternalLink className='h-4 w-4' />
-                </a>
+              {active.appLink ? (
+                <>
+                  <a
+                    href={active.appLink}
+                    target='_blank'
+                    rel='noopener noreferrer'
+                    className='inline-flex items-center gap-2 rounded-lg bg-green px-5 py-2.5 font-semibold text-white transition-colors duration-200 hover:bg-green-dark'
+                  >
+                    <FaGooglePlay className='h-4 w-4' />
+                    Download App
+                  </a>
+                  {active.link && (
+                    <a
+                      href={active.link}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='inline-flex items-center gap-2 rounded-lg border border-green px-5 py-2.5 font-semibold text-green transition-colors duration-200 hover:bg-green hover:text-white'
+                    >
+                      Try Online
+                      <ExternalLink className='h-4 w-4' />
+                    </a>
+                  )}
+                </>
+              ) : (
+                <>
+                  <button
+                    type='button'
+                    onClick={() => setModalProject(active)}
+                    className='rounded-lg border border-green px-5 py-2.5 font-semibold text-green transition-colors duration-200 hover:bg-green hover:text-white'
+                  >
+                    View Details
+                  </button>
+                  {active.link && (
+                    <a
+                      href={active.link}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='inline-flex items-center gap-2 rounded-lg bg-green px-5 py-2.5 font-semibold text-white transition-colors duration-200 hover:bg-green-dark'
+                    >
+                      Try Online
+                      <ExternalLink className='h-4 w-4' />
+                    </a>
+                  )}
+                </>
               )}
             </div>
           </div>

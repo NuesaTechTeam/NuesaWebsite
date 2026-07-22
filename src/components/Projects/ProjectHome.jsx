@@ -10,6 +10,7 @@ import {
   Users,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { FaGooglePlay } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { ongoingProjects, pastProjects } from "../../lib/projects";
 
@@ -121,17 +122,30 @@ const ProjectHome = () => {
                             <Users className='mr-1 h-4 w-4' />
                             {project.students} members
                           </div>
-                          {project.link && (
-                            <a
-                              href={project.link}
-                              target='_blank'
-                              rel='noopener noreferrer'
-                              className='inline-flex items-center gap-2 rounded-lg bg-green px-4 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-green-dark'
-                            >
-                              Visit Project
-                              <ExternalLink className='h-4 w-4' />
-                            </a>
-                          )}
+                          <div className='flex flex-wrap items-center gap-2'>
+                            {project.appLink && (
+                              <a
+                                href={project.appLink}
+                                target='_blank'
+                                rel='noopener noreferrer'
+                                className='inline-flex items-center gap-1.5 rounded-lg bg-green px-3.5 py-2 text-xs font-semibold text-white transition-colors duration-200 hover:bg-green-dark'
+                              >
+                                <FaGooglePlay className='h-3.5 w-3.5' />
+                                Download App
+                              </a>
+                            )}
+                            {project.link && (
+                              <a
+                                href={project.link}
+                                target='_blank'
+                                rel='noopener noreferrer'
+                                className='inline-flex items-center gap-1.5 rounded-lg border border-green px-3.5 py-2 text-xs font-semibold text-green transition-colors duration-200 hover:bg-green hover:text-white'
+                              >
+                                Try Online
+                                <ExternalLink className='h-3.5 w-3.5' />
+                              </a>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
