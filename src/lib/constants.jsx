@@ -84,7 +84,7 @@ export const socialLinks = [
   {
     title: "WhatsApp",
     icon: <BsWhatsapp size={24} />,
-    link: "https://wa.me/2349153002715?text=Hello%20I%20am%20contacting%20about%20NUESA",
+    link: "https://wa.me/2348102841732?text=Hello%20I%20am%20contacting%20about%20NUESA",
     color: "",
   },
 ];

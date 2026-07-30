@@ -12,11 +12,11 @@ const Form = () => {
 
   const contactLinks = [
     {
-      value: "09153002715",
+      value: "08102841732",
       icon: <Phone />,
     },
     {
-      value: "nuesatechteam2025@gmail.com",
+      value: "nuesa.abuad.tech@gmail.com",
       icon: <Mail />,
     },
     {
@@ -47,7 +47,7 @@ const Form = () => {
       }
 
 
-    const targetNumber = "2349153002715";
+    const targetNumber = "2348102841732";
 
      const text = `Hello, my name is ${name}. ${message}`;
 
