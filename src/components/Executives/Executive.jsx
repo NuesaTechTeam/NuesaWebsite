@@ -5,7 +5,6 @@ import {
 } from "../../lib/constants";
 import { useRef, useState } from "react";
 import { Calendar, ArrowRight } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 const Executive = () => {
@@ -18,6 +17,8 @@ const Executive = () => {
     setActiveTab(tab);
     ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
+
+  const pastExecs = pastExecutivesByYear.find((y) => y.year === selectedYear)?.executives ?? [];
 
     return (
       <div className='py-12 lg:px-4'>
@@ -69,83 +70,85 @@ const Executive = () => {
             </div>
           </div>
 
-          <AnimatePresence mode="wait">
-            {activeTab === "current" && (
-              <motion.div
-                key="current"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-              >
-                <div className='text-center mb-12'>
-                <h2 className='text-3xl font-bold text-green mb-4'>
-                  Current Leadership
-                </h2>
-                <h3 className='text-2xl font-semibold text-green-700 mb-4'>
-                  Executive Committee 2025-2026
-                </h3>
-                <p className='text-lg text-gray-700 max-w-4xl mx-auto'>
-                  Our current executive committee is committed to serving the
-                  interests of all engineering students at ABUAD and creating
-                  opportunities for academic and professional growth.
-                </p>
-              </div>
+          {/* Current tab — always in DOM for SEO, hidden via CSS when not active */}
+          <div
+            role="tabpanel"
+            aria-label="Current Executives"
+            style={{ display: activeTab === "current" ? "block" : "none" }}
+          >
+            <div className='text-center mb-12'>
+              <h2 className='text-3xl font-bold text-green mb-4'>
+                Current Leadership
+              </h2>
+              <h3 className='text-2xl font-semibold text-green-700 mb-4'>
+                Executive Committee 2025-2026
+              </h3>
+              <p className='text-lg text-gray-700 max-w-4xl mx-auto'>
+                Our current executive committee is committed to serving the
+                interests of all engineering students at ABUAD and creating
+                opportunities for academic and professional growth.
+              </p>
+            </div>
 
-              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12'>
-                {currentExecutivesData.map((executive, index) => (
-                  <ExecutiveCard
-                    key={index}
-                    executive={executive}
-                    index={index}
-                    showAchievementsButton={true}
-                  />
-                ))}
-              </div>
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8 mb-12'>
+              {currentExecutivesData.map((executive, index) => (
+                <ExecutiveCard
+                  key={index}
+                  executive={executive}
+                  index={index}
+                  showAchievementsButton={true}
+                  imageLoading={index < 4 ? "eager" : "lazy"}
+                />
+              ))}
+            </div>
+          </div>
 
-              </motion.div>
-            )}
-
-            {activeTab === "past" && (
-              <motion.div
-                key="past"
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-              >
-                <div className='flex justify-center mb-8'>
-                  <div className='flex items-center space-x-4'>
-                    <Calendar className='size-5 text-green-700' />
-                    <select
-                      value={selectedYear}
-                      onChange={(e) => setSelectedYear(e.target.value)}
-                      className='border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none'
-                    >
-                      {pastExecutivesByYear.map((yearData) => (
-                        <option key={yearData.year} value={yearData.year}>
-                          {yearData.year}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-              <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8'>
-                {pastExecutivesByYear
-                  .find((yearData) => yearData.year === selectedYear)
-                  ?.executives.map((executive, index) => (
-                    <ExecutiveCard
-                      key={index}
-                      executive={executive}
-                      index={index}
-                      showAchievementsButton={false}
-                    />
+          {/* Past tab — always in DOM for SEO, hidden via CSS when not active */}
+          <div
+            role="tabpanel"
+            aria-label="Past Executives"
+            style={{ display: activeTab === "past" ? "block" : "none" }}
+          >
+            <div className='flex justify-center mb-8'>
+              <div className='flex items-center space-x-4'>
+                <Calendar className='size-5 text-green-700' />
+                <select
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(e.target.value)}
+                  className='border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-green-500 focus:border-transparent outline-none'
+                >
+                  {pastExecutivesByYear.map((yearData) => (
+                    <option key={yearData.year} value={yearData.year}>
+                      {yearData.year}
+                    </option>
                   ))}
+                </select>
               </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+            </div>
+
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8'>
+              {pastExecs.map((executive, index) => (
+                <ExecutiveCard
+                  key={index}
+                  executive={executive}
+                  index={index}
+                  showAchievementsButton={false}
+                  imageLoading="lazy"
+                />
+              ))}
+            </div>
+
+            {/* Hidden SEO content: all past executive names across all years always in DOM */}
+            <div aria-hidden="true" style={{ position: "absolute", width: "1px", height: "1px", overflow: "hidden", clip: "rect(0,0,0,0)", whiteSpace: "nowrap" }}>
+              {pastExecutivesByYear.map((yearData) =>
+                yearData.executives.map((exec, i) => (
+                  <span key={`${yearData.year}-${i}`}>
+                    {exec.name}, {exec.position}, NUESA ABUAD {yearData.year}.{" "}
+                  </span>
+                ))
+              )}
+            </div>
+          </div>
 
           <div className='mt-16 text-center'>
             <div className='bg-green-50 rounded-2xl p-8 border border-green-100'>
@@ -172,3 +175,5 @@ const Executive = () => {
     );
 };
 export default Executive;
+
+
