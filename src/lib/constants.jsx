@@ -668,12 +668,14 @@ export const currentExecutivesData = [
     department: "Mechatronics Engineering",
     year: "500 Level",
     image: "/images/executives/current/Oyejobi.jpeg",
-    bio: "Organizing social events and activities that foster community among engineering students. David ensures that NUESA members have opportunities to network and build relationships outside the classroom.",
-    achievements: [],
+    bio: "Love playing table tennis and a few sports,love socializing ",
+    achievements: [
+      "Project head robotics arm ",
+    ],
     social: {
       whatsapp: "#",
       snapchat: "#",
-      email: "#",
+      email: "Oyetolaoyejobi@gmail.com",
     },
   },
   {
@@ -755,6 +757,22 @@ export const currentExecutivesData = [
     },
   },
   {
+    name: " Bamidele Hassan",
+    position: "Chief of staff",
+    department: "⁠Civil Engineering",
+    year: "500",
+    image: "/images/executives/current/BAMIDELE.jpeg",
+    bio: "A man with a passion to create",
+    achievements: [
+      "Member, SRC Welfare Committee, 2025/2026.",
+    ],
+    social: {
+      whatsapp: "#",
+      snapchat: "#",
+      email: "hassanbamidele60@gmail.com",
+    },
+  },
+  {
     name: "Chinenye Chineye",
     position: "Chief Strategy Office",
     department: "Biomedical Engineering",
@@ -828,7 +846,7 @@ export const currentExecutivesData = [
     ],
     social: {
       whatsapp: "#",
-      snapchat: "#",
+      snapchat: "ao.b3nji",
       email: "ogzzyajibs@gmail.com",
     },
   },
@@ -867,12 +885,17 @@ export const currentExecutivesData = [
     department: "Mechanical Engineering",
     year: "500 Level",
     image: "/images/executives/current/Adeniji.jpeg",
-    bio: " I endlessly bring beautiful ideas to life.",
-    achievements: [],
+    bio: " Creative mind, eager to learn new things, love art.",
+    achievements: [
+      "Abuad drug free club 2022/23",
+      "Social Elites NUESA 23/24 ",
+      "Social Elites NUESA 24/25",
+      "Academic Committee MMESA 2025/2026",
+    ],
     social: {
       whatsapp: "#",
       snapchat: "#",
-      email: "#",
+      email: "adamadeniji2004@gmail.com",
     },
   },
  
