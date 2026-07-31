@@ -37,7 +37,7 @@ const ContactHome = () => {
     setFormError("");
 
     const {name, message} = quickMessage
-   const targetNumber = "2349153002715";
+   const targetNumber = "2348102841732";
 
    const text = `Hello, my name is ${name}. ${message}`;
 
@@ -141,7 +141,7 @@ const ContactHome = () => {
                     <div>
                       <p className="font-medium text-green">Email</p>
                       <p className="text-gray-700 text-sm">
-                        nuesatechteam2025@gmail.com
+                        nuesa.abuad.tech@gmail.com
                       </p>
                     </div>
                   </div>
@@ -151,7 +151,7 @@ const ContactHome = () => {
                     </div>
                     <div>
                       <p className="font-medium text-green">Phone</p>
-                      <p className="text-gray-700">09153002715</p>
+                      <p className="text-gray-700">08102841732</p>
                     </div>
                   </div>
                   <div className="flex items-center">
@@ -194,7 +194,7 @@ const ContactHome = () => {
           <h3 className="text-lg font-semibold text-green mb-4">Follow Us</h3>
           <div className="flex justify-center space-x-4">
             <a
-              href="https://wa.me/2349153002715?text=Hello%20I%20am%20contacting%20about%20NUESA"
+              href="https://wa.me/2348102841732?text=Hello%20I%20am%20contacting%20about%20NUESA"
               className="rounded-lg border border-gray-200 bg-white p-3 transition-colors hover:border-green"
               target="_blank"
               rel="noopener noreferrer"

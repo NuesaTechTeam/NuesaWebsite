@@ -2,7 +2,7 @@ export const ongoingProjects = [
   {
     title: "The Engineering Hub",
     summary:
-      'The "Engineering Hub" is an application built to support students in the College of Engineering. It brings academic schedules, lecture notes, textbooks, past questions, and AI-generated practice questions into one place so students can prepare for classes, tests, and examinations more easily.',
+      'The "Engineering Hub" is an application built to support students in the College of Engineering. It brings academic schedules, review questions based on your notes and past questions, and helps you track your understanding of your courses.',
     year: 2025,
     students: 2,
     image: "/images/projects/nuesa-app.jpg",

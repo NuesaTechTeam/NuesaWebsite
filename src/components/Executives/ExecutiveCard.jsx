@@ -5,7 +5,7 @@ import {
   BsSnapchat,
 } from "react-icons/bs";
 
-const ExecutiveCard = ({executive, index, showAchievementsButton = false}) => {
+const ExecutiveCard = ({executive, index, showAchievementsButton = false, imageLoading = "lazy"}) => {
     const [expandedBio, setExpandedBio] = useState(null);
     const [showAchievements, setShowAchievements] = useState({});
 
@@ -27,8 +27,10 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false}) => {
         <div className='aspect-[4/5] w-full bg-gray-200 flex items-center justify-center overflow-hidden'>
           <img
             src={executive.image}
-            alt={executive.name}
-            loading= "lazy"
+            alt={`${executive.name} - ${executive.position}, NUESA ABUAD Engineering Students Association, Afe Babalola University`}
+            loading={imageLoading}
+            width={300}
+            height={375}
             className='h-full w-full object-cover'
             onError={(e) => {
               e.target.src =
@@ -55,31 +57,28 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false}) => {
         )}
         {executive.bio && (
           <div className='mb-4'>
-            {expandedBio === index && (
-              <div>
-                <p className="text-gray-700 text-sm leading-relaxed">
-                  {executive.bio}
-                </p>
-              </div>
-            )}
+            <p
+              className={`text-gray-700 text-sm leading-relaxed transition-all duration-300 ${
+                expandedBio === index ? "" : "line-clamp-3"
+              }`}
+            >
+              {executive.bio}
+            </p>
             <button
               type="button"
               onClick={() => toggleBio(index)}
-              className='text-green text-sm font-medium hover:text-green-700 mt-2 items-center cursor-pointer'
+              className='text-green text-sm font-medium hover:text-green-700 mt-2 flex items-center cursor-pointer'
               aria-expanded={expandedBio === index}
             >
               {expandedBio === index ? (
-                <div className='flex items-center'>
-                  Show Less <ChevronUp className='w-4 h-4 ml-1 transition-transform duration-200' />
-                </div>
+                <>Show Less <ChevronUp className='w-4 h-4 ml-1' /></>
               ) : (
-                <div className='flex items-center'>
-                  Read More <ChevronDown className='w-4 h-4 ml-1 transition-transform duration-200' />
-                </div>
+                <>Read More <ChevronDown className='w-4 h-4 ml-1' /></>
               )}
             </button>
           </div>
         )}
+
         {showAchievementsButton && executive.achievements && (
           <div className='mb-4'>
             <button
