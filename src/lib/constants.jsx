@@ -510,13 +510,8 @@ export const currentExecutivesData = [
     position: "President",
     department: "Chemical Engineering",
     year: "500 Level",
-<<<<<<< HEAD
     image: "/images/executives/current/gregory.jpeg",
     bio: "I'm naturally curious and always looking for opportunities to grow. I appreciate meaningful conversations, genuine connections, and experiences that broaden my perspective. I try to approach life with humility, determination, and an open mind, believing that every challenge is an opportunity to learn.",
-=======
-    image: "/images/executives/current/kienabere-alaibi-emmanuel-president-nuesa-abuad.jpg",
-    bio: " I’m a passionate student leader and all-round people person who enjoys creating meaningful experiences and building connections that last. When I’m not leading or learning, I’m either on the football pitch or rooting for Man City or Barça. I’m also learning French adding a little joie de vivre to the mix and always chasing growth, purpose, and good vibes.",
->>>>>>> 85d6a70af16cb941225883696752d5e49120435b
     achievements: [
       "President of the NUESA 26/27 administration.",
       "Course representative 100lvl - 500lvl",
@@ -535,13 +530,8 @@ export const currentExecutivesData = [
     position: "Vice President",
     department: "Mechanical Engineering",
     year: "400 Level",
-<<<<<<< HEAD
     image: "/images/executives/current/naimah.jpeg",
     bio: "I’m an easygoing and friendly person. I like meeting new people and having new experiences.I strive to be as helpful and supportive as possible to those around me.",
-=======
-    image: "/images/executives/current/chinenye-chisomebi-vice-president-nuesa-abuad.jpg",
-    bio: "I am a friendly, smiling face who is always willing to engage and offer support to the best of my abilities. I believe in fostering a supportive environment where every student feels seen and heard.",
->>>>>>> 85d6a70af16cb941225883696752d5e49120435b
     achievements: [
       "Academic Committee, MMESA 2025/2026",
       "Social Committee, MMESA 2025/2026",
@@ -601,7 +591,6 @@ export const currentExecutivesData = [
     position: "Assistant General Secretary",
     department: "Aeronautical and Astronautical Engineering",
     year: "400 Level",
-<<<<<<< HEAD
     image: "/images/executives/current/Joel.jpeg",
     bio: "Approachable and growth-driven, with a passion for leadership and innovation. I enjoy meeting new people, building valuable networks, and collaborating with people who are passionate about creating impact. I enjoy traveling, exploring new experiences, watching movies, staying active, and a strong creative side.",
     achievements: [
@@ -612,11 +601,6 @@ export const currentExecutivesData = [
       "Member, SRC Academic Committee, 2024/2025.",
       "Campus Ambassador, Afara Initiative Engineering Representative",
     ],
-=======
-    image: "/images/executives/current/ezeaku-daniel-chiemerie-treasurer-nuesa-abuad.jpg",
-    bio: "I’m a hardworking person with standards. I love connecting with new and great minds and making people around me happier. ",
-    achievements: [],
->>>>>>> 85d6a70af16cb941225883696752d5e49120435b
     social: {
       whatsapp: "#",
       snapchat: "#",
@@ -683,11 +667,7 @@ export const currentExecutivesData = [
     position: "Social Director (Male)",
     department: "Mechatronics Engineering",
     year: "500 Level",
-<<<<<<< HEAD
     image: "/images/executives/current/Oyejobi.jpeg",
-=======
-    image: "/images/executives/current/david-tokoni-tamunosiki-social-director-male-nuesa-abuad.jpg",
->>>>>>> 85d6a70af16cb941225883696752d5e49120435b
     bio: "Organizing social events and activities that foster community among engineering students. David ensures that NUESA members have opportunities to network and build relationships outside the classroom.",
     achievements: [],
     social: {
@@ -701,7 +681,6 @@ export const currentExecutivesData = [
     position: "Social Director (Female)",
     department: "Aeronautical and astronautical engineering",
     year: "500 Level",
-<<<<<<< HEAD
     image: "/images/executives/current/Fiyin.jpeg",
     bio: "I’m approachable, easygoing. I love vlogging and making memorable experiences for everyone",
     achievements: [
@@ -713,11 +692,6 @@ export const currentExecutivesData = [
       "⁠Gold medalist Nuesalympics 2025/2026",
       "⁠Founder of WearKafi",
     ],
-=======
-    image: "/images/executives/current/stephen-oleka-amarachi-jasmine-social-director-female-nuesa-abuad.jpg",
-    bio: "Focused on creating inclusive social experiences that help engineering students connect beyond the classroom.",
-    achievements: ["Social elite 2023/2024 & 2024/2025)"],
->>>>>>> 85d6a70af16cb941225883696752d5e49120435b
     social: {
       whatsapp: "#",
       snapchat: "#",
@@ -729,11 +703,7 @@ export const currentExecutivesData = [
     position: "Sport Director (Male)",
     department: "Mechatronics engineering ",
     year: "500 Level",
-<<<<<<< HEAD
     image: "/images/executives/current/Amazing.jpeg",
-=======
-    image: "/images/executives/current/david-lawrence-sport-director-male-nuesa-abuad.jpg",
->>>>>>> 85d6a70af16cb941225883696752d5e49120435b
     bio: "A very simple person",
     achievements: [
       "ABUAD football league board member for over 3 years",
@@ -868,13 +838,8 @@ export const currentExecutivesData = [
     position: "Director of External affairs",
     department: "Mechatronics Engineering",
     year: "500 Level",
-<<<<<<< HEAD
     image: "/images/executives/current/Prosper.jpeg",
     bio: "I’m Prosper Ughovero, a Mechatronics Engineering student at Afe Babalola University. I enjoy taking on challenges, learning new skills, and turning ideas into something meaningful. Whether it’s engineering, leadership, or empowering people through community projects, I believe in growing, helping others grow, and leaving every place better than I met it.",
-=======
-    image: "/images/executives/current/hillary-edjere-eseoghene-sport-director-female-nuesa-abuad.jpg",
-    bio: "Encourages female student involvement in sports. Eseoghene empowers women in engineering to participate in wellness and competition.",
->>>>>>> 85d6a70af16cb941225883696752d5e49120435b
     achievements: [],
     social: {
       whatsapp: "#",
@@ -882,110 +847,8 @@ export const currentExecutivesData = [
       email: "itsprosperugh@gmail.com",
     },
   },
-<<<<<<< HEAD
     {
     name: "Onochie Danielle",
-=======
-  {
-    name: "Ahiakwo Ochinma Karissa",
-    position: "Welfare Officer",
-    department: "Mechatronics Engineering",
-    year: "500 Level",
-    image: "/images/executives/current/ahiakwo-ochinma-karissa-welfare-officer-nuesa-abuad.jpg",
-    bio: "I’m a tall and easygoing person. Friendly by nature, slightly dramatic by choice. I love good conversations, and being around people who don’t take life too seriously (but still get things done). I’m approachable, open-minded, always down for something fun and I’m the type to hype you up for no reason.",
-    achievements: [
-      "2022/2023 NUESA Welfare Committee",
-      "Social Elite 2023/2024 SRC Welfare Committee & Social Elite",
-    ],
-    social: {
-      whatsapp: "#",
-      snapchat: "#",
-      email: "#",
-    },
-  },
-  {
-    name: "Charles Onochie Ezeamaka",
-    position: "Chief of Staff",
-    department: "Mechatronics Engineering",
-    year: "500 Level",
-    image: "/images/executives/current/charles-onochie-ezeamaka-chief-of-staff-nuesa-abuad.jpg",
-    bio: " I am a passionate Mechatronics Engineering student, skilled in robotics and web development, driven by innovation, leadership, and a desire to make meaningful impact through technology, project management and leadership.",
-    achievements: ["NUESA Treasurer 2024/2025"],
-    social: {
-      whatsapp: "#",
-      snapchat: "#",
-      email: "#",
-    },
-  },
-  {
-    name: "AYANBADEJO Araoluwa Gbadunola",
-    position: "Director of Academics",
-    department: "Electrical/Electronics Engineering",
-    year: "400 Level",
-    image: "/images/executives/current/ayanbadejo-araoluwa-gbadunola-director-academics-nuesa-abuad.jpg",
-    bio: " I’m a thoughtful and purpose driven person who values good connections and balances ambition with empathy and a strive to grow and be better.",
-    achievements: ["Treasurer of APWEN 2024/2025"],
-    social: {
-      whatsapp: "#",
-      snapchat: "#",
-      email: "#",
-    },
-  },
-  {
-    name: "Azike Ifeanyi Daniel",
-    position: "Director of Events",
-    department: "Mechanical Engineering",
-    year: "500 Level",
-    image: "/images/executives/current/azike-ifeanyi-daniel-director-events-nuesa-abuad.jpg",
-    bio: "Yet hardworking and poised, I'm all about getting down to business.",
-    achievements: [
-      "Produced the most attended Engineering Gala in history",
-      "Managed logistics for 5+ technical and social events",
-      "Oversaw successful virtual and hybrid event integration",
-    ],
-    social: {
-      whatsapp: "#",
-      snapchat: "#",
-      email: "#",
-    },
-  },
-  {
-    name: "Dauda Nasir",
-    position: "Technical Secretary",
-    department: "Electrical/Electronics Engineering",
-    year: "500 Level",
-    image: "/images/executives/current/dauda-nasir-technical-secretary-nuesa-abuad.jpg",
-    bio: "I’m a final-year Electrical Electronics Engineering student with a strong passion for technology, AI, and innovation. I enjoy writing code and developing practical solutions to real-world problems through programming.",
-    achievements: [
-      "Built and contributed to several tech projects, including an AI-powered study app and academic tools.",
-      "Built production ready applications and websites for individuals ",
-    ],
-    social: {
-      whatsapp: "#",
-      snapchat: "#",
-      email: "#",
-    },
-  },
-  {
-    name: "Wejih Destiny Hachikaru ",
-    position: "Director of External affairs",
-    department: "Electrical Engineering",
-    year: "500 Level",
-    image: "/images/executives/current/wejih-destiny-hachikaru-director-external-affairs-nuesa-abuad.jpg",
-    bio: "I am eager to work as an individual and also as part of a team to achieve meaningful change. I also enjoy networking with others and providing solutions to problems of our colleagues through shared collaboration.",
-    achievements: [
-      "Member of ASVA (ABUAD Salt Valley Associates) 2024/2025",
-      "Member of Study Smart 23/24",
-    ],
-    social: {
-      whatsapp: "#",
-      snapchat: "#",
-      email: "#",
-    },
-  },
-  {
-    name: "Akerele Obaloluwa",
->>>>>>> 85d6a70af16cb941225883696752d5e49120435b
     position: "Creative Director",
     department: "Bio medical engineering",
     year: "300 Level",
@@ -1003,11 +866,7 @@ export const currentExecutivesData = [
     position: "Director of media and publicity",
     department: "Mechanical Engineering",
     year: "500 Level",
-<<<<<<< HEAD
     image: "/images/executives/current/Adeniji.jpeg",
-=======
-    image: "/images/executives/current/akerele-obaloluwa-creative-director-nuesa-abuad.jpg",
->>>>>>> 85d6a70af16cb941225883696752d5e49120435b
     bio: " I endlessly bring beautiful ideas to life.",
     achievements: [],
     social: {
@@ -1016,24 +875,7 @@ export const currentExecutivesData = [
       email: "#",
     },
   },
-<<<<<<< HEAD
  
-=======
-  {
-    name: "Adebayo Emmanuel Ayotomiwa",
-    position: "Editor in Chief",
-    department: "Mechanical Engineering",
-    year: "500 Level",
-    image: "/images/executives/current/adebayo-emmanuel-ayotomiwa-editor-in-chief-nuesa-abuad.jpg",
-    bio: "I’m calm, collected, and drawn to creative work. I enjoy music, storytelling, and finding thoughtful ways to communicate ideas.",
-    achievements: ["Assistant General Secretary, NUESA 2024/2025"],
-    social: {
-      whatsapp: "#",
-      snapchat: "#",
-      email: "#",
-    },
-  },
->>>>>>> 85d6a70af16cb941225883696752d5e49120435b
 ];
 
 export const pastExecutivesByYear = [
