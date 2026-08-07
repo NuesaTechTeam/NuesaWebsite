@@ -38,13 +38,15 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false, imageL
             }}
           />
         </div>
-        <div className='absolute top-4 right-4 bg-green text-white px-3 py-1 rounded-full text-sm font-medium max-w-[calc(100%-2rem)] truncate'>
+        
+        {/* Fixed Green Oval Badge Backdrop */}
+        <div className='absolute top-4 right-4 bg-[#0f5132] text-white px-3 py-1 rounded-full text-xs font-semibold shadow-md max-w-[calc(100%-2rem)] truncate z-10'>
           {executive.position}
         </div>
       </div>
 
       <div className='p-6'>
-        <h3 className='text-xl font-bold text-green mb-2'>{executive.name}</h3>
+        <h3 className='text-xl font-bold text-[#0f5132] mb-2'>{executive.name}</h3>
         <div className='flex items-center text-gray-700 mb-2'>
           <Building className='size-5 mr-2' />
           <span className='text-sm'>{executive.department}</span>
@@ -67,7 +69,7 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false, imageL
             <button
               type="button"
               onClick={() => toggleBio(index)}
-              className='text-green text-sm font-medium hover:text-green-700 mt-2 flex items-center cursor-pointer'
+              className='text-[#0f5132] text-sm font-medium hover:text-green-700 mt-2 flex items-center cursor-pointer'
               aria-expanded={expandedBio === index}
             >
               {expandedBio === index ? (
@@ -84,7 +86,7 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false, imageL
             <button
               type="button"
               onClick={() => toggleAchievements(index)}
-              className='flex items-center text-green font-medium text-sm hover:text-green-700 mb-3 cursor-pointer'
+              className='flex items-center text-[#0f5132] font-medium text-sm hover:text-green-700 mb-3 cursor-pointer'
               aria-expanded={!!showAchievements[index]}
             >
               <Award className='size-5 mr-2' />
@@ -102,7 +104,7 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false, imageL
                   <ul className='space-y-2'>
                     {executive.achievements.map((achievement, achIndex) => (
                       <li key={achIndex} className='flex items-start'>
-                        <div className='w-2 h-2 bg-green rounded-full mt-2 mr-3 flex-shrink-0'></div>
+                        <div className='w-2 h-2 bg-[#0f5132] rounded-full mt-2 mr-3 flex-shrink-0'></div>
                         <span className='text-sm text-gray-700'>
                           {achievement}
                         </span>
@@ -157,4 +159,4 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false, imageL
     </div>
   );
 }
-export default ExecutiveCard
+export default ExecutiveCard;
