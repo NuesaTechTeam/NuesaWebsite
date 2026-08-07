@@ -48,12 +48,12 @@ const AboutHome = () => {
   ];
 
   const images = [
-    "/images/executives/current/Kienabere.jpg",
-    "/images/executives/current/Chinenye.jpg",
-    "/images/executives/current/Daniel.jpg",
-    "/images/executives/current/Ese.jpg",
-    "/images/executives/current/Karissa.jpg",
-    "/images/executives/current/Prosper.jpg",
+    "/images/executives/current/gregory.jpeg",
+    "/images/executives/current/naimah.jpeg",
+    "/images/executives/current/ojiji.jpeg",
+    "/images/executives/current/Agboyinu Setin Gabriel.jpeg",
+    "/images/executives/current/Angel.jpeg",
+    "/images/executives/current/Joel.jpeg",
   ];
 
   useEffect(() => {

@@ -521,7 +521,7 @@ export const currentExecutivesData = [
     ],
     social: {
       whatsapp: "#",
-      snapchat: "gakidima77",
+      snapchat: "https://www.snapchat.com/add/gakidima77",
       email: "akidimagregory@gmail.com",
     },
   },
@@ -540,7 +540,7 @@ export const currentExecutivesData = [
     ],
     social: {
       whatsapp: "#",
-      snapchat: "msabdul.n",
+      snapchat: "https://www.snapchat.com/add/msabdul.n",
       email: "#",
     },
   },
@@ -603,7 +603,7 @@ export const currentExecutivesData = [
     ],
     social: {
       whatsapp: "#",
-      snapchat: "itssetin",
+      snapchat: "https://www.snapchat.com/add/itssetin",
       email: "nuesa.abuad.tech@gmail.com",
     },
   },
@@ -758,7 +758,7 @@ export const currentExecutivesData = [
   },
   {
     name: " Bamidele Hassan",
-    position: "Chief of staff",
+    position: "Chief of Staff",
     department: "⁠Civil Engineering",
     year: "500",
     image: "/images/executives/current/BAMIDELE.jpeg",
@@ -774,7 +774,7 @@ export const currentExecutivesData = [
   },
   {
     name: "Chinenye Chineye",
-    position: "Chief Strategy Office",
+    position: "Chief Strategy Officer",
     department: "Biomedical Engineering",
     year: "500 Level",
     image: "/images/executives/current/chineye.jpeg",
@@ -787,10 +787,11 @@ export const currentExecutivesData = [
       "⁠Social Committee, SRC 2024/2025",
       "Lead Content Developer, Studysmart, 2023/2024 & 2024/2025",
       "Member, ASVA.",
+      "Vice President, NUESA 2025/2026",
     ],
     social: {
       whatsapp: "#",
-      snapchat: "Nenyecore",
+      snapchat: "https://www.snapchat.com/add/Nenyecore",
       email: "#",
     },
   },
@@ -846,7 +847,7 @@ export const currentExecutivesData = [
     ],
     social: {
       whatsapp: "#",
-      snapchat: "ao.b3nji",
+      snapchat: "https://www.snapchat.com/ao.b3nji",
       email: "ogzzyajibs@gmail.com",
     },
   },

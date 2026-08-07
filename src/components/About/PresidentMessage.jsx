@@ -9,7 +9,7 @@ const PresidentMessage = () => {
       <div className="w-full md:w-1/2">
         <div className="rounded-lg overflow-hidden border border-green-100 bg-white">
           <img
-            src="/images/about/nuesa-president.jpg"
+            src="/images/about/gregory.jpeg"
             alt="NUESA President"
             className="w-full h-100 md:h-[32rem] object-cover object-top"
           />
