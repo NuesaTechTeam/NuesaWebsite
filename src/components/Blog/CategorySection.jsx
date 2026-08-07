@@ -11,25 +11,25 @@ const CategorySection = ({ activeCategory, setActiveCategory }) => {
   ];
 
   return (
-    <section className="max-w-7xl mx-auto px-2 pt-6">
-      <h3 className="text-xl font-semibold text-green-700 mb-4 text-center">
-        Explore by Category
-      </h3>
-
-      <div className="flex gap-3 overflow-x-auto scrollbar-hidden pb-2 justify-center flex-wrap">
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setActiveCategory(cat)}
-            className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition duration-200 transform ${
-              activeCategory === cat
-                ? "bg-green-600 text-white scale-105 shadow-sm"
-                : "bg-green-100 text-green-800 hover:bg-green-200 hover:scale-105"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
+    <section className="max-w-7xl mx-auto px-4 pt-10 pb-2">
+      <div className="flex flex-wrap justify-center gap-2">
+        {categories.map((cat) => {
+          const isActive = activeCategory === cat;
+          return (
+            <button
+              key={cat}
+              onClick={() => setActiveCategory(cat)}
+              aria-pressed={isActive}
+              className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 active:scale-[0.97] ${
+                isActive
+                  ? "bg-green text-white shadow-sm"
+                  : "bg-green-50 text-green-800 hover:bg-green-100 hover:text-green-900"
+              }`}
+            >
+              {cat}
+            </button>
+          );
+        })}
       </div>
     </section>
   );

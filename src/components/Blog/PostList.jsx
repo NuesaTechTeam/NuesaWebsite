@@ -25,6 +25,7 @@ const PostList = ({ activeCategory }) => {
               author={post.author}
               date={post.date}
               content={post.content}
+              category={post.category}
             />
           ))
         ) : (

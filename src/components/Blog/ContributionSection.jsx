@@ -26,6 +26,8 @@ const ContributionSection = () => {
             excerpt={post.excerpt}
             author={post.author}
             date={post.date}
+            content={post.content}
+            category={post.category}
           />
         ))}
       </div>
