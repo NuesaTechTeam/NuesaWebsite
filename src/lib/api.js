@@ -2,7 +2,6 @@ import coursesData from "../../courses.json";
 
 const API_URL = (import.meta.env.VITE_API_URL || "https://r2-to-firestore-worker.nasurf25.workers.dev").replace(/\/+$/, "");
 const API_KEY = import.meta.env.VITE_API_KEY;
-const UPLOAD_SECRET = import.meta.env.VITE_UPLOAD_SECRET;
 const SEARCH_DEPARTMENTS = ["AAE", "BME", "CHE", "COE", "CVE", "EEE", "MCT", "MEE", "PTE"];
 const SEARCH_LEVELS = ["100", "200", "300", "400", "500"];
 const DEPARTMENT_CODE_ALIASES = {
@@ -181,39 +180,6 @@ export const searchDocuments = async (params = {}, signal) => {
     ...params,
     department_code: normalizeDepartmentCode(params.department_code),
   }, signal);
-};
-
-/**
- * Upload a document.
- * @param {File} file - The PDF file.
- * @param {Object} metadata - Metadata (department, department_code, level, semester, course_code)
- */
-export const uploadDocument = async (file, metadata) => {
-  const formData = new FormData();
-  formData.append("file", file);
-  Object.entries(metadata).forEach(([key, value]) => {
-    formData.append(key, value);
-  });
-
-  if (!UPLOAD_SECRET) {
-    throw new Error("Upload is not configured. Missing VITE_UPLOAD_SECRET.");
-  }
-
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: {
-      "X-API-Key": API_KEY,
-      "X-Upload-Secret": UPLOAD_SECRET,
-    },
-    body: formData,
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error || errorData.detail || `Upload failed: ${response.statusText}`);
-  }
-
-  return response.json();
 };
 
 /**
