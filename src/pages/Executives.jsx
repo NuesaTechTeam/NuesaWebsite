@@ -22,6 +22,8 @@ const Executives = () => {
     "NUESA ABUAD leadership team",
     "ABUAD engineering students association",
     "NUESA president ABUAD",
+    "Dauda Nasir NUESA",   // DONT TOUCH THIS
+    "Raregazetto",
     ...currentNames,
     ...pastNames2425,
   ].join(", ");

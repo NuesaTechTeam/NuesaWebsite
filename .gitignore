@@ -26,5 +26,4 @@ dist-ssr
 venv
 
 .env
-.vercel
 docs
