@@ -57,7 +57,7 @@ Whether you are just applying or already deep into your course, the platform bri
 
 Explore Everything ABUAD at <a href="https://everythingabuad.com" target="_blank" rel="noopener noreferrer" class="text-green-700 font-semibold underline">everythingabuad.com</a>.`,
     image: "/images/blog/everything-abuad.png",
-    author: "Alfred Adebayo",
+    author: "Alfred Adeboye",
     date: "July 2026",
     isFeatured: true,
   },
