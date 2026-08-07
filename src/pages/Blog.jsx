@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import {
   FeaturedSection,
   CategorySection,
-  ContributionSection,
   CTASection,
   PostList,
 } from "../components/Blog";
@@ -16,31 +15,37 @@ const Blog = () => {
   });
 
   const [activeCategory, setActiveCategory] = useState("All");
-  // eslint-disable-next-line no-unused-vars
-  const [searchParams, setSearchParams] = useSearchParams()
-  const view = searchParams.get("view")
+  const [searchParams] = useSearchParams();
+  const view = searchParams.get("view");
 
   return (
     <div className="min-h-screen">
-      <header className="text-center py-6">
-        <h1 className="text-4xl md:text-5xl font-bold text-green-700">
-          NUESA Blog
-        </h1>
-        <p className="text-gray-700 mt-2">
-          Sharing ideas, projects, tutorials & achievements from engineering students.
-        </p>
-        <div className="w-24 h-1 bg-green-500 mx-auto mt-4 rounded"></div>
+      {/* Hero */}
+      <header className="pt-20 pb-10 px-4">
+        <div className="max-w-7xl mx-auto">
+          <div className="max-w-3xl mx-auto text-center">
+            <p className="font-dm text-xs font-semibold uppercase tracking-[0.18em] text-green-700 mb-5">
+              The NUESA Journal
+            </p>
+            <h1 className="font-dm text-4xl md:text-6xl font-bold text-gray-900 tracking-tight leading-[1.05]">
+              Ideas, projects, and stories from our engineers
+            </h1>
+            <p className="text-gray-600 mt-5 max-w-[52ch] mx-auto leading-relaxed">
+              Editorial, tutorials, and student contributions from the NUESA
+              community at ABUAD.
+            </p>
+          </div>
+        </div>
       </header>
 
-      <main className="space-y-16">
+      <main className="space-y-4">
         <FeaturedSection />
         <CategorySection
           activeCategory={activeCategory}
           setActiveCategory={setActiveCategory}
         />
         <PostList activeCategory={activeCategory} />
-        <ContributionSection />
-        <CTASection scrollIntoView = {view === "submit"} />
+        <CTASection scrollIntoView={view === "submit"} />
       </main>
     </div>
   );
