@@ -1,83 +1,49 @@
 import React, { useState } from "react";
-import { X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import ArticleModal from "./ArticleModal";
 
-const PostCard = ({ title, image, excerpt, author, date, content }) => {
+const PostCard = ({ title, image, excerpt, author, date, content, category, size }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const large = size === "large";
 
   return (
     <>
-      <div
-        data-aos="fade-up"
-        data-aos-delay="100"
-        className="bg-white rounded-xl border border-transparent hover:border-green-200 shadow-md hover:shadow-xl transition duration-300 overflow-hidden hover:-translate-y-1"
-      >
-        <img src={image} alt={title} className="w-full h-48 object-cover" />
+      <article className={`group bg-white rounded-2xl border border-gray-100 hover:border-green-200 shadow-[0_4px_20px_rgba(15,81,50,0.06)] hover:shadow-[0_12px_40px_rgba(15,81,50,0.12)] transition duration-300 overflow-hidden hover:-translate-y-1 flex flex-col h-full`}>
+        <div className="relative overflow-hidden">
+          <img
+            src={image}
+            alt={title}
+            className={`w-full ${large ? "h-64 md:h-80" : "h-48"} object-cover transition-transform duration-500 group-hover:scale-[1.03]`}
+          />
+          {category && (
+            <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-[11px] font-bold bg-white/90 text-green-700 backdrop-blur-sm">
+              {category}
+            </span>
+          )}
+        </div>
 
-        <div className="p-4 flex flex-col justify-between min-h-[180px]">
-          <div>
-            <h3 className="text-lg font-bold text-green-700 mb-1">{title}</h3>
-            <p className="text-sm text-gray-600 mb-2 line-clamp-3">{excerpt}</p>
-          </div>
+        <div className="p-6 flex flex-col flex-1">
+          <h3 className={`${large ? "text-xl md:text-2xl" : "text-lg"} font-bold text-gray-900 mb-2 group-hover:text-green-700 transition-colors leading-snug`}>
+            {title}
+          </h3>
+          <p className="text-sm text-gray-600 mb-6 line-clamp-3 flex-1 leading-relaxed">
+            {excerpt}
+          </p>
 
-          <div className="flex justify-between items-center text-xs text-gray-500 mt-2">
-            <span>By {author}</span>
-            <span>{date}</span>
+          <div className="flex justify-between items-center text-xs text-gray-500 border-t border-gray-100 pt-4">
+            <span>{author}</span>
+            <time>{date}</time>
           </div>
 
           <button
             onClick={() => setIsOpen(true)}
-            className="mt-4 text-green-600 hover:underline text-sm font-medium"
+            className="mt-4 text-green-600 hover:text-green-700 text-sm font-semibold inline-flex items-center gap-1 w-fit"
           >
             Read More
           </button>
         </div>
-      </div>
+      </article>
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            className="fixed inset-0 z-modal bg-black/30 backdrop-blur-sm flex items-center justify-center px-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              className="bg-white rounded-xl shadow-xl max-w-3xl w-full relative flex flex-col max-h-[90vh] overflow-hidden"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <button
-                onClick={() => setIsOpen(false)}
-                className="absolute top-4 right-4 text-gray-600 hover:text-red-600 transition bg-white rounded-full p-1 shadow-md z-10"
-              >
-                <X className="w-6 h-6" />
-              </button>
-
-              <img
-                src={image}
-                alt={title}
-                className="w-full h-64 object-cover rounded-t-xl"
-              />
-
-              <div className="p-6 overflow-y-auto max-h-[calc(90vh-16rem)]">
-                <h2 className="text-2xl font-bold text-green-700 mb-3">
-                  {title}
-                </h2>
-                <p className="text-gray-500 text-sm mb-4 italic">
-                  By {author} — {date}
-                </p>
-                <div
-                  className="text-gray-700 text-sm leading-relaxed whitespace-pre-wrap"
-                  dangerouslySetInnerHTML={{ __html: content }}
-                />
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ArticleModal post={isOpen ? { title, image, excerpt, author, date, content, category } : null} onClose={() => setIsOpen(false)} />
     </>
   );
 };

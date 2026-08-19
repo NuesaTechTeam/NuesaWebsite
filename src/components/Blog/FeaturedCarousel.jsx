@@ -1,13 +1,15 @@
 import React, { useState } from "react";
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { X } from "lucide-react";
- 
-import { motion, AnimatePresence } from "framer-motion";
+import ArticleModal from "./ArticleModal";
 
 const FeaturedCarousel = ({ posts }) => {
   const featured = posts || [];
   const [index, setIndex] = useState(0);
   const [selectedPost, setSelectedPost] = useState(null);
+
+  if (featured.length === 0) return null;
+
+  const featuredPost = featured[index];
 
   const prevSlide = () =>
     setIndex((prev) => (prev === 0 ? featured.length - 1 : prev - 1));
@@ -15,96 +17,84 @@ const FeaturedCarousel = ({ posts }) => {
     setIndex((prev) => (prev === featured.length - 1 ? 0 : prev + 1));
 
   return (
-    <div className="relative w-full overflow-hidden">
-      <div
-        className="flex transition-transform duration-700"
-        style={{ transform: `translateX(-${index * 100}%)` }}
-      >
-        {featured.map((post) => (
-          <div key={post.id} className="min-w-full">
-            <div className="flex flex-col md:flex-row bg-white shadow rounded-xl overflow-hidden">
-              <img
-                src={post.image}
-                alt={post.title}
-                className="w-full md:w-1/2 h-64 object-cover"
-              />
-              <div className="p-6 flex-1">
-                <h3 className="text-2xl font-bold text-green-700">{post.title}</h3>
-                <p className="text-gray-600 text-sm mt-3">{post.excerpt}</p>
-                <p className="text-xs text-gray-400 mt-2">
-                  By {post.author} — {post.date}
-                </p>
-                <button
-                  onClick={() => setSelectedPost(post)}
-                  className="mt-4 inline-block text-green-600 text-sm font-medium hover:underline"
-                >
-                  Read More
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
+    <div className="relative w-full">
+      <article className="grid md:grid-cols-2 bg-white rounded-2xl border border-green-100 overflow-hidden shadow-[0_8px_30px_rgba(15,81,50,0.08)]">
+        {/* Image side */}
+        <div className="relative min-h-[280px] md:min-h-[420px] overflow-hidden">
+          <img
+            src={featuredPost.image}
+            alt={featuredPost.title}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent md:bg-gradient-to-r" />
+          <span className="absolute top-4 left-4 px-3 py-1 rounded-full text-xs font-bold bg-white/90 text-green-700 backdrop-blur-sm">
+            {featuredPost.category}
+          </span>
+        </div>
 
+        {/* Content side */}
+        <div className="flex flex-col justify-center p-8 md:p-12">
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-green-700 mb-4">
+            Featured
+          </p>
+          <h3 className="font-lora text-2xl md:text-4xl text-gray-900 leading-tight mb-4 text-balance">
+            {featuredPost.title}
+          </h3>
+          <p className="text-gray-600 leading-relaxed mb-8 max-w-[52ch]">
+            {featuredPost.excerpt}
+          </p>
+
+          <div className="flex items-center gap-4 text-xs text-gray-400 mb-8">
+            <span>{featuredPost.author}</span>
+            <span aria-hidden="true" className="text-green-300">
+              /
+            </span>
+            <time>{featuredPost.date}</time>
+          </div>
+
+          <button
+            onClick={() => setSelectedPost(featuredPost)}
+            className="inline-flex items-center justify-center gap-2 bg-green text-white px-6 py-3 rounded-md text-sm font-semibold hover:bg-green-700 transition-colors duration-200 w-fit"
+          >
+            Read Article
+          </button>
+        </div>
+      </article>
+
+      {/* Controls — only when more than one featured */}
       {featured.length > 1 && (
         <>
           <button
             onClick={prevSlide}
-            className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white shadow p-2 rounded-full hover:bg-green-100"
+            aria-label="Previous article"
+            className="absolute left-4 top-1/2 -translate-y-1/2 bg-white border border-gray-100 shadow-[0_4px_20px_rgba(15,81,50,0.12)] p-3 rounded-full hover:bg-white transition"
           >
-            <FaChevronLeft />
+            <FaChevronLeft className="text-green-700" />
           </button>
           <button
             onClick={nextSlide}
-            className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white shadow p-2 rounded-full hover:bg-green-100"
+            aria-label="Next article"
+            className="absolute right-4 top-1/2 -translate-y-1/2 bg-white border border-gray-100 shadow-[0_4px_20px_rgba(15,81,50,0.12)] p-3 rounded-full hover:bg-white transition"
           >
-            <FaChevronRight />
+            <FaChevronRight className="text-green-700" />
           </button>
+
+          <div className="flex justify-center gap-2 mt-6">
+            {featured.map((_, i) => (
+              <button
+                key={i}
+                onClick={() => setIndex(i)}
+                aria-label={`Go to article ${i + 1}`}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  i === index ? "w-8 bg-green" : "w-2 bg-green-200 hover:bg-green-300"
+                }`}
+              />
+            ))}
+          </div>
         </>
       )}
 
-      <AnimatePresence>
-        {selectedPost && (
-          <motion.div
-            className="fixed inset-0 bg-black/50 z-modal flex justify-center items-center px-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              className="bg-white max-w-3xl w-full rounded-xl shadow-xl overflow-y-auto max-h-[78vh] relative"
-              initial={{ scale: 0.9, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.9, opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <button
-                onClick={() => setSelectedPost(null)}
-                className="absolute top-4 right-4 text-gray-700 hover:text-red-500 cursor-pointer"
-              >
-                <X className="w-7 h-7" />
-              </button>
-              <img
-                src={selectedPost.image}
-                alt={selectedPost.title}
-                className="w-full h-64 object-cover rounded-t-xl"
-              />
-              <div className="p-6">
-                <h2 className="text-2xl font-bold text-green-700 mb-3">
-                  {selectedPost.title}
-                </h2>
-                <p className="text-sm text-gray-500 mb-4 italic">
-                  By {selectedPost.author} — {selectedPost.date}
-                </p>
-                <div
-                  className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap"
-                  dangerouslySetInnerHTML={{ __html: selectedPost.content }}
-                />
-              </div>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ArticleModal post={selectedPost} onClose={() => setSelectedPost(null)} />
     </div>
   );
 };

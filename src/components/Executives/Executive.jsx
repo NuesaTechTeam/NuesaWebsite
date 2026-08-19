@@ -9,7 +9,7 @@ import { useNavigate } from "react-router-dom";
 
 const Executive = () => {
   const [activeTab, setActiveTab] = useState("current");
-  const [selectedYear, setSelectedYear] = useState("2024-2025");
+  const [selectedYear, setSelectedYear] = useState(pastExecutivesByYear[0]?.year || "2024-2025");
   const ref = useRef(null)
   const navigate = useNavigate();
 

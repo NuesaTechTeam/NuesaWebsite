@@ -1,32 +1,30 @@
 @import "tailwindcss";
 
-@layer theme {
-  :root {
-    /* Fonts — only what's actually used */
-    --font-poppins: "Poppins", sans-serif;
-    --font-lora: "Lora", serif;
-    --font-montserrat: "Montserrat", sans-serif;
-    --font-dm: "DM Sans", sans-serif;
-    --font-playfair: "Playfair", serif;
-    --font-neue: "Bebas Neue", cursive;
-    --font-cinzel: "Cinzel", serif;
+@theme {
+  /* Fonts — only what's actually used */
+  --font-poppins: "Poppins", sans-serif;
+  --font-lora: "Lora", serif;
+  --font-montserrat: "Montserrat", sans-serif;
+  --font-dm: "DM Sans", sans-serif;
+  --font-playfair: "Playfair", serif;
+  --font-neue: "Bebas Neue", cursive;
+  --font-cinzel: "Cinzel", serif;
 
-    /* Colors */
-    --color-green: #0f5132;
-    --color-green-50: #eefaf3;
-    --color-green-100: #d8f3e3;
-    --color-green-200: #b4e7c7;
-    --color-green-300: #80d4a1;
-    --color-green-400: #4caf50;
-    --color-green-500: #2b8454;
-    --color-green-600: #0f5132;
-    --color-green-700: #0d3c1f;
-    --color-green-800: #0a2d17;
-    --color-green-900: #071f10;
-    --color-green-950: #030e07;
-    --color-green-light: #4caf50;
-    --color-green-dark: #0d3c1f;
-  }
+  /* Colors */
+  --color-green: #0f5132;
+  --color-green-50: #eefaf3;
+  --color-green-100: #d8f3e3;
+  --color-green-200: #b4e7c7;
+  --color-green-300: #80d4a1;
+  --color-green-400: #4caf50;
+  --color-green-500: #2b8454;
+  --color-green-600: #0f5132;
+  --color-green-700: #0d3c1f;
+  --color-green-800: #0a2d17;
+  --color-green-900: #071f10;
+  --color-green-950: #030e07;
+  --color-green-light: #4caf50;
+  --color-green-dark: #0d3c1f;
 }
 
 @layer base {

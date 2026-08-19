@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { blogPosts } from "../../lib/blogPosts"
-import { Star, BookOpen, PenTool, Users, Eye, Sparkles, MessageCircle, Plus, Share2, ArrowRight } from "lucide-react";
+import { Star, BookOpen, PenTool, Sparkles, MessageCircle, Plus, Share2, ArrowRight } from "lucide-react";
 
 const blogFeatures = [
   {
@@ -29,12 +29,6 @@ const blogFeatures = [
   },
 ];
 
-const stats = [
-  { number: "15+", label: "Published Articles", icon: BookOpen },
-  { number: "10+", label: "Student Writers", icon: Users },
-  { number: "20", label: "Monthly Readers", icon: Eye },
-];
-
 
 const BlogHome = () => {
 
@@ -55,24 +49,6 @@ const BlogHome = () => {
             cutting-edge tech insights to student experiences, find stories that
             inspire and inform.
           </p>
-        </div>
-
-        {/* stats */}
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-8 mb-12'>
-          {stats.map((stat, index) => (
-            <div
-              key={index}
-              className='bg-white rounded-xl p-6 text-center border border-gray-200'
-            >
-              <div className='flex items-center justify-center mb-3'>
-                <stat.icon className='w-6 h-6 text-green' />
-              </div>
-              <div className='text-3xl font-bold text-gray-900 mb-1'>
-                {stat.number}
-              </div>
-              <div className='text-gray-700'>{stat.label}</div>
-            </div>
-          ))}
         </div>
 
         {/* features */}
