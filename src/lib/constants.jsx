@@ -210,7 +210,7 @@ export const eventsData = [
     description: "A very first olympics competition by NUESA",
     image: "/images/events/nuesa-olympics.jpg",
     category: "Sport",
-    status: "upcoming",
+    status: "past",
     featured: true,
   },
   {
@@ -266,25 +266,33 @@ export const timeTables = [
 
 export const newsArticles = [
   {
-    id: 1,
-    title: "NUESA News August edition",
-    excerpt:
-      "Stay updated with the latest news and events from the NUESA community in our August newsletter.",
-    date: "August 30, 2025",
-    image:
-      "/images/news/august-news.jpg",
-    link: "/documents/august-news.pdf"
-  },
-  {
-    id: 2,
-    title: "NUESA News October edition",
-    excerpt:
-      "Stay updated with the latest news and events from the NUESA community in our October newsletter.",
-    date: "October 30, 2025",
-    image:
-      "/images/news/october-news.jpg",
-    link: "/documents/october-news.pdf"
-  },
+    id:5,
+    title: "ACADEMIC, INNOVATION AND TECHNOLOGICAL ACHIEVEMENTS",
+    excerpt: "Highlights of recent academic, innovation, and technological accomplishments at the college.",
+    date: "August 19, 2026",
+    image: "/images/news/achievemetns.jpg",
+    link: "/documents/COLLEGE OF ENGINEERING ACHIEVEMENTs this summer and IT period.pdf"
+  }
+//  {
+ //   id: 1,
+   // title: "NUESA News August edition",
+ //   excerpt:
+ //     "Stay updated with the latest news and events from the NUESA community in our August newsletter.",
+ //   date: "August 30, 2025",
+ //   image:
+ //    "/images/news/august-news.jpg",
+ //   link: "/documents/august-news.pdf"
+ // },
+ // {
+ //  id: 2,
+ //   title: "NUESA News October edition",
+ //   excerpt:
+ //     "Stay updated with the latest news and events from the NUESA community in our October newsletter.",
+ // date: "October 30, 2025",
+  //  image:
+  //   "/images/news/october-news.jpg",
+  // link: "/documents/october-news.pdf"
+  // },
   // {
   //   id: 2,
   //   title: "New AI Research Lab Opens on Campus",
