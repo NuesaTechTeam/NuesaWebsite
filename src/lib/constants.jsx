@@ -72,7 +72,7 @@ export const socialLinks = [
   {
     title: "Snapchat",
     icon: <BsSnapchat size={24} />,
-    link: "https://www.snapchat.com/add/nuesa_abuad01",
+    link: "https://www.snapchat.com/add/nuesa.abuad",
     color: "",
   },
   {
@@ -574,7 +574,7 @@ export const currentExecutivesData = [
     },
   },
   {
-    name: "Joel otunowigho ",
+    name: "Joel Otunowigho ",
     position: "Assistant General Secretary",
     department: "Aeronautical and Astronautical Engineering",
     year: "400 Level",

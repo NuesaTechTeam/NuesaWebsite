@@ -204,7 +204,7 @@ const ContactHome = () => {
               <BsWhatsapp className="size-6 text-green" />
             </a>
             <a
-              href="https://www.snapchat.com/add/nuesa_abuad01"
+              href="https://www.snapchat.com/add/nuesa.abuad"
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-lg border border-gray-200 bg-white p-3 transition-colors hover:border-green"

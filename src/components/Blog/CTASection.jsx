@@ -32,15 +32,28 @@ const CTASection = ({ scrollIntoView }) => {
     window.open(`https://wa.me/?text=${text}`, "_blank");
   };
 
-  const handleFormSubmit = (e) => {
+const handleFormSubmit = (e) => {
     e.preventDefault();
+
+    // Replace with your NEW Public Key
+    emailjs.init("I_mhIENGLPNaiT96V");
+
+    const templateParams = {
+      title: formData.title,
+      author: formData.author,
+      from_name: formData.author,
+      email: formData.email,
+      reply_to: formData.email,
+      category: formData.category,
+      content: formData.content,
+      message: formData.content,
+    };
 
     emailjs
       .send(
-        "service_75ng39s",
-        "template_whc8nhu",
-        formData,
-        "RKwtceqS0hiSjGSMx"
+        "service_mdn74w9",  // Replace with your NEW Service ID
+        "template_pedcd6o", // Replace with your NEW Template ID
+        templateParams
       )
       .then(() => {
         setSubmitted(true);
@@ -58,10 +71,9 @@ const CTASection = ({ scrollIntoView }) => {
       })
       .catch((err) => {
         console.error("Submission failed:", err);
-        alert("An error occurred. Please try again.");
+        alert(`Submission failed: ${err?.text || "Check console"}`);
       });
   };
-
   return (
     <section ref={submitRef} className="py-16 md:py-24 px-4 border-t border-green-100">
       <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">

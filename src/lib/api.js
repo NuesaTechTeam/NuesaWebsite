@@ -1,4 +1,5 @@
 import coursesData from "../../courses.json";
+import emailjs from "@emailjs/browser"; // Make sure this import is at the top of api.js
 
 const API_URL = (import.meta.env.VITE_API_URL || "https://r2-to-firestore-worker.nasurf25.workers.dev").replace(/\/+$/, "");
 const API_KEY = import.meta.env.VITE_API_KEY;
@@ -240,36 +241,28 @@ export const getCourses = async (params = {}) => {
  * @param {Object} data - Feedback details
  */
 export const sendFeedbackEmail = async (type, data) => {
-  const targetEmail = import.meta.env.VITE_FEEDBACK_EMAIL || "drsomelina@gmail.com";
-  const subjectStr = type === "Suggestion" ? "NUESA FEEDBACK: SUGGESTION" : "NUESA FEEDBACK: COMPLAINT";
+  // Initialize EmailJS with your Public Key
+  emailjs.init("I_mhIENGLPNaiT96V");
 
-  const textBody = `
-You have received a new ${type.toLowerCase()}.
+  const templateParams = {
+    feedback_type: type,
+    is_anonymous: data.isAnonymous ? "Yes (Anonymous)" : "No",
+    contact_method: data.isAnonymous ? "N/A" : data.contactMethod,
+    contact_info: data.isAnonymous ? "Anonymous User" : data.contactInfo,
+    reply_to: data.isAnonymous || !data.contactInfo ? "nuesa.abuad.tech@gmail.com" : data.contactInfo,
+    details: data.details,
+    message: data.details,
+  };
 
-Contact Information:
-${data.isAnonymous ? "unknown" : `${data.contactMethod}: ${data.contactInfo}`}
-
-Details:
-${data.details}
-  `.trim();
-
-  const response = await fetch("https://email-service-98807055984.us-central1.run.app/email/send/text", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-API-Key": API_KEY,
-    },
-    body: JSON.stringify({
-      subject: subjectStr,
-      to_emails: targetEmail,
-      text_body: textBody,
-    }),
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.detail || `Failed to send ${type.toLowerCase()}`);
+  try {
+    const response = await emailjs.send(
+      "service_mdn74w9",               // Your Service ID
+      "template_13y81mw",     // The new Feedback Template ID from Step 1
+      templateParams
+    );
+    return response;
+  } catch (error) {
+    console.error("EmailJS Feedback Error:", error);
+    throw new Error(error?.text || `Failed to send ${type.toLowerCase()}`);
   }
-
-  return response.json();
 };
