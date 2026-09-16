@@ -3,11 +3,11 @@ import { Link } from "react-router-dom";
 
 const PresidentMessage = () => {
   return (
-    <section className="bg-gray-50 px-4 py-16 sm:px-6 lg:px-8">
+    <section className="bg-gray-50 dark:bg-gray-900 px-4 py-16 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-start gap-10">
       {/* Image Section */}
       <div className="w-full md:w-1/2">
-        <div className="rounded-lg overflow-hidden border border-green-100 bg-white">
+        <div className="rounded-lg overflow-hidden border border-green-100 dark:border-gray-800 bg-white dark:bg-gray-900">
           <img
             src="/images/about/gregory.jpeg"
             alt="NUESA President"
@@ -18,11 +18,11 @@ const PresidentMessage = () => {
 
       {/* Message Section */}
       <div className="w-full md:w-1/2">
-        <h2 className="text-3xl md:text-4xl font-bold text-gray-950 mb-6">
+        <h2 className="text-3xl md:text-4xl font-bold text-gray-950 dark:text-white mb-6">
           President's Message
         </h2>
 
-        <div className="max-w-prose text-gray-700 text-base md:text-lg leading-relaxed space-y-4">
+        <div className="max-w-prose text-gray-700 dark:text-gray-200 text-base md:text-lg leading-relaxed space-y-4">
           <p>
             Dear Fellow Engineering Students,
           </p>
@@ -31,7 +31,7 @@ const PresidentMessage = () => {
             It is with great humility and a deep sense of responsibility that I welcome you to a new and exciting chapter in the life of our association. As your President, I consider it a privilege to serve you and to lead an administration that is committed to your growth, well-being, and success.
           </p>
 
-          <p className="font-semibold italic text-green-700">
+          <p className="font-semibold italic text-green-700 dark:text-green-400">
             This tenure is anchored on a clear vision: “Reformation: Sustaining Policies and Advancing Possibilities.”
           </p>
 

@@ -270,10 +270,10 @@ const PastPapers = () => {
 
   return (
     <section className="w-full py-12">
-      <h2 className="text-3xl md:text-4xl font-bold text-green-700 mb-6 text-center">
+      <h2 className="text-3xl md:text-4xl font-bold text-green-700 dark:text-green-400 mb-6 text-center">
         Past Questions & Solutions
       </h2>
-      <p className="text-center text-gray-600 mb-6 max-w-2xl mx-auto text-sm">
+      <p className="text-center text-gray-600 dark:text-gray-300 mb-6 max-w-2xl mx-auto text-sm">
         Browse past exam papers across various levels and engineering courses.
       </p>
 
@@ -287,22 +287,22 @@ const PastPapers = () => {
         {filtered.map((paper, index) => (
           <div
             key={index}
-            className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition"
+            className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 hover:shadow-lg transition"
           >
             <div className="flex items-center gap-3 mb-2">
               <FaFilePdf className="text-red-600 text-xl" />
-              <h3 className="text-lg font-semibold text-green-800">
+              <h3 className="text-lg font-semibold text-green-800 dark:text-green-400">
                 {paper.course}
               </h3>
             </div>
-            <p className="text-sm text-gray-700 mb-2">
+            <p className="text-sm text-gray-700 dark:text-gray-200 mb-2">
               Level: {paper.level}
             </p>
             <a
               href={paper.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block text-sm text-green-700 font-medium hover:underline"
+              className="inline-block text-sm text-green-700 dark:text-green-400 font-medium hover:underline"
             >
               Download PDF
             </a>

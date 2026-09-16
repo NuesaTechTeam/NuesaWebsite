@@ -15,15 +15,15 @@ const News = () => {
   const hasNews = newsArticles && newsArticles.length > 0;
 
   const NoNewsCard = () => (
-    <div className='bg-white rounded-2xl shadow-lg border border-gray-100 p-8 text-center'>
+    <div className='bg-white dark:bg-gray-900 rounded-2xl shadow-lg border border-gray-100 dark:border-gray-800 p-8 text-center'>
       <div className='mb-6'>
-        <div className='w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4'>
-          <Newspaper className="text-gray-500" size={20}/>
+        <div className='w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4'>
+          <Newspaper className="text-gray-500 dark:text-gray-400" size={20}/>
         </div>
-        <h3 className='text-2xl font-bold text-gray-900 mb-3'>
+        <h3 className='text-2xl font-bold text-gray-900 dark:text-white mb-3'>
           No News Available
         </h3>
-        <p className='text-gray-600 leading-relaxed mb-6'>
+        <p className='text-gray-600 dark:text-gray-300 leading-relaxed mb-6'>
           We're currently preparing exciting news and updates for our
           engineering community. Check back soon for the latest developments,
           achievements, and announcements!
@@ -36,7 +36,7 @@ const News = () => {
         >
           Contact the Team
         </Link>
-        <p className='text-sm text-gray-500'>
+        <p className='text-sm text-gray-500 dark:text-gray-400'>
           Be the first to know when we publish new updates
         </p>
       </div>
@@ -50,8 +50,8 @@ const News = () => {
       </div>
 
       <div className='space-y-6'>
-        <div className='rounded-lg border border-dashed border-green-300 bg-green-50 p-6 text-center'>
-          <div className='text-green mb-2'>
+        <div className='rounded-lg border border-dashed border-green-300 bg-green-50 dark:bg-green-900/30 p-6 text-center'>
+          <div className='text-green dark:text-green-400 mb-2'>
             <svg
               className='w-8 h-8 mx-auto mb-2'
               fill='none'
@@ -95,10 +95,10 @@ const News = () => {
       <div className="max-w-7xl mx-auto">
         {/* header */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-green mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-green dark:text-green-400 mb-4">
             {hasNews ? "Latest News & Updates" : "News & Updates"}
           </h2>
-          <p className="text-xl text-gray-700 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-700 dark:text-gray-200 max-w-3xl mx-auto">
             {hasNews
               ? "Stay informed with the latest developments, achievements, and announcements from our engineering college"
               : "Your source for the latest developments, achievements, and announcements from our engineering college"}
@@ -117,7 +117,7 @@ const News = () => {
                     index === 0 ? "md:col-span-2 lg:col-span-1" : ""
                   }`}
                 >
-                  <div className="overflow-hidden rounded-lg border border-gray-200 bg-white transition-[border-color,box-shadow] duration-200 hover:border-green-300">
+                  <div className="overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 transition-[border-color,box-shadow] duration-200 hover:border-green-300 dark:hover:border-green-700">
                     <div className="relative overflow-hidden">
                       <img
                         src={article.image}
@@ -126,14 +126,14 @@ const News = () => {
                       />
                     </div>
                     <div className="p-6">
-                      <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-green-600 transition-colors line-clamp-2">
+                      <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-3 group-hover:text-green-600 dark:group-hover:text-green-400 transition-colors line-clamp-2">
                         {article.title}
                       </h3>
-                      <p className="text-gray-700 mb-4 leading-relaxed line-clamp-3">
+                      <p className="text-gray-700 dark:text-gray-200 mb-4 leading-relaxed line-clamp-3">
                         {article.excerpt}
                       </p>
 
-                      <div className="flex items-center justify-between text-sm text-gray-500">
+                      <div className="flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
                         <div className="flex items-center ">
                           <div className="flex items-center space-x-1">
                             <Calendar className="size-5" />
@@ -156,7 +156,7 @@ const News = () => {
             {/* Overlay */}
             {showNews && (
               <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-modal">
-                <div className="relative w-11/12 h-[78vh] bg-white rounded-lg shadow-lg overflow-hidden">
+                <div className="relative w-11/12 h-[78vh] bg-white dark:bg-gray-900 rounded-lg shadow-lg overflow-hidden">
                   {/* Close button */}
                   <button
                     onClick={() => setShowNews(false)}
@@ -191,12 +191,12 @@ const News = () => {
                 </Link>
                 <Link
                   to='/contactus'
-                  className="rounded-lg border border-green px-8 py-4 font-semibold text-green transition-colors duration-200 hover:bg-green-50"
+                  className="rounded-lg border border-green px-8 py-4 font-semibold text-green dark:text-green-400 transition-colors duration-200 hover:bg-green-50 dark:hover:bg-gray-800"
                 >
                   Contact Us
                 </Link>
               </div>
-              <p className="text-sm text-gray-500 mt-4">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
                 Have news to share? We'd love to hear from you!
               </p>
             </div>

@@ -85,14 +85,14 @@ const DropdownFilter = ({ options, selected, onSelect, label, icon: Icon }) => {
                 type="button"
                 onClick={() => isOpen ? setIsOpen(false) : openMenu()}
                 onKeyDown={handleTriggerKeyDown}
-                className={`flex items-center justify-between w-full bg-white border px-5 py-3.5 rounded-2xl outline-none transition duration-200 hover:bg-gray-50 ${isOpen ? "border-green-400 ring-[3px] ring-green-500/20" : "border-gray-200 hover:border-gray-300"
+                className={`flex items-center justify-between w-full bg-white dark:bg-gray-900 border px-5 py-3.5 rounded-2xl outline-none transition duration-200 hover:bg-gray-50 ${isOpen ? "border-green-400 ring-[3px] ring-green-500/20" : "border-gray-200 dark:border-gray-800 hover:border-gray-300"
                     }`}
                 aria-haspopup="listbox"
                 aria-expanded={isOpen}
                 aria-controls={listboxId}
                 aria-activedescendant={isOpen && optionValues.length > 0 ? `${listboxId}-option-${activeIndex}` : undefined}
             >
-                <span className="font-semibold text-gray-700 truncate mr-4">
+                <span className="font-semibold text-gray-700 dark:text-gray-200 truncate mr-4">
                     {selected}
                 </span>
                 <motion.div
@@ -115,7 +115,7 @@ const DropdownFilter = ({ options, selected, onSelect, label, icon: Icon }) => {
                     >
                         <ul
                             id={listboxId}
-                            className="bg-white rounded-2xl shadow-[0_16px_44px_rgba(0,0,0,0.16)] border border-gray-200 py-2 max-h-[18rem] overflow-y-auto overscroll-contain focus:outline-none"
+                            className="bg-white dark:bg-gray-900 rounded-2xl shadow-[0_16px_44px_rgba(0,0,0,0.16)] border border-gray-200 dark:border-gray-800 py-2 max-h-[18rem] overflow-y-auto overscroll-contain focus:outline-none"
                             role="listbox"
                         >
                             {optionValues.map((optionValue, index) => {
@@ -135,10 +135,10 @@ const DropdownFilter = ({ options, selected, onSelect, label, icon: Icon }) => {
                                             onMouseEnter={() => setActiveIndex(index)}
                                             onClick={() => handleSelect(optionValue)}
                                             className={`flex w-full items-center justify-between rounded-xl px-3 py-3 text-left transition-colors duration-150 ${isSelected
-                                                    ? "bg-green-50 text-green-700 font-bold"
+                                                    ? "bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 font-bold"
                                                     : isActive
-                                                        ? "bg-gray-50 text-gray-900 font-medium"
-                                                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900 font-medium"
+                                                        ? "bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-white font-medium"
+                                                        : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 hover:text-gray-900 font-medium"
                                                 }`}
                                         >
                                             <span className="truncate">{optionValue}</span>

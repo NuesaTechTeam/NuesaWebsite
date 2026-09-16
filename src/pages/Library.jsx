@@ -11,24 +11,24 @@ import coursesData from "../../courses.json";
 import useSEO from "../hooks/useSEO";
 
 const SkeletonCard = () => (
-    <div className="bg-white rounded-2xl border border-gray-100 p-6 flex flex-col justify-between h-[180px] overflow-hidden relative">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 flex flex-col justify-between h-[180px] overflow-hidden relative">
         <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-100/70 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
         <div>
             <div className="flex justify-between items-start mb-5">
                 <div className="flex gap-3">
-                    <div className="w-10 h-10 bg-gray-200/70 rounded-xl"></div>
-                    <div className="w-16 h-8 bg-gray-200/70 rounded-md"></div>
+                    <div className="w-10 h-10 bg-gray-200/70 dark:bg-gray-700/70 rounded-xl"></div>
+                    <div className="w-16 h-8 bg-gray-200/70 dark:bg-gray-700/70 rounded-md"></div>
                 </div>
-                <div className="w-10 h-6 bg-gray-200/70 rounded-full"></div>
+                <div className="w-10 h-6 bg-gray-200/70 dark:bg-gray-700/70 rounded-full"></div>
             </div>
             <div className="space-y-3">
-                <div className="w-full h-5 bg-gray-200/70 rounded-md"></div>
-                <div className="w-3/4 h-5 bg-gray-200/70 rounded-md"></div>
+                <div className="w-full h-5 bg-gray-200/70 dark:bg-gray-700/70 rounded-md"></div>
+                <div className="w-3/4 h-5 bg-gray-200/70 dark:bg-gray-700/70 rounded-md"></div>
             </div>
         </div>
-        <div className="mt-6 pt-5 border-t border-gray-100 flex justify-between items-center">
-            <div className="w-24 h-4 bg-gray-200/70 rounded"></div>
-            <div className="w-8 h-8 bg-gray-200/70 rounded-full"></div>
+        <div className="mt-6 pt-5 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center">
+            <div className="w-24 h-4 bg-gray-200/70 dark:bg-gray-700/70 rounded"></div>
+            <div className="w-8 h-8 bg-gray-200/70 dark:bg-gray-700/70 rounded-full"></div>
         </div>
     </div>
 );
@@ -176,7 +176,7 @@ const Library = () => {
     };
 
     return (
-        <main className="min-h-screen pt-24 pb-16 px-4 md:px-8 lg:px-12 bg-[#F9FAFB] relative overflow-hidden font-sans">
+        <main className="min-h-screen pt-24 pb-16 px-4 md:px-8 lg:px-12 bg-[#F9FAFB] dark:bg-gray-950 relative overflow-hidden font-sans">
             <div className="max-w-7xl mx-auto relative z-10">
                 {/* Hero Section */}
                 <motion.div
@@ -189,15 +189,15 @@ const Library = () => {
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.2, duration: 0.5 }}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-gray-200 shadow-sm mb-6"
+                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm mb-6"
                     >
                         <BookOpen className="w-5 h-5 text-green-600" />
-                        <span className="text-sm font-bold text-gray-800 tracking-wide uppercase">NUESA Digital Library</span>
+                        <span className="text-sm font-bold text-gray-800 dark:text-gray-100 tracking-wide uppercase">NUESA Digital Library</span>
                     </motion.div>
-                    <h1 className="text-5xl md:text-7xl font-extrabold text-gray-950 tracking-tight leading-tight mb-6">
+                    <h1 className="text-5xl md:text-7xl font-extrabold text-gray-950 dark:text-white tracking-tight leading-tight mb-6">
                         NUESA ABUAD Digital Library
                     </h1>
-                    <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto font-medium leading-relaxed">
+                    <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto font-medium leading-relaxed">
                         Engineering textbooks, past questions, lecture notes, and study materials for ABUAD engineering students.
                     </p>
                 </motion.div>
@@ -209,10 +209,10 @@ const Library = () => {
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ delay: 0.2 }}
                 >
-                    <div className="inline-flex items-center p-1.5 bg-gray-100 rounded-2xl border border-gray-200 relative" role="group" aria-label="Library collection mode">
+                    <div className="inline-flex items-center p-1.5 bg-gray-100 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-800 relative" role="group" aria-label="Library collection mode">
                         {/* Sliding active background indicator */}
                         <motion.div
-                            className="absolute inset-y-1.5 left-1.5 bg-white rounded-xl shadow-sm border border-gray-200"
+                            className="absolute inset-y-1.5 left-1.5 bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800"
                             layout
                             initial={false}
                             animate={{
@@ -227,8 +227,8 @@ const Library = () => {
                             onClick={() => setShowLegacy(false)}
                             aria-pressed={!showLegacy}
                             className={`relative z-10 flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-colors duration-300 w-full sm:w-auto justify-center ${!showLegacy
-                                ? "text-green-700"
-                                : "text-gray-500 hover:text-gray-700"
+                                ? "text-green-700 dark:text-green-400"
+                                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                                 }`}
                         >
                             <Database className="w-4 h-4" />
@@ -239,8 +239,8 @@ const Library = () => {
                             onClick={() => setShowLegacy(true)}
                             aria-pressed={showLegacy}
                             className={`relative z-10 flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-colors duration-300 w-full sm:w-auto justify-center ${showLegacy
-                                ? "text-amber-700"
-                                : "text-gray-500 hover:text-gray-700"
+                                ? "text-amber-700 dark:text-amber-300"
+                                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
                                 }`}
                         >
                             <History className="w-4 h-4" />
@@ -260,18 +260,18 @@ const Library = () => {
                         >
                             {/* Search & Filter Hub */}
                             <motion.div
-                                className="relative z-40 bg-white rounded-2xl border border-gray-200 p-5 md:p-6 mb-12 overflow-visible"
+                                className="relative z-40 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 md:p-6 mb-12 overflow-visible"
                                 initial={{ opacity: 0, y: 40 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ type: "spring", damping: 25, delay: 0.1 }}
                             >
-                                <div className="mb-5 flex items-start gap-3 border-b border-gray-100 pb-5">
-                                    <div className="rounded-xl bg-green-50 p-2.5 text-green-700">
+                                <div className="mb-5 flex items-start gap-3 border-b border-gray-100 dark:border-gray-800 pb-5">
+                                    <div className="rounded-xl bg-green-50 dark:bg-green-900/30 p-2.5 text-green-700 dark:text-green-400">
                                         <SlidersHorizontal className="h-5 w-5" />
                                     </div>
                                     <div>
-                                        <h2 className="text-lg font-bold text-gray-950">Find a resource</h2>
-                                        <p className="text-sm text-gray-500">
+                                        <h2 className="text-lg font-bold text-gray-950 dark:text-white">Find a resource</h2>
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
                                             Search by course code or title, then narrow results by level and department.
                                         </p>
                                     </div>
@@ -300,8 +300,8 @@ const Library = () => {
                                                     disabled={isPQLocked}
                                                     className={`w-full pl-14 pr-4 py-4 rounded-2xl border-2 outline-none transition text-base md:text-lg font-semibold
                                         ${isPQLocked
-                                                        ? 'bg-gray-100/50 border-gray-200 text-gray-400 cursor-not-allowed italic shadow-inner'
-                                                        : 'bg-white border-gray-200 hover:border-green-200 focus:bg-white focus:ring-[4px] focus:ring-green-500/20 focus:border-green-400 placeholder:text-gray-400 text-gray-800'
+                                                        ? 'bg-gray-100/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 text-gray-400 cursor-not-allowed italic shadow-inner'
+                                                        : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-green-200 focus:bg-white dark:focus:bg-gray-900 focus:ring-[4px] focus:ring-green-500/20 focus:border-green-400 placeholder:text-gray-400 dark:placeholder-gray-500 text-gray-800 dark:text-white'
                                                     }`}
                                                 />
                                             </div>
@@ -327,7 +327,7 @@ const Library = () => {
                                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                                     exit={{ opacity: 0, y: -10, scale: 0.98 }}
                                                     transition={{ duration: 0.2 }}
-                                                    className="absolute top-[calc(100%+8px)] left-0 w-full bg-white border border-gray-200 rounded-xl shadow-[0_16px_40px_rgba(0,0,0,0.14)] overflow-hidden z-[80] p-2"
+                                                    className="absolute top-[calc(100%+8px)] left-0 w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-[0_16px_40px_rgba(0,0,0,0.14)] overflow-hidden z-[80] p-2"
                                                 >
                                                     <div className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 pb-2 pt-1">
                                                         Suggested Courses
@@ -338,15 +338,15 @@ const Library = () => {
                                                             key={course.code}
                                                             onMouseEnter={() => setActiveSuggestionIndex(index)}
                                                             onClick={() => handleCourseSelect(course.code)}
-                                                            className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex flex-col gap-1 group/item ${index === activeSuggestionIndex ? "bg-green-50" : "hover:bg-green-50"}`}
+                                                            className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex flex-col gap-1 group/item ${index === activeSuggestionIndex ? "bg-green-50 dark:bg-green-900/30" : "hover:bg-green-50 dark:hover:bg-green-900/30"}`}
                                                         >
                                                             <div className="flex items-center justify-between">
-                                                                <span className="font-bold text-green-700 bg-green-100/50 px-2 py-0.5 rounded text-sm shrink-0">
+                                                                <span className="font-bold text-green-700 dark:text-green-400 bg-green-100/50 dark:bg-green-900/40 px-2 py-0.5 rounded text-sm shrink-0">
                                                                     {course.code}
                                                                 </span>
                                                                 <span className="text-gray-400 text-xs font-medium group-hover/item:text-green-500 transition-colors">Select ↵</span>
                                                             </div>
-                                                            <span className="text-gray-600 text-sm font-medium line-clamp-1">
+                                                            <span className="text-gray-600 dark:text-gray-300 text-sm font-medium line-clamp-1">
                                                                 {course.title}
                                                             </span>
                                                         </button>
@@ -380,7 +380,7 @@ const Library = () => {
                                             <button
                                                 type="button"
                                                 onClick={() => setIsPQLocked(!isPQLocked)}
-                                                className={`px-4 py-3 rounded-xl transition duration-200 flex items-center gap-2 font-bold text-xs uppercase tracking-wider ${isPQLocked ? 'bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-200 shadow-sm' : 'bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 border border-transparent'}`}
+                                                className={`px-4 py-3 rounded-xl transition duration-200 flex items-center gap-2 font-bold text-xs uppercase tracking-wider ${isPQLocked ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-900/50 border border-amber-200 dark:border-amber-800/60 shadow-sm' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 border border-transparent'}`}
                                                 title={isPQLocked ? "Unlock standard search" : "Lock search to Past Questions"}
                                             >
                                                 {isPQLocked ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
@@ -390,7 +390,7 @@ const Library = () => {
                                                 <button
                                                     type="button"
                                                     onClick={clearFilters}
-                                                    className="px-4 py-3 bg-gray-100 hover:bg-red-50 text-gray-500 hover:text-red-500 rounded-xl transition-colors shrink-0"
+                                                    className="px-4 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 rounded-xl transition-colors shrink-0"
                                                     title="Clear Filters"
                                                 >
                                                     <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider">
@@ -407,29 +407,29 @@ const Library = () => {
                                     <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-gray-100 pt-5">
                                         <span className="text-xs font-bold uppercase tracking-wide text-gray-400">Active</span>
                                         {searchQuery && !isPQLocked && (
-                                            <span className="rounded-full bg-gray-100 px-3 py-1.5 text-xs font-semibold text-gray-700">
+                                            <span className="rounded-full bg-gray-100 dark:bg-gray-800 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-gray-200">
                                                 Search: {searchQuery}
                                             </span>
                                         )}
                                         {isPQLocked && (
-                                            <span className="rounded-full bg-amber-100 px-3 py-1.5 text-xs font-semibold text-amber-800">
+                                            <span className="rounded-full bg-amber-100 dark:bg-amber-900/30 px-3 py-1.5 text-xs font-semibold text-amber-800 dark:text-amber-300">
                                                 Past Questions only
                                             </span>
                                         )}
                                         {selectedLevel !== "All" && (
-                                            <span className="rounded-full bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-800">
+                                            <span className="rounded-full bg-green-50 dark:bg-green-900/30 px-3 py-1.5 text-xs font-semibold text-green-800 dark:text-green-400">
                                                 {selectedLevel}L
                                             </span>
                                         )}
                                         {selectedDept !== "All" && (
-                                            <span className="rounded-full bg-green-50 px-3 py-1.5 text-xs font-semibold text-green-800">
+                                            <span className="rounded-full bg-green-50 dark:bg-green-900/30 px-3 py-1.5 text-xs font-semibold text-green-800 dark:text-green-400">
                                                 {selectedDept}
                                             </span>
                                         )}
                                         <button
                                             type="button"
                                             onClick={clearFilters}
-                                            className="rounded-full px-3 py-1.5 text-xs font-bold text-red-600 transition-colors hover:bg-red-50"
+                                            className="rounded-full px-3 py-1.5 text-xs font-bold text-red-600 transition-colors hover:bg-red-50 dark:hover:bg-red-900/30"
                                         >
                                             Clear all
                                         </button>
@@ -446,8 +446,8 @@ const Library = () => {
                                         animate={{ opacity: 1, x: 0 }}
                                     >
                                         <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
-                                        <span className="text-sm text-gray-500 font-semibold tracking-wide uppercase">
-                                            <span className="text-gray-900 font-bold text-base">{resultLabel}</span>
+                                        <span className="text-sm text-gray-500 dark:text-gray-400 font-semibold tracking-wide uppercase">
+                                            <span className="text-gray-900 dark:text-white font-bold text-base">{resultLabel}</span>
                                         </span>
                                     </motion.div>
 
@@ -457,10 +457,10 @@ const Library = () => {
                                                 initial={{ opacity: 0, scale: 0.95 }}
                                                 animate={{ opacity: 1, scale: 1 }}
                                                 exit={{ opacity: 0, scale: 0.95 }}
-                                                className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200/60 rounded-xl"
+                                                className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-900/30 border border-green-200/60 dark:border-green-800/60 rounded-xl"
                                             >
                                                 <BookOpen className="w-4 h-4 text-green-600" />
-                                                <span className="text-xs text-green-800 font-medium">
+                                                <span className="text-xs text-green-800 dark:text-green-400 font-medium">
                                                     Searching for: <strong className="font-bold">{matchedCourse.code}</strong> - {matchedCourse.title}
                                                 </span>
                                             </motion.div>
@@ -475,9 +475,9 @@ const Library = () => {
                                             exit={{ opacity: 0, height: 0 }}
                                             className="sm:hidden overflow-hidden"
                                         >
-                                            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 border border-green-200/60 rounded-xl w-full">
+                                            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-900/30 border border-green-200/60 dark:border-green-800/60 rounded-xl w-full">
                                                 <BookOpen className="w-4 h-4 text-green-600 shrink-0" />
-                                                <span className="text-xs text-green-800 font-medium truncate">
+                                                <span className="text-xs text-green-800 dark:text-green-400 font-medium truncate">
                                                     Searching for: <strong className="font-bold">{matchedCourse.code}</strong> - {matchedCourse.title}
                                                 </span>
                                             </div>
@@ -503,12 +503,12 @@ const Library = () => {
                                                 initial={{ opacity: 0 }}
                                                 animate={{ opacity: 1 }}
                                             >
-                                                <div className="bg-red-50/50 backdrop-blur-sm text-red-600 p-8 rounded-3xl inline-flex flex-col items-center gap-4 border border-red-100 shadow-sm max-w-sm mx-auto">
-                                                    <div className="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mb-2 shadow-inner">
+                                                <div className="bg-red-50/50 dark:bg-red-900/20 backdrop-blur-sm text-red-600 dark:text-red-400 p-8 rounded-3xl inline-flex flex-col items-center gap-4 border border-red-100 dark:border-red-900/40 shadow-sm max-w-sm mx-auto">
+                                                    <div className="w-16 h-16 bg-red-100 dark:bg-red-900/40 text-red-500 dark:text-red-400 rounded-full flex items-center justify-center mb-2 shadow-inner">
                                                         <X className="w-8 h-8" />
                                                     </div>
-                                                    <h3 className="font-bold text-lg text-red-900">Connection Error</h3>
-                                                    <p className="text-sm text-red-700/80 text-center">{error}</p>
+                                                    <h3 className="font-bold text-lg text-red-900 dark:text-red-300">Connection Error</h3>
+                                                    <p className="text-sm text-red-700/80 dark:text-red-300/80 text-center">{error}</p>
                                                     <button
                                                         type="button"
                                                         onClick={() => fetchDocs()}
@@ -525,13 +525,13 @@ const Library = () => {
                                                 animate={{ opacity: 1, scale: 1 }}
                                             >
                                                 <div className="relative mb-6">
-                                                    <div className="absolute inset-0 bg-gray-200/50 rounded-full blur-2xl transform scale-150 opacity-60"></div>
-                                                    <div className="bg-white/80 border border-white shadow-sm w-28 h-28 rounded-full flex items-center justify-center relative z-10 backdrop-blur-sm">
+                                                    <div className="absolute inset-0 bg-gray-200/50 dark:bg-gray-700/50 rounded-full blur-2xl transform scale-150 opacity-60"></div>
+                                                    <div className="bg-white/80 dark:bg-gray-900/80 border border-white dark:border-gray-800 shadow-sm w-28 h-28 rounded-full flex items-center justify-center relative z-10 backdrop-blur-sm">
                                                         <FileQuestion className="w-12 h-12 text-gray-400" />
                                                     </div>
                                                 </div>
-                                                <h3 className="text-3xl font-extrabold text-gray-800 mb-3 tracking-tight">Nothing Found</h3>
-                                                <p className="text-gray-500 max-w-md mx-auto font-medium text-lg leading-relaxed">
+                                                <h3 className="text-3xl font-extrabold text-gray-800 dark:text-gray-100 mb-3 tracking-tight">Nothing Found</h3>
+                                                <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto font-medium text-lg leading-relaxed">
                                                     We explored every shelf but couldn't find matches. Broaden your search or check your spelling.
                                                 </p>
                                                 {(searchQuery || selectedLevel !== "All" || selectedDept !== "All") && (
@@ -569,7 +569,7 @@ const Library = () => {
                                         <button
                                             onClick={() => fetchDocs(true)}
                                             disabled={loading}
-                                            className="group relative inline-flex items-center gap-3 bg-white border border-gray-200 text-gray-800 px-10 py-4 rounded-full font-bold hover:border-green-300 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
+                                            className="group relative inline-flex items-center gap-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-100 px-10 py-4 rounded-full font-bold hover:border-green-300 dark:hover:border-green-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
                                         >
                                             {loading ? (
                                                 <Loader2 className="w-5 h-5 text-green-600 animate-spin" />
@@ -594,16 +594,16 @@ const Library = () => {
                         >
                             <div className="max-w-4xl mx-auto">
                                 <motion.div
-                                    className="bg-amber-50/80 backdrop-blur-sm border border-amber-200/60 p-5 rounded-2xl flex items-start gap-4 shadow-sm"
+                                    className="bg-amber-50/80 dark:bg-amber-900/30 backdrop-blur-sm border border-amber-200/60 dark:border-amber-800/60 p-5 rounded-2xl flex items-start gap-4 shadow-sm"
                                     initial={{ scale: 0.98, opacity: 0 }}
                                     animate={{ scale: 1, opacity: 1 }}
                                 >
-                                    <div className="p-2.5 bg-amber-100/80 rounded-xl text-amber-600 shadow-sm shrink-0">
+                                    <div className="p-2.5 bg-amber-100/80 dark:bg-amber-900/40 rounded-xl text-amber-600 dark:text-amber-300 shadow-sm shrink-0">
                                         <History className="w-6 h-6" />
                                     </div>
                                     <div>
-                                        <h4 className="font-bold text-amber-900 text-lg">Legacy Archive Active</h4>
-                                        <p className="text-sm text-amber-800/80 leading-relaxed font-medium mt-1">
+                                        <h4 className="font-bold text-amber-900 dark:text-amber-300 text-lg">Legacy Archive Active</h4>
+                                        <p className="text-sm text-amber-800/80 dark:text-amber-300/80 leading-relaxed font-medium mt-1">
                                             You are browsing the old static archives of Lecture Notes and Past Papers. New materials are actively being added to the primary Digital Collection above.
                                         </p>
                                     </div>

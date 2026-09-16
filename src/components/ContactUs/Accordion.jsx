@@ -15,12 +15,12 @@ const AccordionDemo = () => {
           <AccordionItem
             key={index}
             value={`item-${index + 1}`}
-            className='rounded-md bg-white shadow-md shadow-black/50'
+            className='rounded-md bg-white dark:bg-gray-900 shadow-md shadow-black/50'
           >
-              <AccordionTrigger className='text-lg font-semibold text-gray-800 border-b border-gray-200'>
+              <AccordionTrigger className='text-lg font-semibold text-gray-800 dark:text-gray-100 border-b border-gray-200 dark:border-gray-800'>
                 {item.question}
               </AccordionTrigger>
-            <Accordion.Content className='p-4 text-gray-700'>
+            <Accordion.Content className='p-4 text-gray-700 dark:text-gray-200'>
               {item.answer}
             </Accordion.Content>
           </AccordionItem>
@@ -44,7 +44,7 @@ const AccordionTrigger = React.forwardRef(
     <Accordion.Header className='flex p-4'>
       <Accordion.Trigger
         className={classNames(
-          "group flex flex-1 items-center gap-x-4 justify-between bg-white px-2 leading-none outline-non hover:bg-white/80 cursor-pointer",
+          "group flex flex-1 items-center gap-x-4 justify-between bg-white dark:bg-gray-900 px-2 leading-none outline-non hover:bg-white/80 dark:hover:bg-gray-900/80 cursor-pointer",
           className
         )}
         {...props}
@@ -52,7 +52,7 @@ const AccordionTrigger = React.forwardRef(
       >
         {children}
         <ChevronDown
-          className='text-green transition-transform duration-300 ease-[cubic-bezier(0.87,_0,_0.13,_1)] group-data-[state=open]:rotate-180 size-9'
+          className='text-green dark:text-green-400 transition-transform duration-300 ease-[cubic-bezier(0.87,_0,_0.13,_1)] group-data-[state=open]:rotate-180 size-9'
           aria-hidden
         />
       </Accordion.Trigger>
@@ -63,7 +63,7 @@ const AccordionContent = React.forwardRef(
   ({ children, className, ...props }, forwardedRef) => (
     <Accordion.Content
       className={classNames(
-        "overflow-hidden bg-gray-50 data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown ", className,
+        "overflow-hidden bg-gray-50 dark:bg-gray-900 data-[state=closed]:animate-slideUp data-[state=open]:animate-slideDown ", className,
             )}
             {...props}
             ref={forwardedRef}

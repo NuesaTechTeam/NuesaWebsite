@@ -7,24 +7,24 @@ import ResourceCard from "./ResourceCard";
 import { useResourceSearch } from "../../hooks/useResourceSearch";
 
 const SkeletonCard = () => (
-  <div className="bg-white rounded-3xl border border-gray-100 p-6 flex flex-col justify-between h-[180px] overflow-hidden relative">
+  <div className="bg-white dark:bg-gray-900 rounded-3xl border border-gray-100 dark:border-gray-800 p-6 flex flex-col justify-between h-[180px] overflow-hidden relative">
     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/50 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
     <div>
       <div className="flex justify-between items-start mb-5">
         <div className="flex gap-3">
-          <div className="w-10 h-10 bg-gray-100/80 rounded-xl"></div>
-          <div className="w-16 h-8 bg-gray-100/80 rounded-md"></div>
+          <div className="w-10 h-10 bg-gray-100/80 dark:bg-gray-800/80 rounded-xl"></div>
+          <div className="w-16 h-8 bg-gray-100/80 dark:bg-gray-800/80 rounded-md"></div>
         </div>
-        <div className="w-10 h-6 bg-gray-100/80 rounded-full"></div>
+        <div className="w-10 h-6 bg-gray-100/80 dark:bg-gray-800/80 rounded-full"></div>
       </div>
       <div className="space-y-3">
-        <div className="w-full h-5 bg-gray-100/80 rounded-md"></div>
-        <div className="w-3/4 h-5 bg-gray-100/80 rounded-md"></div>
+        <div className="w-full h-5 bg-gray-100/80 dark:bg-gray-800/80 rounded-md"></div>
+        <div className="w-3/4 h-5 bg-gray-100/80 dark:bg-gray-800/80 rounded-md"></div>
       </div>
     </div>
     <div className="mt-6 pt-5 border-t border-gray-50 flex justify-between items-center">
-      <div className="w-24 h-4 bg-gray-100/80 rounded"></div>
-      <div className="w-8 h-8 bg-gray-100/80 rounded-full"></div>
+      <div className="w-24 h-4 bg-gray-100/80 dark:bg-gray-800/80 rounded"></div>
+      <div className="w-8 h-8 bg-gray-100/80 dark:bg-gray-800/80 rounded-full"></div>
     </div>
   </div>
 );
@@ -79,7 +79,7 @@ const ResourceExplorer = () => {
     <section className="w-full pb-24 pt-4 overflow-visible">
       {/* Search and Filters */}
       <motion.div
-        className="relative z-10 bg-white/60 backdrop-blur-2xl rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 p-6 md:p-10 mb-16 overflow-visible"
+        className="relative z-10 bg-white/60 dark:bg-gray-900/60 backdrop-blur-2xl rounded-[2rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100 dark:border-gray-800 p-6 md:p-10 mb-16 overflow-visible"
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ type: "spring", damping: 25 }}
@@ -97,8 +97,8 @@ const ResourceExplorer = () => {
               disabled={isPQLocked}
               className={`w-full pl-14 pr-36 py-4 rounded-2xl border-2 outline-none transition shadow-sm text-base md:text-lg font-semibold
                 ${isPQLocked
-                  ? 'bg-gray-50/80 border-gray-100 text-gray-400 cursor-not-allowed italic shadow-inner'
-                  : 'bg-white/90 border-transparent hover:border-gray-200 focus:bg-white focus:ring-[4px] focus:ring-green-500/15 focus:border-green-400 placeholder:text-gray-400 text-gray-800'
+                  ? 'bg-gray-50/80 dark:bg-gray-900/80 border-gray-100 dark:border-gray-800 text-gray-400 cursor-not-allowed italic shadow-inner'
+                  : 'bg-white/90 dark:bg-gray-900/90 border-transparent hover:border-gray-200 focus:bg-white dark:focus:bg-gray-900 focus:ring-[4px] focus:ring-green-500/15 focus:border-green-400 placeholder:text-gray-400 text-gray-800 dark:text-gray-100'
                 }`}
             />
 
@@ -111,7 +111,7 @@ const ResourceExplorer = () => {
             <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-2">
               <button
                 onClick={() => setIsPQLocked(!isPQLocked)}
-                className={`px-3 py-2 rounded-xl transition duration-300 flex items-center gap-1.5 font-bold text-[11px] uppercase tracking-wider ${isPQLocked ? 'bg-amber-100 text-amber-800 hover:bg-amber-200 border border-amber-200' : 'bg-gray-100 text-gray-600 hover:bg-gray-200 hover:text-gray-800 border border-transparent'}`}
+                className={`px-3 py-2 rounded-xl transition duration-300 flex items-center gap-1.5 font-bold text-[11px] uppercase tracking-wider ${isPQLocked ? 'bg-amber-100 text-amber-800 hover:bg-amber-200 border border-amber-200' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-800 hover:text-gray-800 dark:hover:text-gray-100 border border-transparent'}`}
                 title={isPQLocked ? "Unlock standard search" : "Lock search to Past Questions"}
               >
                 {isPQLocked ? <Lock className="w-3.5 h-3.5" /> : <Unlock className="w-3.5 h-3.5" />}
@@ -120,7 +120,7 @@ const ResourceExplorer = () => {
               {(searchQuery || selectedLevel !== "All" || selectedDept !== "All") && (
                 <button
                   onClick={clearFilters}
-                  className="p-2 bg-gray-100 hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-xl transition-colors shrink-0"
+                  className="p-2 bg-gray-100 dark:bg-gray-800 hover:bg-red-50 text-gray-400 hover:text-red-500 rounded-xl transition-colors shrink-0"
                   title="Clear Filters"
                 >
                   <X className="w-4 h-4" />
@@ -156,8 +156,8 @@ const ResourceExplorer = () => {
           animate={{ opacity: 1, x: 0 }}
         >
           <div className={`w-2 h-2 rounded-full ${loading ? 'animate-pulse bg-green-500' : 'bg-green-500'}`} />
-          <span className="text-sm text-gray-500 font-semibold tracking-wide">
-            Found <span className="text-gray-900 font-bold">{totalCount || documents.length}</span> results
+          <span className="text-sm text-gray-500 dark:text-gray-400 font-semibold tracking-wide">
+            Found <span className="text-gray-900 dark:text-white font-bold">{totalCount || documents.length}</span> results
           </span>
         </motion.div>
       </div>
@@ -201,13 +201,13 @@ const ResourceExplorer = () => {
                 animate={{ opacity: 1, scale: 1 }}
               >
                 <div className="relative mb-6">
-                  <div className="absolute inset-0 bg-gray-100 rounded-full blur-xl transform scale-150 opacity-50"></div>
-                  <div className="bg-white border border-gray-100 shadow-sm w-24 h-24 rounded-full flex items-center justify-center relative z-10">
+                  <div className="absolute inset-0 bg-gray-100 dark:bg-gray-800 rounded-full blur-xl transform scale-150 opacity-50"></div>
+                  <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm w-24 h-24 rounded-full flex items-center justify-center relative z-10">
                     <FileQuestion className="w-10 h-10 text-gray-300" />
                   </div>
                 </div>
-                <h3 className="text-2xl font-bold text-gray-800 mb-2">No resources found</h3>
-                <p className="text-gray-500 max-w-sm mx-auto font-medium">We couldn't find anything matching your search. Try changing your filters or searching for a different course code.</p>
+                <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">No resources found</h3>
+                <p className="text-gray-500 dark:text-gray-400 max-w-sm mx-auto font-medium">We couldn't find anything matching your search. Try changing your filters or searching for a different course code.</p>
                 {(searchQuery || selectedLevel !== "All" || selectedDept !== "All") && (
                   <button
                     onClick={clearFilters}
@@ -242,7 +242,7 @@ const ResourceExplorer = () => {
             <button
               onClick={() => fetchDocs(true)}
               disabled={loading}
-              className="group relative inline-flex items-center gap-3 bg-white border border-gray-200 text-gray-800 px-8 py-4 rounded-2xl font-bold hover:border-green-300 hover:text-green-700 hover:shadow-lg hover:shadow-green-900/5 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
+              className="group relative inline-flex items-center gap-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-100 px-8 py-4 rounded-2xl font-bold hover:border-green-300 dark:hover:border-green-700 hover:text-green-700 dark:hover:text-green-400 hover:shadow-lg hover:shadow-green-900/5 transition duration-300 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 text-green-600 animate-spin" />

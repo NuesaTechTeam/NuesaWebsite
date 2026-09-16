@@ -12,6 +12,7 @@ const Academics = lazy(() => import("./pages/Academics"));
 const Library = lazy(() => import("./pages/Library"));
 const ContactUs = lazy(() => import("./pages/ContactUs"));
 const Dinner = lazy(() => import("./pages/Dinner"));
+const FajiLawa = lazy(() => import("./pages/FajiLawa"));
 const Videos = lazy(() => import("./pages/Videos"));
 const HeartPage = lazy(() => import("./pages/Heart"));
 const Feedback = lazy(() => import("./pages/Feedback"));
@@ -41,6 +42,7 @@ function App() {
           <Route path='/library' element={<Library />} />
           <Route path='/contactus' element={<ContactUs />} />
           <Route path='/dinner' element={<Dinner />} />
+          <Route path='/faji-lawa' element={<FajiLawa />} />
           <Route path='/videos' element={<Videos />} />
           <Route path='/heart' element={<HeartPage />} />
           <Route path='/feedback' element={<Feedback />} />

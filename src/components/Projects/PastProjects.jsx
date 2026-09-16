@@ -12,13 +12,13 @@ const PastProjects = () => {
     <section className='mx-auto max-w-7xl px-4 pb-16 sm:px-6 lg:px-8'>
       {/* Legacy Project Heading */}
       <div className='mb-10 text-center'>
-        <p className='mb-2 text-sm font-semibold text-green'>
+        <p className='mb-2 text-sm font-semibold text-green dark:text-green-400'>
           Our History
         </p>
-        <h2 className='mb-4 text-2xl font-bold text-gray-950 md:text-3xl'>
+        <h2 className='mb-4 text-2xl font-bold text-gray-950 dark:text-white md:text-3xl'>
           Legacy Project
         </h2>
-        <p className='mx-auto max-w-2xl text-gray-600'>
+        <p className='mx-auto max-w-2xl text-gray-600 dark:text-gray-300'>
           A look back at the projects and initiatives that have shaped the
           engineering community over the years, built by students for
           students.
@@ -29,7 +29,7 @@ const PastProjects = () => {
       <div className='mx-auto mb-16 max-w-2xl'>
         <article
           onClick={() => setIsVideoOpen(true)}
-          className='group cursor-pointer overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm transition-shadow duration-200 hover:border-green-300 hover:shadow-md'
+          className='group cursor-pointer overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm transition-shadow duration-200 hover:border-green-300 dark:hover:border-green-700 hover:shadow-md'
         >
           <div className='relative'>
             <img
@@ -46,11 +46,11 @@ const PastProjects = () => {
             </div>
           </div>
           <div className='p-5'>
-            <p className='mb-2 text-sm font-medium text-gray-500'>2026</p>
-            <h3 className='mb-2 text-lg font-semibold text-gray-950 group-hover:text-green transition-colors'>
+            <p className='mb-2 text-sm font-medium text-gray-500 dark:text-gray-400'>2026</p>
+            <h3 className='mb-2 text-lg font-semibold text-gray-950 dark:text-white group-hover:text-green dark:group-hover:text-green-400 transition-colors'>
               Renovated Engineering Auditorium
             </h3>
-            <p className='text-sm leading-relaxed text-gray-600'>
+            <p className='text-sm leading-relaxed text-gray-600 dark:text-gray-300'>
               Upgraded the comfort of the engineering auditorium by installing
               seat cushions for students attending lectures and events.
             </p>

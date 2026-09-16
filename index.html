@@ -32,6 +32,19 @@
     <meta property="twitter:title" content="NUESA ABUAD | Nigerian Universities Engineering Students Association" />
     <meta property="twitter:description" content="The official student platform for the Nigerian Universities Engineering Students Association (NUESA) Afe Babalola University chapter. Access digital library textbooks, past questions, academic resources, event details, and student portals." />
     <meta property="twitter:image" content="/images/blog/logo.jpg" />
+
+    <!-- Theme (set before paint to avoid flash) -->
+    <script>
+      (function () {
+        try {
+          var stored = localStorage.getItem("theme");
+          var prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          if (stored === "dark" || (!stored && prefersDark)) {
+            document.documentElement.classList.add("dark");
+          }
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

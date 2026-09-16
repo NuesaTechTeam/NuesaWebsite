@@ -22,9 +22,9 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false, imageL
 
 
   return (
-    <div className='bg-white rounded-xl border border-gray-200 transition-colors duration-200 hover:border-green-300 overflow-hidden'>
+    <div className='bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800 transition-colors duration-200 hover:border-green-300 dark:hover:border-green-700 overflow-hidden'>
       <div className='relative'>
-        <div className='aspect-[4/5] w-full bg-gray-200 flex items-center justify-center overflow-hidden'>
+        <div className='aspect-[4/5] w-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center overflow-hidden'>
           <img
             src={executive.image}
             alt={`${executive.name} - ${executive.position}, NUESA ABUAD Engineering Students Association, Afe Babalola University`}
@@ -46,13 +46,13 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false, imageL
       </div>
 
       <div className='p-6'>
-        <h3 className='text-xl font-bold text-[#0f5132] mb-2'>{executive.name}</h3>
-        <div className='flex items-center text-gray-700 mb-2'>
+            <h3 className='text-xl font-bold text-[#0f5132] dark:text-green-400 mb-2'>{executive.name}</h3>
+        <div className='flex items-center text-gray-700 dark:text-gray-200 mb-2'>
           <Building className='size-5 mr-2' />
           <span className='text-sm'>{executive.department}</span>
         </div>
         {executive.year && (
-          <div className='flex items-center text-gray-700 mb-4'>
+          <div className='flex items-center text-gray-700 dark:text-gray-200 mb-4'>
             <User className='size-5 mr-2' />
             <span className='text-sm'>{executive.year}</span>
           </div>
@@ -60,7 +60,7 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false, imageL
         {executive.bio && (
           <div className='mb-4'>
             <p
-              className={`text-gray-700 text-sm leading-relaxed transition-all duration-300 ${
+              className={`text-gray-700 dark:text-gray-200 text-sm leading-relaxed transition-all duration-300 ${
                 expandedBio === index ? "" : "line-clamp-3"
               }`}
             >
@@ -69,7 +69,7 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false, imageL
             <button
               type="button"
               onClick={() => toggleBio(index)}
-              className='text-[#0f5132] text-sm font-medium hover:text-green-700 mt-2 flex items-center cursor-pointer'
+                className='text-[#0f5132] dark:text-green-400 text-sm font-medium hover:text-green-700 dark:hover:text-green-400 mt-2 flex items-center cursor-pointer'
               aria-expanded={expandedBio === index}
             >
               {expandedBio === index ? (
@@ -86,7 +86,7 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false, imageL
             <button
               type="button"
               onClick={() => toggleAchievements(index)}
-              className='flex items-center text-[#0f5132] font-medium text-sm hover:text-green-700 mb-3 cursor-pointer'
+                  className='flex items-center text-[#0f5132] dark:text-green-400 font-medium text-sm hover:text-green-700 dark:hover:text-green-400 mb-3 cursor-pointer'
               aria-expanded={!!showAchievements[index]}
             >
               <Award className='size-5 mr-2' />
@@ -100,12 +100,12 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false, imageL
 
             {showAchievements[index] && (
               <div>
-                <div className='bg-green-50 rounded-lg p-4 border border-green-100 mt-0'>
+                <div className='bg-green-50 dark:bg-green-900/30 rounded-lg p-4 border border-green-100 dark:border-gray-800 mt-0'>
                   <ul className='space-y-2'>
                     {executive.achievements.map((achievement, achIndex) => (
                       <li key={achIndex} className='flex items-start'>
                         <div className='w-2 h-2 bg-[#0f5132] rounded-full mt-2 mr-3 flex-shrink-0'></div>
-                        <span className='text-sm text-gray-700'>
+                        <span className='text-sm text-gray-700 dark:text-gray-200'>
                           {achievement}
                         </span>
                       </li>
@@ -118,11 +118,11 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false, imageL
         )}
 
         {executive.social && (
-          <div className='flex space-x-3 pt-4 border-t border-gray-100'>
+          <div className='flex space-x-3 pt-4 border-t border-gray-100 dark:border-gray-800'>
             {executive.social.email && executive.social.email !== "#" && (
               <a
                 href={executive.social.email.startsWith("mailto:") ? executive.social.email : `mailto:${executive.social.email}`}
-                className='text-gray-500 hover:text-green-600 transition-colors block'
+                className='text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors block'
                 title='Email'
                 aria-label={`Email ${executive.name}`}
               >
@@ -132,7 +132,7 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false, imageL
             {executive.social.whatsapp && executive.social.whatsapp !== "#" && (
               <a
                 href={executive.social.whatsapp}
-                className='text-gray-500 hover:text-green-600 transition-colors block'
+                className='text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors block'
                 title='WhatsApp'
                 aria-label={`WhatsApp ${executive.name}`}
                 target='_blank'
@@ -144,7 +144,7 @@ const ExecutiveCard = ({executive, index, showAchievementsButton = false, imageL
             {executive.social.snapchat && executive.social.snapchat !== "#" && (
               <a
                 href={executive.social.snapchat}
-                className='text-gray-500 hover:text-green-600 transition-colors block'
+                className='text-gray-500 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 transition-colors block'
                 title='Snapchat'
                 aria-label={`Snapchat ${executive.name}`}
                 target='_blank'

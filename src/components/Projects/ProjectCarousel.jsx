@@ -29,7 +29,7 @@ const ProjectCarousel = ({ projects }) => {
 
   return (
     <div>
-      <div className='relative overflow-hidden rounded-lg border border-gray-200 bg-white'>
+      <div className='relative overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900'>
         <div className='flex flex-col md:flex-row'>
           <img
             src={active.image}
@@ -39,14 +39,14 @@ const ProjectCarousel = ({ projects }) => {
 
           <div className='flex flex-1 flex-col justify-between p-6'>
             <div>
-              <div className='mb-3 flex flex-wrap items-center gap-3 text-sm text-gray-600'>
+              <div className='mb-3 flex flex-wrap items-center gap-3 text-sm text-gray-600 dark:text-gray-300'>
                 <span>{active.year}</span>
                 <span>{active.students} members</span>
               </div>
-              <h3 className='mb-3 text-2xl font-bold text-gray-950'>
+              <h3 className='mb-3 text-2xl font-bold text-gray-950 dark:text-white'>
                 {active.title}
               </h3>
-              <p className='mb-6 line-clamp-7 text-sm leading-relaxed text-gray-700 md:text-base'>
+              <p className='mb-6 line-clamp-7 text-sm leading-relaxed text-gray-700 dark:text-gray-200 md:text-base'>
                 {active.summary}
               </p>
             </div>
@@ -68,7 +68,7 @@ const ProjectCarousel = ({ projects }) => {
                       href={active.link}
                       target='_blank'
                       rel='noopener noreferrer'
-                      className='inline-flex items-center gap-2 rounded-lg border border-green px-5 py-2.5 font-semibold text-green transition-colors duration-200 hover:bg-green hover:text-white'
+                      className='inline-flex items-center gap-2 rounded-lg border border-green px-5 py-2.5 font-semibold text-green dark:text-green-400 transition-colors duration-200 hover:bg-green hover:text-white'
                     >
                       Try Online
                       <ExternalLink className='h-4 w-4' />
@@ -80,7 +80,7 @@ const ProjectCarousel = ({ projects }) => {
                   <button
                     type='button'
                     onClick={() => setModalProject(active)}
-                    className='rounded-lg border border-green px-5 py-2.5 font-semibold text-green transition-colors duration-200 hover:bg-green hover:text-white'
+                    className='rounded-lg border border-green px-5 py-2.5 font-semibold text-green dark:text-green-400 transition-colors duration-200 hover:bg-green hover:text-white'
                   >
                     View Details
                   </button>
@@ -107,7 +107,7 @@ const ProjectCarousel = ({ projects }) => {
               type='button'
               onClick={prevSlide}
               aria-label='Previous project'
-              className='absolute left-3 top-32 rounded-full bg-white/90 p-2 text-gray-800 transition-colors duration-200 hover:bg-white md:top-1/2 md:-translate-y-1/2'
+              className='absolute left-3 top-32 rounded-full bg-white/90 dark:bg-gray-900/90 p-2 text-gray-800 dark:text-gray-100 transition-colors duration-200 hover:bg-white dark:hover:bg-gray-900 md:top-1/2 md:-translate-y-1/2'
             >
               <ChevronLeft className='h-5 w-5' />
             </button>
@@ -115,7 +115,7 @@ const ProjectCarousel = ({ projects }) => {
               type='button'
               onClick={nextSlide}
               aria-label='Next project'
-              className='absolute right-3 top-32 rounded-full bg-white/90 p-2 text-gray-800 transition-colors duration-200 hover:bg-white md:top-1/2 md:-translate-y-1/2'
+              className='absolute right-3 top-32 rounded-full bg-white/90 dark:bg-gray-900/90 p-2 text-gray-800 dark:text-gray-100 transition-colors duration-200 hover:bg-white dark:hover:bg-gray-900 md:top-1/2 md:-translate-y-1/2'
             >
               <ChevronRight className='h-5 w-5' />
             </button>
@@ -129,7 +129,7 @@ const ProjectCarousel = ({ projects }) => {
             type='button'
             onClick={() => setIsAutoPlaying((value) => !value)}
             aria-label={isAutoPlaying ? "Pause project carousel" : "Play project carousel"}
-            className='rounded-full border border-gray-200 p-2 text-gray-700 transition-colors duration-200 hover:border-green hover:text-green'
+            className='rounded-full border border-gray-200 dark:border-gray-800 p-2 text-gray-700 dark:text-gray-200 transition-colors duration-200 hover:border-green hover:text-green dark:hover:text-green-400'
           >
             {isAutoPlaying ? <Pause className='h-4 w-4' /> : <Play className='h-4 w-4' />}
           </button>
@@ -154,10 +154,10 @@ const ProjectCarousel = ({ projects }) => {
             type='button'
             key={project.title}
             onClick={() => goTo(index)}
-            className={`w-64 flex-shrink-0 overflow-hidden rounded-lg border bg-white text-left transition-colors duration-200 ${
+            className={`w-64 flex-shrink-0 overflow-hidden rounded-lg border bg-white dark:bg-gray-900 text-left transition-colors duration-200 ${
               index === currentIndex
                 ? "border-green"
-                : "border-gray-200 hover:border-green-300"
+                : "border-gray-200 dark:border-gray-800 hover:border-green-300 dark:hover:border-green-700"
             }`}
           >
             <img
@@ -166,10 +166,10 @@ const ProjectCarousel = ({ projects }) => {
               className='h-40 w-full object-cover'
             />
             <div className='p-4'>
-              <h4 className='mb-1 text-base font-semibold text-gray-950'>
+              <h4 className='mb-1 text-base font-semibold text-gray-950 dark:text-white'>
                 {project.title}
               </h4>
-              <p className='line-clamp-2 text-sm text-gray-700'>
+              <p className='line-clamp-2 text-sm text-gray-700 dark:text-gray-200'>
                 {project.summary}
               </p>
             </div>

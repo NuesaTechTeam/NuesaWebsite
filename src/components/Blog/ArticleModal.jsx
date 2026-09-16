@@ -12,7 +12,7 @@ const ArticleModal = ({ post, onClose }) => {
           className="fixed inset-0 z-modal flex items-center justify-center px-4 py-8"
           onPointerDownOutside={onClose}
         >
-          <div className="bg-white w-full max-w-3xl rounded-2xl overflow-hidden shadow-[0_24px_80px_rgba(3,14,7,0.35)] relative flex flex-col max-h-[90vh]">
+          <div className="bg-white dark:bg-gray-900 w-full max-w-3xl rounded-2xl overflow-hidden shadow-[0_24px_80px_rgba(3,14,7,0.35)] relative flex flex-col max-h-[90vh]">
             <div className="relative shrink-0">
               <img
                 src={post.image}
@@ -27,18 +27,18 @@ const ArticleModal = ({ post, onClose }) => {
                 <X className="w-5 h-5" />
               </Dialog.Close>
               {post.category && (
-                <span className="absolute bottom-4 left-6 px-3 py-1 rounded-full text-xs font-bold bg-white text-green-700">
+                <span className="absolute bottom-4 left-6 px-3 py-1 rounded-full text-xs font-bold bg-white dark:bg-gray-900 text-green-700 dark:text-green-400">
                   {post.category}
                 </span>
               )}
             </div>
 
             <div className="p-6 md:p-8 overflow-y-auto">
-              <Dialog.Title className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 leading-tight text-balance">
+              <Dialog.Title className="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-4 leading-tight text-balance">
                 {post.title}
               </Dialog.Title>
 
-              <div className="flex items-center gap-4 text-sm text-gray-500 mb-6 border-b border-gray-100 pb-5">
+              <div className="flex items-center gap-4 text-sm text-gray-500 dark:text-gray-400 mb-6 border-b border-gray-100 dark:border-gray-800 pb-5">
                 <span>{post.author}</span>
                 <span aria-hidden="true" className="text-green-400">
                   /
@@ -50,7 +50,7 @@ const ArticleModal = ({ post, onClose }) => {
                 {/* Content is static, curated data from blogPosts.js (never user input);
                     the submit form posts to EmailJS and does not write here. Safe to render. */}
                 <div
-                  className="text-[15px] text-gray-700 leading-relaxed whitespace-pre-wrap [&>p]:mb-4"
+                  className="text-[15px] text-gray-700 dark:text-gray-200 leading-relaxed whitespace-pre-wrap [&>p]:mb-4"
                   dangerouslySetInnerHTML={{ __html: post.content }}
                 />
               </Dialog.Description>

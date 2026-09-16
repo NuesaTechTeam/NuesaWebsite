@@ -13,7 +13,7 @@ const ContactUs = () => {
         {/* header for contact us form */}
         <div className='max-w-7xl mx-auto'>
           <div className='text-center mb-12'>
-            <h1 className='text-4xl md:text-5xl font-bold text-green mb-4'>
+            <h1 className='text-4xl md:text-5xl font-bold text-green dark:text-green-400 mb-4'>
               Contact Us
             </h1>
             <p className='text-lg'>
@@ -26,7 +26,7 @@ const ContactUs = () => {
       </div>
       <div>
         <div className='max-w-7xl mx-auto mt-12'>
-          <h2 className='text-3xl font-bold text-green mb-6'>
+          <h2 className='text-3xl font-bold text-green dark:text-green-400 mb-6'>
             Frequently Asked Questions
           </h2>
           <p className='text-lg mb-8'>

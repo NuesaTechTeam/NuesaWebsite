@@ -3,7 +3,7 @@ import React from "react";
 const VideoCard = ({ title, description, videoUrl, onClick }) => {
   return (
     <div
-      className="bg-white rounded-xl shadow-md overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-300"
+      className="bg-white dark:bg-gray-900 rounded-xl shadow-md overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-300"
       onClick={onClick}
     >
       <video
@@ -15,8 +15,8 @@ const VideoCard = ({ title, description, videoUrl, onClick }) => {
         onMouseLeave={(e) => e.target.pause()}
       ></video>
       <div className="p-4">
-        <h3 className="text-lg font-bold text-green mb-2">{title}</h3>
-        <p className="text-gray-700 text-sm">{description}</p>
+        <h3 className="text-lg font-bold text-green dark:text-green-400 mb-2">{title}</h3>
+        <p className="text-gray-700 dark:text-gray-200 text-sm">{description}</p>
       </div>
     </div>
   );

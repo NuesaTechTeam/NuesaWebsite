@@ -29,12 +29,12 @@ const VideosSection = () => {
   };
 
   return (
-    <section className="py-12 lg:px-4 bg-green-50">
+    <section className="py-12 lg:px-4 bg-green-50 dark:bg-green-900/30">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-green mb-4">NUESA Videos</h1>
-          <p className="text-xl text-gray-700 max-w-4xl mx-auto">
+          <h1 className="text-4xl font-bold text-green dark:text-green-400 mb-4">NUESA Videos</h1>
+          <p className="text-xl text-gray-700 dark:text-gray-200 max-w-4xl mx-auto">
             Explore our collection of videos from NUESA events, workshops, and seminars.
           </p>
         </div>
@@ -51,7 +51,7 @@ const VideosSection = () => {
               className={`px-5 py-2 rounded-full font-medium transition border ${
                 sortType === type
                   ? "bg-green text-white border-green shadow-md"
-                  : "bg-white text-gray-700 border-gray-300 hover:bg-green/10"
+                  : "bg-white dark:bg-gray-900 text-gray-700 dark:text-gray-200 border-gray-300 dark:border-gray-700 hover:bg-green/10"
               }`}
             >
               {type === "date" ? "Date Added" : "Name (A-Z)"}
@@ -88,7 +88,7 @@ const VideosSection = () => {
               className={`px-4 py-2 rounded ${
                 currentPage === i + 1
                   ? "bg-green text-white shadow-sm"
-                  : "bg-gray-200 text-gray-700 hover:bg-green/20"
+                  : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-green/20"
               }`}
             >
               {i + 1}
@@ -98,11 +98,11 @@ const VideosSection = () => {
 
         {/* Submit Video Section */}
         <div className="mt-16 text-center">
-          <div className="bg-green-50 rounded-2xl p-8 border border-green-100 shadow-md">
-            <h2 className="text-2xl font-bold text-green mb-4">
+          <div className="bg-green-50 dark:bg-green-900/30 rounded-2xl p-8 border border-green-100 shadow-md">
+            <h2 className="text-2xl font-bold text-green dark:text-green-400 mb-4">
               Want to Feature Your Event?
             </h2>
-            <p className="text-gray-700 mb-6 max-w-2xl mx-auto">
+            <p className="text-gray-700 dark:text-gray-200 mb-6 max-w-2xl mx-auto">
               Submit your video to be featured on our NUESA page.
             </p>
             <button

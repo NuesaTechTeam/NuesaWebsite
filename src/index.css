@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   /* Fonts — only what's actually used */
   --font-poppins: "Poppins", sans-serif;
@@ -28,6 +30,14 @@
 }
 
 @layer base {
+  html {
+    color-scheme: light;
+  }
+
+  html.dark {
+    color-scheme: dark;
+  }
+
   p {
     font-family: var(--font-montserrat);
   }
@@ -77,6 +87,11 @@ body {
   scrollbar-width: none;
   font-family: var(--font-montserrat);
   color: rgb(55 65 81 / var(--tw-text-opacity));
+}
+
+.dark body {
+  background-color: #030712;
+  color: #d1d5db;
 }
 
 body::-webkit-scrollbar {

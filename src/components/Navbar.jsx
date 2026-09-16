@@ -5,6 +5,7 @@ import logo from "../assets/logo.png";
 import { DropdownMenu } from "radix-ui";
 import { ChevronDown } from "lucide-react";
 import Hamburger from "./Hamburger.jsx";
+import ThemeToggle from "./ThemeToggle.jsx";
 import { motion as Motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
@@ -77,18 +78,18 @@ const Navbar = () => {
 
   return (
     <>
-      <nav className='fixed left-0 top-0 w-full z-nav bg-white/80 backdrop-blur-md w-full mx-auto flex items-center justify-between py-2 shadow-md px-4 md:px-8 lg:px-12'>
+      <nav className='fixed left-0 top-0 w-full z-nav bg-white/80 dark:bg-gray-900/80 backdrop-blur-md w-full mx-auto flex items-center justify-between py-2 shadow-md px-4 md:px-8 lg:px-12'>
         <Link to='/' className='flex items-center gap-2'>
           <img src={logo} alt='nuesa abuad' className="h-10 w-10 object-contain" />
-          <h1 className="font-semibold text-black text-lg">NUESA ABUAD</h1>
+          <h1 className="font-semibold text-black dark:text-white text-lg">NUESA ABUAD</h1>
         </Link>
         <div className='hidden md:flex items-center gap-x-1 overflow-x-scroll scrollbar-hidden'>
           {primaryLinks.map((link) => (
             <Link
               key={link.title}
               to={link.url}
-              className={`px-3 py-2 text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 rounded transition-colors duration-200 ${
-                location.pathname === link.url ? "bg-green-100 text-green-700 font-medium" : ""
+              className={`px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-100 hover:text-green-700 dark:hover:bg-gray-800 dark:hover:text-green-400 rounded transition-colors duration-200 ${
+                location.pathname === link.url ? "bg-green-100 text-green-700 font-medium dark:bg-green-900/40 dark:text-green-400" : ""
               }`}
             >
               {link.title}
@@ -99,20 +100,20 @@ const Navbar = () => {
           {secondaryLinks.length > 0 && (
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <button className='px-3 py-2 text-sm text-gray-700 hover:bg-green-100 hover:text-green-700 rounded transition-colors duration-200 flex items-center gap-1 cursor-pointer active:scale-[0.97]'>
+                <button className='px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-100 hover:text-green-700 dark:hover:bg-gray-800 dark:hover:text-green-400 rounded transition-colors duration-200 flex items-center gap-1 cursor-pointer active:scale-[0.97]'>
                   More
                   <ChevronDown className='w-3.5 h-3.5' />
                 </button>
               </DropdownMenu.Trigger>
               <DropdownMenu.Portal>
                 <DropdownMenu.Content
-                  className='min-w-[180px] rounded-md bg-white p-[5px] shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] z-nav-dropdown'
+                  className='min-w-[180px] rounded-md bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-[5px] shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] z-nav-dropdown'
                   sideOffset={8}
                 >
                   {secondaryLinks.map((link) => (
                     <DropdownMenu.Item
                       key={link.title}
-                      className='flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-green-100 hover:text-green-700 rounded transition-colors duration-200 cursor-pointer'
+                      className='flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-green-100 hover:text-green-700 dark:hover:bg-gray-700 dark:hover:text-green-400 rounded transition-colors duration-200 cursor-pointer'
                     >
                       <Link
                         to={link.url}
@@ -127,39 +128,42 @@ const Navbar = () => {
             </DropdownMenu.Root>
           )}
         </div>
-        <DropdownMenu.Root>
-          <DropdownMenu.Trigger asChild>
-            <button className='hidden lg:inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 hover:bg-green/90 px-5 py-2 text-sm w-fit text-white bg-green h-auto active:scale-[0.97]'>
-              Follow us
-            </button>
-          </DropdownMenu.Trigger>
-          <DropdownMenu.Portal>
-            <DropdownMenu.Content
-              className='min-w-[220px] rounded-md bg-white p-[5px] shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] z-nav-dropdown'
-              sideOffset={8}
-            >
-              {socialLinks.map((social) => (
-                <DropdownMenu.Item
-                  key={social.title}
-                  className='flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-green-100 hover:text-green-700 rounded transition-colors duration-200 cursor-pointer'
-                >
-                  <a
-                    href={social.link}
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='flex items-center gap-2'
+        <div className='flex items-center gap-1 sm:gap-2'>
+          <ThemeToggle />
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild>
+              <button className='hidden lg:inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 hover:bg-green/90 px-5 py-2 text-sm w-fit text-white bg-green h-auto active:scale-[0.97]'>
+                Follow us
+              </button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content
+                className='min-w-[220px] rounded-md bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 p-[5px] shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] z-nav-dropdown'
+                sideOffset={8}
+              >
+                {socialLinks.map((social) => (
+                  <DropdownMenu.Item
+                    key={social.title}
+                    className='flex items-center gap-2 px-4 py-2 text-gray-700 dark:text-gray-200 hover:bg-green-100 hover:text-green-700 dark:hover:bg-gray-700 dark:hover:text-green-400 rounded transition-colors duration-200 cursor-pointer'
                   >
-                    {social.icon}
-                    {social.title}
-                  </a>
-                </DropdownMenu.Item>
-              ))}
-            </DropdownMenu.Content>
-          </DropdownMenu.Portal>
-        </DropdownMenu.Root>
-        <button className='md:hidden z-mobile-menu'>
-          <Hamburger setMobileMenu={setIsOpen} mobileMenu={isOpen} />
-        </button>
+                    <a
+                      href={social.link}
+                      target='_blank'
+                      rel='noopener noreferrer'
+                      className='flex items-center gap-2'
+                    >
+                      {social.icon}
+                      {social.title}
+                    </a>
+                  </DropdownMenu.Item>
+                ))}
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
+          <button className='md:hidden z-mobile-menu text-black dark:text-white'>
+            <Hamburger setMobileMenu={setIsOpen} mobileMenu={isOpen} />
+          </button>
+        </div>
       </nav>
 
       <AnimatePresence>
@@ -169,7 +173,7 @@ const Navbar = () => {
             initial='hidden'
             animate='visible'
             exit='exit'
-            className='fixed inset-0 bg-white z-mobile-menu flex flex-col overflow-y-auto md:hidden'
+            className='fixed inset-0 bg-white dark:bg-gray-950 z-mobile-menu flex flex-col overflow-y-auto md:hidden'
           >
             <div className='flex flex-col items-center pt-24 pb-6 space-y-6'>
               {navbarLinks.map((link, index) => (
@@ -178,8 +182,8 @@ const Navbar = () => {
                   variants={linkVariants}
                   className={`text-lg font-medium transition-colors duration-200 ${
                     location.pathname === link.url
-                      ? "text-green"
-                      : "text-gray-700"
+                      ? "text-green dark:text-green-400"
+                      : "text-gray-700 dark:text-gray-200"
                   }`}
                 >
                   <Link to={link.url} onClick={() => setIsOpen(false)}>
@@ -198,7 +202,7 @@ const Navbar = () => {
                   href={social.link}
                   target='_blank'
                   rel='noopener noreferrer'
-                  className='text-black hover:text-green transition-colors duration-200 flex items-center gap-2'
+                  className='text-black dark:text-gray-200 hover:text-green dark:hover:text-green-400 transition-colors duration-200 flex items-center gap-2'
                 >
                   {social.icon}
                 </a>

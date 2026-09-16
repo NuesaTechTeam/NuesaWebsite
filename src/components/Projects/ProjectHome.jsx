@@ -44,13 +44,13 @@ const ProjectHome = () => {
   };
 
   return (
-    <section className='border-t border-green-200 bg-white px-4 py-12 sm:px-6 lg:px-8'>
+    <section className='border-t border-green-200 bg-white dark:bg-gray-900 px-4 py-12 sm:px-6 lg:px-8'>
       <div className='mx-auto max-w-7xl'>
         <div className='mb-12 text-center'>
-          <h2 className='mb-4 text-4xl font-bold text-gray-950'>
-            Legacy <span className='text-green'>Projects</span>
+          <h2 className='mb-4 text-4xl font-bold text-gray-950 dark:text-white'>
+            Legacy <span className='text-green dark:text-green-400'>Projects</span>
           </h2>
-          <p className='mx-auto max-w-3xl text-lg leading-relaxed text-gray-700'>
+          <p className='mx-auto max-w-3xl text-lg leading-relaxed text-gray-700 dark:text-gray-200'>
             Explore the projects developed by NUESA ABUAD members and
             administrations, from student software to practical improvements
             around the Engineering College.
@@ -59,8 +59,8 @@ const ProjectHome = () => {
 
         <div className='mb-16'>
           <div className='mb-8 flex items-center justify-between gap-4'>
-            <h3 className='flex items-center text-xl font-semibold text-green'>
-              <Clock className='mr-2 h-6 w-6 text-green' />
+            <h3 className='flex items-center text-xl font-semibold text-green dark:text-green-400'>
+              <Clock className='mr-2 h-6 w-6 text-green dark:text-green-400' />
               Ongoing Projects
             </h3>
             <div className='flex gap-2'>
@@ -68,7 +68,7 @@ const ProjectHome = () => {
                 type='button'
                 onClick={prevSlide}
                 aria-label='Previous ongoing project'
-                className='rounded-full border border-gray-200 bg-white p-2 text-gray-700 transition-colors duration-200 hover:border-green hover:text-green'
+                className='rounded-full border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-2 text-gray-700 dark:text-gray-200 transition-colors duration-200 hover:border-green hover:text-green dark:hover:text-green-400'
               >
                 <ChevronLeft className='h-5 w-5' />
               </button>
@@ -76,7 +76,7 @@ const ProjectHome = () => {
                 type='button'
                 onClick={nextSlide}
                 aria-label='Next ongoing project'
-                className='rounded-full border border-gray-200 bg-white p-2 text-gray-700 transition-colors duration-200 hover:border-green hover:text-green'
+                className='rounded-full border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-2 text-gray-700 dark:text-gray-200 transition-colors duration-200 hover:border-green hover:text-green dark:hover:text-green-400'
               >
                 <ChevronRight className='h-5 w-5' />
               </button>
@@ -84,21 +84,21 @@ const ProjectHome = () => {
                 type='button'
                 onClick={() => setIsAutoPlaying((value) => !value)}
                 aria-label={isAutoPlaying ? "Pause ongoing project carousel" : "Play ongoing project carousel"}
-                className='rounded-full border border-gray-200 bg-white p-2 text-gray-700 transition-colors duration-200 hover:border-green hover:text-green'
+                className='rounded-full border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-2 text-gray-700 dark:text-gray-200 transition-colors duration-200 hover:border-green hover:text-green dark:hover:text-green-400'
               >
                 {isAutoPlaying ? <Pause className='h-5 w-5' /> : <Play className='h-5 w-5' />}
               </button>
             </div>
           </div>
 
-          <div className='relative overflow-hidden rounded-lg border border-gray-200'>
+          <div className='relative overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800'>
             <div
               className='flex transition-transform duration-500 ease-out'
               style={{ transform: `translateX(-${currentSlide * 100}%)` }}
             >
               {ongoingProjects.map((project) => (
                 <div key={project.title} className='w-full flex-shrink-0'>
-                  <article className='bg-white'>
+                  <article className='bg-white dark:bg-gray-900'>
                     <div className='md:flex'>
                       <div className='md:w-1/2'>
                         <img
@@ -109,16 +109,16 @@ const ProjectHome = () => {
                       </div>
                       <div className='flex flex-col justify-between p-6 md:w-1/2'>
                         <div>
-                          <h4 className='mb-4 text-2xl font-bold text-gray-950'>
+                          <h4 className='mb-4 text-2xl font-bold text-gray-950 dark:text-white'>
                             {project.title}
                           </h4>
-                          <p className='mb-6 line-clamp-6 leading-relaxed text-gray-700'>
+                          <p className='mb-6 line-clamp-6 leading-relaxed text-gray-700 dark:text-gray-200'>
                             {project.summary}
                           </p>
                         </div>
 
-                        <div className='flex flex-wrap items-center justify-between gap-4 border-t border-gray-100 pt-4'>
-                          <div className='flex items-center text-sm text-gray-600'>
+                        <div className='flex flex-wrap items-center justify-between gap-4 border-t border-gray-100 dark:border-gray-800 pt-4'>
+                          <div className='flex items-center text-sm text-gray-600 dark:text-gray-300'>
                             <Users className='mr-1 h-4 w-4' />
                             {project.students} members
                           </div>
@@ -139,7 +139,7 @@ const ProjectHome = () => {
                                 href={project.link}
                                 target='_blank'
                                 rel='noopener noreferrer'
-                                className='inline-flex items-center gap-1.5 rounded-lg border border-green px-3.5 py-2 text-xs font-semibold text-green transition-colors duration-200 hover:bg-green hover:text-white'
+                                className='inline-flex items-center gap-1.5 rounded-lg border border-green px-3.5 py-2 text-xs font-semibold text-green dark:text-green-400 transition-colors duration-200 hover:bg-green hover:text-white'
                               >
                                 Try Online
                                 <ExternalLink className='h-3.5 w-3.5' />
@@ -171,8 +171,8 @@ const ProjectHome = () => {
         </div>
 
         <div className='mb-12'>
-          <h3 className='mb-8 flex items-center text-2xl font-bold text-green'>
-            <CheckCircle className='mr-2 h-6 w-6 text-green' />
+          <h3 className='mb-8 flex items-center text-2xl font-bold text-green dark:text-green-400'>
+            <CheckCircle className='mr-2 h-6 w-6 text-green dark:text-green-400' />
             Completed Projects
           </h3>
 
@@ -180,7 +180,7 @@ const ProjectHome = () => {
             {pastProjects.slice(0, 4).map((project) => (
               <article
                 key={`${project.title}-${project.year}`}
-                className='overflow-hidden rounded-lg border border-gray-200 bg-white transition-colors duration-200 hover:border-green-300'
+                className='overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 transition-colors duration-200 hover:border-green-300 dark:hover:border-green-700'
               >
                 <div className='h-48 overflow-hidden'>
                   <img
@@ -191,14 +191,14 @@ const ProjectHome = () => {
                 </div>
 
                 <div className='p-6'>
-                  <div className='mb-4 text-sm text-gray-600'>
+                  <div className='mb-4 text-sm text-gray-600 dark:text-gray-300'>
                     {project.year}
                   </div>
 
-                  <h4 className='mb-3 text-xl font-bold text-gray-950'>
+                  <h4 className='mb-3 text-xl font-bold text-gray-950 dark:text-white'>
                     {project.title}
                   </h4>
-                  <p className='line-clamp-3 leading-relaxed text-gray-700'>
+                  <p className='line-clamp-3 leading-relaxed text-gray-700 dark:text-gray-200'>
                     {project.summary}
                   </p>
                 </div>

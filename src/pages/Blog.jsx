@@ -24,13 +24,13 @@ const Blog = () => {
       <header className="pt-20 pb-10 px-4">
         <div className="max-w-7xl mx-auto">
           <div className="max-w-3xl mx-auto text-center">
-            <p className="font-dm text-xs font-semibold uppercase tracking-[0.18em] text-green-700 mb-5">
+            <p className="font-dm text-xs font-semibold uppercase tracking-[0.18em] text-green-700 dark:text-green-400 mb-5">
               The NUESA Journal
             </p>
-            <h1 className="font-dm text-4xl md:text-6xl font-bold text-gray-900 tracking-tight leading-[1.05]">
+            <h1 className="font-dm text-4xl md:text-6xl font-bold text-gray-900 dark:text-white tracking-tight leading-[1.05]">
               Ideas, projects, and stories from our engineers
             </h1>
-            <p className="text-gray-600 mt-5 max-w-[52ch] mx-auto leading-relaxed">
+            <p className="text-gray-600 dark:text-gray-300 mt-5 max-w-[52ch] mx-auto leading-relaxed">
               Editorial, tutorials, and student contributions from the NUESA
               community at ABUAD.
             </p>

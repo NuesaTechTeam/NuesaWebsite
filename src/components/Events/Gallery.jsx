@@ -66,14 +66,14 @@ const Gallery = () => {
   }, [isLightboxOpen]);
 
   return (
-    <section className="bg-white px-4 py-16 sm:px-6 lg:px-8">
+    <section className="bg-white dark:bg-gray-900 px-4 py-16 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
         {/* header */}
         <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-green mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-green dark:text-green-400 mb-4">
             Event Photo Gallery
           </h2>
-          <p className="text-xl text-gray-700 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-700 dark:text-gray-200 max-w-3xl mx-auto">
             Relive the memorable moments from our college events through this
             curated collection of photographs
           </p>
@@ -82,7 +82,7 @@ const Gallery = () => {
 
         {/* main gallery carousel */}
         <div className="relative max-w-5xl mx-auto">
-          <div className="relative overflow-hidden rounded-lg border border-gray-200 bg-white">
+          <div className="relative overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
             <div className="relative h-96 md:h-[500px]">
               {galleryPhotos.map((photo, index) => (
                 <div
@@ -109,20 +109,20 @@ const Gallery = () => {
             <button
               onClick={prevSlide}
               aria-label="Previous gallery photo"
-              className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-3 text-gray-800 transition-colors duration-200 hover:bg-white cursor-pointer"
+              className="absolute left-4 top-1/2 -translate-y-1/2 rounded-full bg-white/80 dark:bg-gray-900/80 p-3 text-gray-800 dark:text-gray-100 transition-colors duration-200 hover:bg-white dark:hover:bg-gray-900 cursor-pointer"
             >
               <ChevronLeft className="size-8" />
             </button>
             <button
               onClick={nextSlide}
               aria-label="Next gallery photo"
-              className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/80 p-3 text-gray-800 transition-colors duration-200 hover:bg-white cursor-pointer"
+              className="absolute right-4 top-1/2 -translate-y-1/2 rounded-full bg-white/80 dark:bg-gray-900/80 p-3 text-gray-800 dark:text-gray-100 transition-colors duration-200 hover:bg-white dark:hover:bg-gray-900 cursor-pointer"
             >
               <ChevronRight className="size-8" />
             </button>
             <button
               aria-label={isAutoPlaying ? "Pause gallery autoplay" : "Play gallery autoplay"}
-              className="absolute top-4 right-4 rounded-full bg-white/80 p-3 text-gray-800 transition-colors duration-200 hover:bg-white cursor-pointer"
+              className="absolute top-4 right-4 rounded-full bg-white/80 dark:bg-gray-900/80 p-3 text-gray-800 dark:text-gray-100 transition-colors duration-200 hover:bg-white dark:hover:bg-gray-900 cursor-pointer"
               onClick={() => setIsAutoPlaying(!isAutoPlaying)}
             >
               {isAutoPlaying ? (
@@ -190,18 +190,18 @@ const Gallery = () => {
           onClick={() => setIsModalOpen(false)}
         >
           <div
-            className="relative bg-white rounded-lg p-6 max-w-6xl w-full overflow-y-auto max-h-[90vh]"
+            className="relative bg-white dark:bg-gray-900 rounded-lg p-6 max-w-6xl w-full overflow-y-auto max-h-[90vh]"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               onClick={() => setIsModalOpen(false)}
               aria-label="Close full gallery"
-              className="absolute top-4 right-4 text-gray-600 hover:text-green-600"
+              className="absolute top-4 right-4 text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400"
             >
               <X className="size-8" />
             </button>
 
-            <h2 className="text-3xl font-bold text-green text-center mb-6">
+            <h2 className="text-3xl font-bold text-green dark:text-green-400 text-center mb-6">
               Full Photo Gallery
             </h2>
 
@@ -209,7 +209,7 @@ const Gallery = () => {
               {galleryPhotos.map((photo, index) => (
                 <div
                   key={photo.id}
-                  className="relative group overflow-hidden rounded-lg border border-gray-200 cursor-pointer"
+                  className="relative group overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 cursor-pointer"
                   onClick={() => openLightbox(index)}
                 >
                   <img

@@ -59,7 +59,7 @@ const Form = () => {
   };
 
   return (
-    <div className='bg-white rounded-2xl shadow-xl overflow-hidden'>
+    <div className='bg-white dark:bg-gray-900 rounded-2xl shadow-xl overflow-hidden'>
       <div className='grid grid-cols-1 lg:grid-cols-2'>
         <div
           className='bg-white text-white p-8 px-4 lg:p-12 relative overflow-hidden bg-contain bg-center bg-no-repeat'

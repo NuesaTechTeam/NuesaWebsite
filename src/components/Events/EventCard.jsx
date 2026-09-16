@@ -23,10 +23,10 @@ const EventCard = ({ event, isPast, isVisible, isEven }) => {
     >
       <div
         className={`${
-          isPast ? "bg-gray-50" : "bg-white"
+          isPast ? "bg-gray-50 dark:bg-gray-900" : "bg-white dark:bg-gray-900"
         } rounded-lg overflow-hidden border ${
-          isPast ? "border-gray-200" : "border-green-200"
-        } transition-[border-color,box-shadow,transform] duration-200 hover:border-green-300 ${
+          isPast ? "border-gray-200 dark:border-gray-800" : "border-green-200"
+        } transition-[border-color,box-shadow,transform] duration-200 hover:border-green-300 dark:hover:border-green-700 ${
           isVisible
             ? "opacity-100 translate-y-0 translate-x-0"
             : "opacity-100 translate-y-0 translate-x-0"
@@ -37,9 +37,11 @@ const EventCard = ({ event, isPast, isVisible, isEven }) => {
           <img
             src={event.image}
             alt={event.title}
-            className={`w-full h-50 object-cover transition-transform duration-200 hover:scale-[1.02] ${
-              isPast ? "grayscale opacity-80" : ""
-            }`}
+            className={`w-full transition-transform duration-200 hover:scale-[1.02] ${
+              event.imageFit === "contain"
+                ? "aspect-[4/5] object-contain bg-black"
+                : "h-50 object-cover"
+            } ${isPast ? "grayscale opacity-80" : ""}`}
           />
           <div
             className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold text-white ${
@@ -59,8 +61,8 @@ const EventCard = ({ event, isPast, isVisible, isEven }) => {
           <h3
             className={`text-2xl font-bold mb-3 transition-colors ${
               isPast
-                ? "text-gray-700"
-                : "text-gray-900 hover:text-green"
+                ? "text-gray-700 dark:text-gray-200"
+                : "text-gray-900 dark:text-white hover:text-green dark:hover:text-green-400"
             }`}
           >
             {event.title}
@@ -68,7 +70,7 @@ const EventCard = ({ event, isPast, isVisible, isEven }) => {
 
           <p
             className={`mb-4 leading-relaxed ${
-              isPast ? "text-gray-600" : "text-gray-500"
+              isPast ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-400"
             }`}
           >
             {event.description}
@@ -76,7 +78,7 @@ const EventCard = ({ event, isPast, isVisible, isEven }) => {
           <div className='space-y-2'>
             <div
               className={`flex items-center ${
-                isPast ? "text-gray-600" : "text-gray-500"
+                isPast ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-400"
               }`}
             >
               <Calendar
@@ -89,7 +91,7 @@ const EventCard = ({ event, isPast, isVisible, isEven }) => {
             {event.time && (
               <div
                 className={`flex items-center ${
-                  isPast ? "text-gray-600" : "text-gray-500"
+                  isPast ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-400"
                 }`}
               >
                 <Clock
@@ -103,7 +105,7 @@ const EventCard = ({ event, isPast, isVisible, isEven }) => {
             {event.venue && (
               <div
                 className={`flex items-center ${
-                  isPast ? "text-gray-600" : "text-gray-500"
+                  isPast ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-400"
                 }`}
               >
                 <MapPin
@@ -135,8 +137,8 @@ const EventCard = ({ event, isPast, isVisible, isEven }) => {
             <div
               className={`mt-6 w-full rounded-lg px-6 py-3 text-center font-semibold ${
                 isPast
-                  ? "bg-gray-100 text-gray-600"
-                  : "bg-green-50 text-green-800"
+                  ? "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300"
+                  : "bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-400"
               }`}
             >
               {isPast ? "Event completed" : "Registration opening soon"}

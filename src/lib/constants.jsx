@@ -239,6 +239,21 @@ export const eventsData = [
     status: "past",
     featured: false,
   },
+  {
+    id: 10,
+    title: "FÀÁJÍ LAWA",
+    date: "October 31, 2026",
+    time: "06:00 PM",
+    venue: "Alfa Belgore Hall, ABUAD",
+    description:
+      "Placeholder description for FÀÁJÍ LAWA. Full details will be announced soon.",
+    image: "/images/events/faji-lawa.jpg",
+    imageFit: "contain",
+    category: "Social",
+    status: "upcoming",
+    featured: true,
+    detailsUrl: "/faji-lawa",
+  },
 ];
 
 export const timeTables = [

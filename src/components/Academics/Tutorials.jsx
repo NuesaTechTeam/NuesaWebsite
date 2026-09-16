@@ -96,10 +96,10 @@ const Tutorials = () => {
         viewport={{ once: true, margin: "-100px" }}
         className="text-center mb-12"
       >
-        <h2 className="text-4xl md:text-5xl font-black text-green-800 mb-4 tracking-tight">
+        <h2 className="text-4xl md:text-5xl font-black text-green-800 dark:text-green-400 mb-4 tracking-tight">
           Featured Tutorials
         </h2>
-        <p className="text-gray-600 max-w-2xl mx-auto text-lg mb-10">
+        <p className="text-gray-600 dark:text-gray-300 max-w-2xl mx-auto text-lg mb-10">
           Handpicked learning paths from top engineering educators on YouTube.
         </p>
 
@@ -121,23 +121,23 @@ const Tutorials = () => {
           <motion.div
             key={index}
             variants={cardVariants}
-            className="group bg-white rounded-2xl shadow-xl shadow-green-900/5 p-8 border border-green-50 hover:border-green-200 transition duration-500 hover:-translate-y-2 flex flex-col justify-between"
+            className="group bg-white dark:bg-gray-900 rounded-2xl shadow-xl shadow-green-900/5 p-8 border border-green-50 hover:border-green-200 transition duration-500 hover:-translate-y-2 flex flex-col justify-between"
           >
             <div>
               <div className="flex items-start gap-4 mb-6">
-                <div className="p-3 bg-green-50 text-green-600 rounded-xl group-hover:bg-green-600 group-hover:text-white transition duration-300">
+                <div className="p-3 bg-green-50 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded-xl group-hover:bg-green-600 group-hover:text-white transition duration-300">
                   <FaChalkboardTeacher className="text-2xl" />
                 </div>
-                <h3 className="text-xl font-bold text-gray-800 group-hover:text-green-700 transition-colors leading-tight">
+                <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100 group-hover:text-green-700 dark:group-hover:text-green-400 transition-colors leading-tight">
                   {tutorial.title}
                 </h3>
               </div>
-              <p className="text-gray-600 text-sm leading-relaxed mb-6 font-medium line-clamp-3">
+              <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed mb-6 font-medium line-clamp-3">
                 {tutorial.description}
               </p>
-              <div className="flex items-center gap-3 text-xs font-bold text-gray-500 uppercase tracking-wider mb-8">
-                <span className="bg-gray-50 px-2 py-1 rounded">{tutorial.tutor}</span>
-                <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
+              <div className="flex items-center gap-3 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-8">
+                <span className="bg-gray-50 dark:bg-gray-900 px-2 py-1 rounded">{tutorial.tutor}</span>
+                <span className="w-1 h-1 bg-gray-300 dark:bg-gray-700 rounded-full"></span>
                 <span>{tutorial.date}</span>
               </div>
             </div>
@@ -146,7 +146,7 @@ const Tutorials = () => {
               href={tutorial.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 bg-green-50 text-green-700 hover:bg-green-600 hover:text-white px-6 py-3 rounded-xl text-sm font-black transition duration-200 shadow-sm border border-green-100 active:scale-[0.97]"
+              className="inline-flex items-center justify-center gap-2 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 hover:bg-green-600 hover:text-white px-6 py-3 rounded-xl text-sm font-black transition duration-200 shadow-sm border border-green-100 active:scale-[0.97]"
             >
               Watch Lecture Series
             </a>

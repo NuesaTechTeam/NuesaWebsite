@@ -57,30 +57,30 @@ const ContactHome = () => {
   };
 
   return (
-    <section className="bg-white py-16 lg:px-4">
+    <section className="bg-white dark:bg-gray-900 py-16 lg:px-4">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">
-            Get In Touch With <span className="text-green">Us</span>
+          <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+            Get In Touch With <span className="text-green dark:text-green-400">Us</span>
           </h2>
-          <p className="text-lg text-gray-700 max-w-3xl mx-auto">
+          <p className="text-lg text-gray-700 dark:text-gray-200 max-w-3xl mx-auto">
             Have questions, suggestions, or want to get involved? We'd love to
             hear from you. Reach out to NUESA ABUAD and join our engineering
             community.
           </p>
         </div>
-        <div className="bg-white rounded-2xl border border-gray-200 px-4 py-8 lg:px-8">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 px-4 py-8 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <div>
               <div className="flex items-center mb-6">
-                <div className="bg-green-100 p-3 rounded-lg mr-4">
-                  <MessageCircle className="size-6 text-green" />
+                <div className="bg-green-100 dark:bg-green-900/40 p-3 rounded-lg mr-4">
+                  <MessageCircle className="size-6 text-green dark:text-green-400" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-bold text-green">
+                  <h3 className="text-xl font-bold text-green dark:text-green-400">
                     Quick Message
                   </h3>
-                  <p className="text-gray-700">
+                  <p className="text-gray-700 dark:text-gray-200">
                     Send us a quick message and we'll respond as soon as we can
                   </p>
                 </div>
@@ -93,7 +93,7 @@ const ContactHome = () => {
                     placeholder="Your Name"
                     value={quickMessage.name}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent transition outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent transition outline-none"
                   />
                   <input
                     type="tel"
@@ -102,7 +102,7 @@ const ContactHome = () => {
                     placeholder="Your Phone No"
                     value={quickMessage.phoneNo}
                     onChange={handleInputChange}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent transition outline-none"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent transition outline-none"
                   />
                   <textarea
                     name="message"
@@ -110,7 +110,7 @@ const ContactHome = () => {
                     value={quickMessage.message}
                     onChange={handleInputChange}
                     rows="4"
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent transition resize-none outline-none sm:col-span-2"
+                    className="w-full px-4 py-3 border border-gray-300 dark:border-gray-700 rounded-lg focus:ring-2 focus:ring-green-600 focus:border-transparent transition resize-none outline-none sm:col-span-2"
                   ></textarea>
                 </div>
                 <button
@@ -129,38 +129,38 @@ const ContactHome = () => {
             </div>
 
             <div className="space-y-8">
-              <div className="bg-green-50 rounded-2xl border border-green-100 p-4 py-8">
-                <h3 className="text-xl font-bold text-green mb-6">
+              <div className="bg-green-50 dark:bg-green-900/30 rounded-2xl border border-green-100 p-4 py-8">
+                <h3 className="text-xl font-bold text-green dark:text-green-400 mb-6">
                   Connect With Us
                 </h3>
                 <div className="space-y-4">
                   <div className="flex items-center">
-                    <div className="bg-green-100 p-2 rounded-lg mr-4">
-                      <Mail className="size-5 text-green" />
+                    <div className="bg-green-100 dark:bg-green-900/40 p-2 rounded-lg mr-4">
+                      <Mail className="size-5 text-green dark:text-green-400" />
                     </div>
                     <div>
-                      <p className="font-medium text-green">Email</p>
-                      <p className="text-gray-700 text-sm">
+                      <p className="font-medium text-green dark:text-green-400">Email</p>
+                      <p className="text-gray-700 dark:text-gray-200 text-sm">
                         nuesa.abuad.tech@gmail.com
                       </p>
                     </div>
                   </div>
                   <div className="flex items-center">
-                    <div className="bg-green-100 p-2 rounded-lg mr-4">
-                      <Phone className="size-5 text-green" />
+                    <div className="bg-green-100 dark:bg-green-900/40 p-2 rounded-lg mr-4">
+                      <Phone className="size-5 text-green dark:text-green-400" />
                     </div>
                     <div>
-                      <p className="font-medium text-green">Phone</p>
-                      <p className="text-gray-700">08102841732</p>
+                      <p className="font-medium text-green dark:text-green-400">Phone</p>
+                      <p className="text-gray-700 dark:text-gray-200">08102841732</p>
                     </div>
                   </div>
                   <div className="flex items-center">
-                    <div className="bg-green-100 p-2 rounded-lg mr-4">
-                      <MapPin className="size-5 text-green" />
+                    <div className="bg-green-100 dark:bg-green-900/40 p-2 rounded-lg mr-4">
+                      <MapPin className="size-5 text-green dark:text-green-400" />
                     </div>
                     <div>
-                      <p className="font-medium text-green">Location</p>
-                      <p className="text-gray-700">
+                      <p className="font-medium text-green dark:text-green-400">Location</p>
+                      <p className="text-gray-700 dark:text-gray-200">
                         E26 - E27, Engineering College, ABUAD, Ado-Ekiti, Ekiti
                         State
                       </p>
@@ -181,7 +181,7 @@ const ContactHome = () => {
               </p>
               <button
                 onClick={handleContactButton}
-                className="bg-white text-green px-6 py-2 rounded-lg font-medium hover:bg-gray-100 inline-flex items-center cursor-pointer"
+                className="bg-white dark:bg-gray-900 text-green dark:text-green-400 px-6 py-2 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-gray-800 inline-flex items-center cursor-pointer"
               >
                 Visit Contact Page
                 <ArrowRight className="size-5 ml-2" />
@@ -191,37 +191,37 @@ const ContactHome = () => {
         </div>
 
         <div className="mt-10 text-center">
-          <h3 className="text-lg font-semibold text-green mb-4">Follow Us</h3>
+          <h3 className="text-lg font-semibold text-green dark:text-green-400 mb-4">Follow Us</h3>
           <div className="flex justify-center space-x-4">
             <a
               href="https://wa.me/2348102841732?text=Hello%20I%20am%20contacting%20about%20NUESA"
-              className="rounded-lg border border-gray-200 bg-white p-3 transition-colors hover:border-green"
+              className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 transition-colors hover:border-green"
               target="_blank"
               rel="noopener noreferrer"
               title="WhatsApp"
               aria-label="WhatsApp"
             >
-              <BsWhatsapp className="size-6 text-green" />
+              <BsWhatsapp className="size-6 text-green dark:text-green-400" />
             </a>
             <a
               href="https://www.snapchat.com/add/nuesa.abuad"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-lg border border-gray-200 bg-white p-3 transition-colors hover:border-green"
+              className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 transition-colors hover:border-green"
               title="Snapchat"
               aria-label="Snapchat"
             >
-              <BsSnapchat className="size-6 text-green" />
+              <BsSnapchat className="size-6 text-green dark:text-green-400" />
             </a>
             <a
               href="https://www.instagram.com/nuesaabuad?igsh=MThyYzg3aXN5ZHg2bQ=="
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-lg border border-gray-200 bg-white p-3 transition-colors hover:border-green"
+              className="rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 p-3 transition-colors hover:border-green"
               title="Instagram"
               aria-label="Instagram"
             >
-              <BsInstagram className="size-6 text-green" />
+              <BsInstagram className="size-6 text-green dark:text-green-400" />
             </a>
           </div>
         </div>

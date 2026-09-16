@@ -37,12 +37,12 @@ const GallerySlider = ({ category }) => {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <h3 className='flex items-center text-green font-bold text-xl'>
+      <h3 className='flex items-center text-green dark:text-green-400 font-bold text-xl'>
         <IconComponent className='mr-2 h-5 w-5' /> {category.title}
       </h3>
 
-      <p className='text-gray-700'>{category.description}</p>
-      <div className='relative rounded-2xl overflow-hidden border border-gray-200 bg-gray-100'>
+      <p className='text-gray-700 dark:text-gray-200'>{category.description}</p>
+      <div className='relative rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 bg-gray-100 dark:bg-gray-800'>
         <div className='relative h-55'>
           {category.images.map((photo, index) => (
             <div

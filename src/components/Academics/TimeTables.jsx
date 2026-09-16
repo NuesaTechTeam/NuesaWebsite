@@ -28,10 +28,10 @@ const TimeTables = () => {
   return (
     <section className="w-full py-16">
       <div className="flex flex-col items-center justify-center mb-12 text-center">
-        <h2 className="text-4xl md:text-5xl font-black text-green-900 mb-6 tracking-tight">
+        <h2 className="text-4xl md:text-5xl font-black text-green-900 dark:text-green-400 mb-6 tracking-tight">
           College Timetables
         </h2>
-        <p className="text-gray-600 text-sm max-w-md mx-auto leading-relaxed">
+        <p className="text-gray-600 dark:text-gray-300 text-sm max-w-md mx-auto leading-relaxed">
           Swipe through to find your class schedule and download essential academic documents.
         </p>
       </div>
@@ -49,11 +49,11 @@ const TimeTables = () => {
             variants={cardVariants}
             className="flex-none w-[280px] md:w-[320px] snap-center"
           >
-            <div className="group bg-white rounded-2xl border border-gray-100 hover:border-green-200 hover:shadow-lg transition duration-300 overflow-hidden">
+            <div className="group bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-green-200 hover:shadow-lg transition duration-300 overflow-hidden">
               {/* PDF Preview - Minimal */}
-              <div className="h-40 bg-gray-50 relative border-b border-gray-100 overflow-hidden">
-                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-white/50 z-10">
-                  <span className="text-xs font-bold text-gray-900 bg-white px-3 py-1 rounded-full shadow-sm border border-gray-100">
+              <div className="h-40 bg-gray-50 dark:bg-gray-900 relative border-b border-gray-100 dark:border-gray-800 overflow-hidden">
+                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-white/50 dark:bg-gray-900/50 z-10">
+                  <span className="text-xs font-bold text-gray-900 dark:text-white bg-white dark:bg-gray-900 px-3 py-1 rounded-full shadow-sm border border-gray-100 dark:border-gray-800">
                     Preview
                   </span>
                 </div>
@@ -73,7 +73,7 @@ const TimeTables = () => {
               <div className="p-5">
                 <div className="flex items-start gap-3 mb-4 min-h-[3rem]">
                   <FileText className="w-5 h-5 text-gray-400 mt-1 flex-shrink-0" />
-                  <h3 className="text-base font-semibold text-gray-800 leading-snug group-hover:text-green-700 transition-colors line-clamp-2">
+                  <h3 className="text-base font-semibold text-gray-800 dark:text-gray-100 leading-snug group-hover:text-green-700 dark:group-hover:text-green-400 transition-colors line-clamp-2">
                     {timetable.title}
                   </h3>
                 </div>
@@ -83,7 +83,7 @@ const TimeTables = () => {
                     href={timetable.link}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 py-2 px-3 rounded-lg border border-gray-200 text-gray-600 text-xs font-medium hover:bg-gray-50 hover:text-gray-900 transition-colors flex items-center justify-center gap-2"
+                    className="flex-1 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-300 text-xs font-medium hover:bg-gray-50 hover:text-gray-900 transition-colors flex items-center justify-center gap-2"
                   >
                     View
                   </a>

@@ -450,10 +450,10 @@ const Notes = () => {
 
   return (
     <section className="w-full py-12">
-      <h2 className="text-3xl md:text-4xl font-bold text-green-700 mb-6 text-center">
+      <h2 className="text-3xl md:text-4xl font-bold text-green-700 dark:text-green-400 mb-6 text-center">
         Notes & Textbooks
       </h2>
-      <p className="text-center text-gray-600 mb-6 max-w-2xl mx-auto text-sm">
+      <p className="text-center text-gray-600 dark:text-gray-300 mb-6 max-w-2xl mx-auto text-sm">
         Download comprehensive lecture notes and recommended textbooks to guide your academic journey.
       </p>
 
@@ -464,7 +464,7 @@ const Notes = () => {
           placeholder="Search notes..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full border border-green-300 px-4 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 text-sm"
+          className="w-full border border-green-300 px-4 py-2 rounded-md focus:outline-none focus:ring-1 focus:ring-green-500 text-sm dark:bg-gray-900 dark:text-white dark:border-green-700 dark:placeholder:text-gray-400"
         />
       </div>
 
@@ -489,26 +489,26 @@ const Notes = () => {
         {paginatedNotes.map((note, index) => (
           <div
             key={index}
-            className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition"
+            className="bg-white dark:bg-gray-900 rounded-lg shadow-md p-6 hover:shadow-lg transition"
           >
             <div className="flex items-center gap-3 mb-2">
-              <FaBookOpen className="text-green-700 text-xl" />
-              <h3 className="text-lg font-semibold text-green-800">
+              <FaBookOpen className="text-green-700 dark:text-green-400 text-xl" />
+              <h3 className="text-lg font-semibold text-green-800 dark:text-green-400">
                 {note.title}
               </h3>
             </div>
             {/* Two separate paragraphs */}
-            <p className="text-sm text-gray-700 mb-1">
+            <p className="text-sm text-gray-700 dark:text-gray-200 mb-1">
               <strong>Level:</strong> {note.level}
             </p>
-            <p className="text-sm text-gray-700 mb-2">
+            <p className="text-sm text-gray-700 dark:text-gray-200 mb-2">
               <strong>Department:</strong> {note.department}
             </p>
             <a
               href={note.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block text-sm text-green-700 font-medium hover:underline"
+              className="inline-block text-sm text-green-700 dark:text-green-400 font-medium hover:underline"
             >
               Download PDF
             </a>
@@ -525,7 +525,7 @@ const Notes = () => {
               onClick={() => setPage(i + 1)}
               className={`px-4 py-2 rounded-full text-sm ${i + 1 === page
                   ? "bg-green-600 text-white"
-                  : "bg-green-100 text-green-800 hover:bg-green-200"
+                  : "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-400 hover:bg-green-200"
                 }`}
             >
               {i + 1}

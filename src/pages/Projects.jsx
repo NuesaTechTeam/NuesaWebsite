@@ -8,12 +8,12 @@ const Projects = () => {
   });
 
   return (
-    <div className='min-h-screen bg-white text-gray-800'>
+    <div className='min-h-screen bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100'>
       <section className='px-4 pb-14 pt-16 text-center sm:px-6 lg:px-8'>
-        <h1 className='text-4xl font-bold text-gray-950 md:text-5xl'>
+        <h1 className='text-4xl font-bold text-gray-950 dark:text-white md:text-5xl'>
           NUESA Projects
         </h1>
-        <p className='mx-auto mt-5 max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg'>
+        <p className='mx-auto mt-5 max-w-2xl text-base leading-relaxed text-gray-600 dark:text-gray-300 md:text-lg'>
           Explore the student-led projects, tools, and college improvements
           built by NUESA members, from current digital platforms to completed
           initiatives around the Engineering College.

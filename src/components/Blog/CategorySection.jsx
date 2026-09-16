@@ -19,7 +19,7 @@ const CategorySection = ({ activeCategory, setActiveCategory }) => {
               className={`px-4 py-2 rounded-full text-sm font-medium whitespace-nowrap transition-colors duration-200 ${
                 isActive
                   ? "bg-green text-white"
-                  : "bg-green-50 text-green-800 hover:bg-green-100 hover:text-green-900"
+                  : "bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-400 hover:bg-green-100 dark:hover:bg-gray-800 hover:text-green-900 dark:hover:text-green-400"
               }`}
             >
               {cat}

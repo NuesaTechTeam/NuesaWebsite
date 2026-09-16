@@ -232,9 +232,9 @@ const HeartPage = () => {
 
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Hero Section */}
-      <div className="relative bg-red-50 py-20 px-4 overflow-hidden border-b border-red-100">
+      <div className="relative bg-red-50 dark:bg-red-900/30 py-20 px-4 overflow-hidden border-b border-red-100 dark:border-red-900/40">
         <div className="max-w-5xl mx-auto text-center relative z-10">
           <div className="flex items-center justify-center mb-6">
             <img
@@ -242,14 +242,14 @@ const HeartPage = () => {
               alt="NUESA HEART Logo"
               className="w-16 h-16 mr-4"
             />
-            <h1 className="text-5xl md:text-6xl font-bold text-gray-900">
+            <h1 className="text-5xl md:text-6xl font-bold text-gray-900 dark:text-white">
               NUESA H.E.A.R.T. Initiative
             </h1>
           </div>
-          <p className="text-2xl md:text-3xl text-red-600 font-semibold mb-8">
+          <p className="text-2xl md:text-3xl text-red-600 dark:text-red-400 font-semibold mb-8">
             Helping Everyone Achieve Resilience Together
           </p>
-          <p className="text-xl text-gray-700 max-w-3xl mx-auto mb-8">
+          <p className="text-xl text-gray-700 dark:text-gray-200 max-w-3xl mx-auto mb-8">
             A safe space for mental wellness, peer support, and personal growth
             within the NUESA community.
           </p>
@@ -264,7 +264,7 @@ const HeartPage = () => {
       </div>
 
       {/* Quick Links Bar */}
-      <div className="bg-white shadow-md ">
+      <div className="bg-white dark:bg-gray-900 shadow-md ">
         <div className="max-w-7xl mx-auto px-2 py-4">
           <div className="flex flex-wrap justify-center gap-4">
             {[
@@ -280,7 +280,7 @@ const HeartPage = () => {
               <button
                 key={index}
                 onClick={() => scrollToSection(link.section)}
-                className="flex items-center px-6 py-2 bg-pink-50 hover:bg-pink-100 text-red-600 font-medium rounded-full transition-colors duration-200"
+                className="flex items-center px-6 py-2 bg-pink-50 dark:bg-pink-900/30 hover:bg-pink-100 dark:hover:bg-pink-900/40 text-red-600 dark:text-red-400 font-medium rounded-full transition-colors duration-200"
               >
                 <link.icon className="w-5 h-5 mr-2" />
                 {link.label}
@@ -335,29 +335,29 @@ const HeartPage = () => {
       </div>
 
       {/* About HEART */}
-      <div className="py-16 px-4 bg-pink-50">
+      <div className="py-16 px-4 bg-pink-50 dark:bg-pink-900/30">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center mb-4">
-              <Heart className="w-8 h-8 text-red-500 mr-2" />
-              <span className="text-sm font-semibold text-red-600 uppercase tracking-wide">
+              <Heart className="w-8 h-8 text-red-500 dark:text-red-400 mr-2" />
+              <span className="text-sm font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">
                 About Us
               </span>
             </div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               About H.E.A.R.T
             </h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-            <div className="bg-white rounded-xl p-8 border border-red-100">
+            <div className="bg-white dark:bg-gray-900 rounded-xl p-8 border border-red-100 dark:border-red-900/40">
               <div className="flex items-center mb-4">
-                <Target className="w-8 h-8 text-red-500 mr-3" />
-                <h3 className="text-2xl font-bold text-gray-900">
+                <Target className="w-8 h-8 text-red-500 dark:text-red-400 mr-3" />
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
                   Our Mission
                 </h3>
               </div>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-200 leading-relaxed">
                 To provide holistic mental health support through evidence-based
                 resilience training, accessible peer networks, research-driven
                 programs, and transformative community engagement that empowers
@@ -366,12 +366,12 @@ const HeartPage = () => {
               </p>
             </div>
 
-            <div className="bg-white rounded-xl p-8 border border-pink-100">
+            <div className="bg-white dark:bg-gray-900 rounded-xl p-8 border border-pink-100 dark:border-pink-900/40">
               <div className="flex items-center mb-4">
-                <Eye className="w-8 h-8 text-pink-500 mr-3" />
-                <h3 className="text-2xl font-bold text-gray-900">Our Vision</h3>
+                <Eye className="w-8 h-8 text-pink-500 dark:text-pink-400 mr-3" />
+                <h3 className="text-2xl font-bold text-gray-900 dark:text-white">Our Vision</h3>
               </div>
-              <p className="text-gray-700 leading-relaxed">
+              <p className="text-gray-700 dark:text-gray-200 leading-relaxed">
                 To pioneer a culture of mental resilience in engineering
                 education, where every student is equipped to navigate academic
                 and personal challenges with confidence and community support.
@@ -380,13 +380,13 @@ const HeartPage = () => {
           </div>
 
           {/* Timeline */}
-          <div className="bg-white rounded-xl p-8 px-3 border border-red-100">
-            <h3 className="text-2xl font-bold text-gray-900 mb-8 text-center flex items-center justify-center">
-              <Clock className="w-6 h-6 mr-2 text-red-500" />
+          <div className="bg-white dark:bg-gray-900 rounded-xl p-8 px-3 border border-red-100 dark:border-red-900/40">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-8 text-center flex items-center justify-center">
+              <Clock className="w-6 h-6 mr-2 text-red-500 dark:text-red-400" />
               The Journey of HEART
             </h3>
             <div className="relative">
-              <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-red-200"></div>
+              <div className="absolute left-1/2 transform -translate-x-1/2 h-full w-1 bg-red-200 dark:bg-red-900/50"></div>
               {milestones.map((milestone, index) => (
                 <div
                   key={index}
@@ -399,14 +399,14 @@ const HeartPage = () => {
                       index % 2 === 0 ? "text-right pr-8" : "text-left pl-8"
                     }`}
                   >
-                    <div className="bg-pink-50 rounded-lg p-4 inline-block">
-                      <p className="font-bold text-red-600 text-xl">
+                    <div className="bg-pink-50 dark:bg-pink-900/30 rounded-lg p-4 inline-block">
+                      <p className="font-bold text-red-600 dark:text-red-400 text-xl">
                         {milestone.year}
                       </p>
-                      <p className="text-gray-700">{milestone.event}</p>
+                      <p className="text-gray-700 dark:text-gray-200">{milestone.event}</p>
                     </div>
                   </div>
-                  <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-red-500 rounded-full border-4 border-white"></div>
+                  <div className="absolute left-1/2 transform -translate-x-1/2 w-4 h-4 bg-red-500 rounded-full border-4 border-white dark:border-gray-900"></div>
                   <div className="w-1/2"></div>
                 </div>
               ))}
@@ -426,19 +426,19 @@ const HeartPage = () => {
       </div>
 
       {/* Meet the Team */}
-      <div id="team" className="py-16 px-4 bg-white">
+      <div id="team" className="py-16 px-4 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center mb-4">
-              <Users className="w-8 h-8 text-red-500 mr-2" />
-              <span className="text-sm font-semibold text-red-600 uppercase tracking-wide">
+              <Users className="w-8 h-8 text-red-500 dark:text-red-400 mr-2" />
+              <span className="text-sm font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">
                 Our Team
               </span>
             </div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Meet Our Team
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-gray-600 dark:text-gray-300">
               Compassionate leaders dedicated to your mental wellness
             </p>
           </div>
@@ -447,7 +447,7 @@ const HeartPage = () => {
             {teamMembers.map((member, index) => (
               <div
                 key={index}
-                className="group bg-red-50 rounded-xl p-6 border border-pink-100 transition-colors duration-200 hover:border-red-300"
+                className="group bg-red-50 dark:bg-red-900/30 rounded-xl p-6 border border-pink-100 dark:border-pink-900/40 transition-colors duration-200 hover:border-red-300 dark:hover:border-red-700"
               >
                 <div className="text-center">
                   <img
@@ -455,18 +455,18 @@ const HeartPage = () => {
                     alt={member.name}
                     className="mx-auto rounded-full w-24 h-24 object-cover mb-4"
                   />
-                  <h3 className="text-xl font-bold text-gray-900 mb-1">
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-1">
                     {member.name}
                   </h3>
-                  <p className="text-sm text-gray-600 mb-1">
+                  <p className="text-sm text-gray-600 dark:text-gray-300 mb-1">
                     {member.department}
                   </p>
-                  <p className="text-sm font-semibold text-red-600 mb-4">
+                  <p className="text-sm font-semibold text-red-600 dark:text-red-400 mb-4">
                     {member.role}
                   </p>
 
                   <div className="mt-4">
-                    <p className="text-sm text-gray-700 italic mb-3">
+                    <p className="text-sm text-gray-700 dark:text-gray-200 italic mb-3">
                       "{member.message}"
                     </p>
                     <button
@@ -485,40 +485,40 @@ const HeartPage = () => {
       </div>
 
       {/* Events */}
-      <div id="events" className="py-16 px-4 bg-pink-50">
+      <div id="events" className="py-16 px-4 bg-pink-50 dark:bg-pink-900/30">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center mb-4">
-              <Calendar className="w-8 h-8 text-red-500 mr-2" />
-              <span className="text-sm font-semibold text-red-600 uppercase tracking-wide">
+              <Calendar className="w-8 h-8 text-red-500 dark:text-red-400 mr-2" />
+              <span className="text-sm font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">
                 Events
               </span>
             </div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               HEART Events
             </h2>
           </div>
 
           {/* Upcoming Events */}
           <div className="mb-12">
-            <h3 className="text-2xl font-bold text-gray-900 mb-6">
+            <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
               Featured Event
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {upcomingEvents.map((event, index) => (
                 <div
                   key={index}
-                  className="bg-white rounded-xl p-6 border border-red-100 hover:border-red-300 transition-colors duration-200"
+                  className="bg-white dark:bg-gray-900 rounded-xl p-6 border border-red-100 dark:border-red-900/40 hover:border-red-300 dark:hover:border-red-700 transition-colors duration-200"
                 >
-                  <div className="bg-red-100 text-red-600 font-bold px-3 py-1 rounded-full inline-block mb-4 text-sm">
+                  <div className="bg-red-100 dark:bg-red-900/40 text-red-600 dark:text-red-400 font-bold px-3 py-1 rounded-full inline-block mb-4 text-sm">
                     {event.date}
                   </div>
-                  <h4 className="text-xl font-bold text-gray-900 mb-2">
+                  <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                     {event.theme}
                   </h4>
-                  <p className="text-gray-600 mb-4">{event.description}</p>
+                  <p className="text-gray-600 dark:text-gray-300 mb-4">{event.description}</p>
                   <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">{event.time}</span>
+                    <span className="text-sm text-gray-500 dark:text-gray-400">{event.time}</span>
                     <button
                       onClick={() => scrollToSection("contact")}
                       className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-200"
@@ -534,20 +534,20 @@ const HeartPage = () => {
           {/* Past Events */}
           {pastEvents.length > 0 && (
             <div>
-              <h3 className="text-2xl font-bold text-gray-900 mb-6">
+              <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">
                 Past Events
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {pastEvents.map((event, index) => (
                   <div
                     key={index}
-                    className="bg-white rounded-xl p-6 shadow-lg"
+                    className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-lg"
                   >
-                    <h4 className="text-xl font-bold text-gray-900 mb-2">
+                    <h4 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
                       {event.title}
                     </h4>
-                    <p className="text-sm text-gray-500 mb-3">{event.date}</p>
-                    <p className="text-gray-700">{event.recap}</p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 mb-3">{event.date}</p>
+                    <p className="text-gray-700 dark:text-gray-200">{event.recap}</p>
                   </div>
                 ))}
               </div>
@@ -557,19 +557,19 @@ const HeartPage = () => {
       </div>
 
       {/* Resources */}
-      <div id="resources" className="py-16 px-4 bg-white">
+      <div id="resources" className="py-16 px-4 bg-white dark:bg-gray-900">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center mb-4">
-              <BookOpen className="w-8 h-8 text-red-500 mr-2" />
-              <span className="text-sm font-semibold text-red-600 uppercase tracking-wide">
+              <BookOpen className="w-8 h-8 text-red-500 dark:text-red-400 mr-2" />
+              <span className="text-sm font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">
                 Resources
               </span>
             </div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Mental Health Resources
             </h2>
-            <p className="text-xl text-gray-600 mb-6">
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-6">
               Your library for mental wellness and resilience
             </p>
 
@@ -581,14 +581,14 @@ const HeartPage = () => {
                   placeholder="Search resources..."
                   value={searchTerm}
                   onChange={handleSearchChange}
-                  className="w-full pl-12 pr-4 py-3 border-2 border-pink-200 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full pl-12 pr-4 py-3 border-2 border-pink-200 rounded-full focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500 dark:border-gray-700"
                 />
               </div>
             </div>
           </div>
 
           {filteredResources.length === 0 ? (
-            <div className="rounded-xl border border-pink-100 bg-pink-50 p-8 text-center text-gray-700">
+            <div className="rounded-xl border border-pink-100 dark:border-pink-900/40 bg-pink-50 dark:bg-pink-900/30 p-8 text-center text-gray-700 dark:text-gray-200">
               No resources match "{searchTerm}". Try a broader term.
             </div>
           ) : (
@@ -596,11 +596,11 @@ const HeartPage = () => {
             {filteredResources.map((resource, index) => (
               <div
                 key={index}
-                className="bg-red-50 rounded-xl p-6 border border-pink-100"
+                className="bg-red-50 dark:bg-red-900/30 rounded-xl p-6 border border-pink-100 dark:border-pink-900/40"
               >
                 <div className="flex items-center mb-4">
-                  <resource.icon className="w-8 h-8 text-red-500 mr-3" />
-                  <h3 className="text-xl font-bold text-gray-900">
+                  <resource.icon className="w-8 h-8 text-red-500 dark:text-red-400 mr-3" />
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                     {resource.category}
                   </h3>
                 </div>
@@ -610,8 +610,8 @@ const HeartPage = () => {
                       key={idx}
                       className="flex items-start group"
                     >
-                      <ChevronRight className="w-5 h-5 text-red-500 mr-2 mt-0.5 group-hover:translate-x-1 transition-transform duration-300" />
-                      <span className="text-gray-700 group-hover:text-red-600 transition-colors duration-300">
+                      <ChevronRight className="w-5 h-5 text-red-500 dark:text-red-400 mr-2 mt-0.5 group-hover:translate-x-1 transition-transform duration-300" />
+                      <span className="text-gray-700 dark:text-gray-200 group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors duration-300">
                         {item}
                       </span>
                     </li>
@@ -627,29 +627,29 @@ const HeartPage = () => {
       {/* Contact a Counselor */}
       <div
         id="contact"
-        className="py-16 px-4 bg-red-50"
+        className="py-16 px-4 bg-red-50 dark:bg-red-900/30"
       >
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center mb-4">
-              <MessageCircle className="w-8 h-8 text-red-500 mr-2" />
-              <span className="text-sm font-semibold text-red-600 uppercase tracking-wide">
+              <MessageCircle className="w-8 h-8 text-red-500 dark:text-red-400 mr-2" />
+              <span className="text-sm font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">
                 Get Support
               </span>
             </div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Contact a Counselor
             </h2>
-            <p className="text-xl text-gray-600">
+            <p className="text-xl text-gray-600 dark:text-gray-300">
               Need to talk? We're here for you. Your conversations are
               confidential.
             </p>
           </div>
 
-          <div className="bg-white rounded-xl p-8 border border-red-100 relative overflow-hidden">
+          <div className="bg-white dark:bg-gray-900 rounded-xl p-8 border border-red-100 dark:border-red-900/40 relative overflow-hidden">
             <div className="space-y-6 relative z-10">
               <div>
-                <label className="block text-gray-700 font-medium mb-2">
+                <label className="block text-gray-700 dark:text-gray-200 font-medium mb-2">
                   Your Name (Optional)
                 </label>
                 <input
@@ -659,12 +659,12 @@ const HeartPage = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, name: e.target.value })
                   }
-                  className="w-full px-4 py-3 border-2 border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-4 py-3 border-2 border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500 dark:border-gray-700"
                 />
               </div>
 
               <div>
-                <label className="block text-gray-700 font-medium mb-2">
+                <label className="block text-gray-700 dark:text-gray-200 font-medium mb-2">
                   Email (Optional)
                 </label>
                 <input
@@ -674,18 +674,18 @@ const HeartPage = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, email: e.target.value })
                   }
-                  className="w-full px-4 py-3 border-2 border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-4 py-3 border-2 border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500 dark:border-gray-700"
                 />
               </div>
 
               <div>
-                <label className="block text-gray-700 font-medium mb-2">
+                <label className="block text-gray-700 dark:text-gray-200 font-medium mb-2">
                   Select a Counselor or Submit Anonymously
                 </label>
                 <select
                   value={selectedCounselor}
                   onChange={(e) => setSelectedCounselor(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-4 py-3 border-2 border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500 dark:border-gray-700"
                 >
                   <option value="">Anonymous Submission</option>
                   {teamMembers.map((member, index) => (
@@ -697,7 +697,7 @@ const HeartPage = () => {
               </div>
 
               <div>
-                <label className="block text-gray-700 font-medium mb-2">
+                <label className="block text-gray-700 dark:text-gray-200 font-medium mb-2">
                   How can we help you?
                 </label>
                 <textarea
@@ -708,24 +708,24 @@ const HeartPage = () => {
                   onChange={(e) =>
                     setFormData({ ...formData, message: e.target.value })
                   }
-                  className="w-full px-4 py-3 border-2 border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500"
+                  className="w-full px-4 py-3 border-2 border-pink-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500 dark:bg-gray-900 dark:text-white dark:placeholder-gray-500 dark:border-gray-700"
                 ></textarea>
               </div>
 
               <button
                 onClick={handleContactSubmit}
                 disabled={!formData.message.trim()}
-                className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-4 rounded-lg transition-colors duration-200 disabled:cursor-not-allowed disabled:bg-gray-300 flex items-center justify-center"
+                className="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-4 rounded-lg transition-colors duration-200 disabled:cursor-not-allowed disabled:bg-gray-300 dark:disabled:bg-gray-700 flex items-center justify-center"
               >
                 <Send className="w-5 h-5 mr-2" />
                 Send Message
               </button>
 
-              <p className="text-center text-sm text-gray-500 mt-4">
+              <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
                 You can also submit via our{" "}
                 <a
                   href="https://forms.gle/tJXHvaVaYtq9d5pR6"
-                  className="text-red-600 hover:underline font-medium"
+                  className="text-red-600 dark:text-red-400 hover:underline font-medium"
                 >
                   Google Form
                 </a>
@@ -736,27 +736,27 @@ const HeartPage = () => {
       </div>
 
       {/* Join HEART */}
-      <div className="py-16 px-4 bg-white">
+      <div className="py-16 px-4 bg-white dark:bg-gray-900">
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
             <div className="flex items-center justify-center mb-4">
-              <UserPlus className="w-8 h-8 text-red-500 mr-2" />
-              <span className="text-sm font-semibold text-red-600 uppercase tracking-wide">
+              <UserPlus className="w-8 h-8 text-red-500 dark:text-red-400 mr-2" />
+              <span className="text-sm font-semibold text-red-600 dark:text-red-400 uppercase tracking-wide">
                 Join Us
               </span>
             </div>
-            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">
               Join HEART
             </h2>
-            <p className="text-xl text-gray-600 mb-8">
+            <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
               Become a volunteer and help create a supportive community for your
               peers
             </p>
           </div>
 
-          <div className="bg-red-50 rounded-xl p-8 border border-red-100">
+          <div className="bg-red-50 dark:bg-red-900/30 rounded-xl p-8 border border-red-100 dark:border-red-900/40">
             <div className="mb-8">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">
+              <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
                 What it means to volunteer:
               </h3>
               <ul className="space-y-3">
@@ -768,8 +768,8 @@ const HeartPage = () => {
                   "Be part of a compassionate community making real impact",
                 ].map((item, index) => (
                   <li key={index} className="flex items-start">
-                    <Heart className="w-5 h-5 text-red-500 mr-3 mt-0.5 flex-shrink-0" />
-                    <span className="text-gray-700">{item}</span>
+                    <Heart className="w-5 h-5 text-red-500 dark:text-red-400 mr-3 mt-0.5 flex-shrink-0" />
+                    <span className="text-gray-700 dark:text-gray-200">{item}</span>
                   </li>
                 ))}
               </ul>
@@ -783,9 +783,9 @@ const HeartPage = () => {
               Sign Up to Join HEART
             </button>
 
-            <p className="text-center text-sm text-gray-500 mt-4">
+            <p className="text-center text-sm text-gray-500 dark:text-gray-400 mt-4">
               Complete our{" "}
-              <a href="https://forms.gle/tJXHvaVaYtq9d5pR6" className="text-red-600 hover:underline font-medium">
+              <a href="https://forms.gle/tJXHvaVaYtq9d5pR6" className="text-red-600 dark:text-red-400 hover:underline font-medium">
                 volunteer registration form
               </a>
             </p>

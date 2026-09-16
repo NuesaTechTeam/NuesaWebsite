@@ -70,14 +70,14 @@ const Event = () => {
   const stats = getEventStats();
 
   return (
-    <section className='bg-white px-4 py-24 sm:px-6 lg:px-8'>
+    <section className='bg-white dark:bg-gray-900 px-4 py-24 sm:px-6 lg:px-8'>
       <div className='container mx-auto'>
         {/* header */}
         <div className='text-center mb-12'>
-          <h1 className='text-4xl md:text-6xl font-bold mb-6 text-gray-950'>
+          <h1 className='text-4xl md:text-6xl font-bold mb-6 text-gray-950 dark:text-white'>
             College Events and News
           </h1>
-          <p className='text-xl text-green-900/80 max-w-2xl mx-auto'>
+          <p className='text-xl text-green-900/80 dark:text-green-400 max-w-2xl mx-auto'>
             Discover our exciting events that shape the future of engineering
             and our college
           </p>
@@ -85,13 +85,13 @@ const Event = () => {
         {/* filters */}
         <div className='max-w-4xl mx-auto mb-16'>
           <div className='flex justify-center'>
-            <div className='bg-gray-50 rounded-lg p-1.5 border border-gray-200'>
+            <div className='bg-gray-50 dark:bg-gray-900 rounded-lg p-1.5 border border-gray-200 dark:border-gray-800'>
               <div className='flex space-x-1'>
                 <button
                   className={`px-4 py-3 rounded-md font-semibold transition-colors duration-200 flex items-center space-x-2 ${
                     activeFilter === "upcoming"
                       ? "bg-green text-white"
-                      : "text-gray-500 hover:text-gray-700 hover:bg-green-400/20 cursor-pointer"
+                      : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-green-400/20 cursor-pointer"
                   }`}
                   onClick={() => setActiveFilter("upcoming")}
                 >
@@ -102,7 +102,7 @@ const Event = () => {
                   className={`px-4 py-3 rounded-md font-semibold transition-colors duration-200 flex items-center space-x-1 ${
                     activeFilter === "past"
                       ? "bg-gray-800 text-white"
-                      : "text-gray-500 hover:text-gray-700 hover:bg-gray-300/20 cursor-pointer"
+                      : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-300/20 cursor-pointer"
                   }`}
                   onClick={() => setActiveFilter("past")}
                 >
@@ -152,8 +152,8 @@ const Event = () => {
                   </div>
                   <div
                     className={`absolute left-2 -translate-x-1/2 translate-y-11  md:left-1/2 md:transform md:-translate-x-1/2 md:-translate-y-12 ${
-                      isPast ? "bg-gray-100" : "bg-white"
-                    } rounded-lg p-3 border border-gray-100 transition duration-200 ${
+                      isPast ? "bg-gray-100 dark:bg-gray-800" : "bg-white dark:bg-gray-900"
+                    } rounded-lg p-3 border border-gray-100 dark:border-gray-800 transition duration-200 ${
                       isVisible
                         ? "opacity-100 translate-y-0"
                         : "opacity-0 translate-y-4"
@@ -162,21 +162,21 @@ const Event = () => {
                     <div className='text-center'>
                       <div
                         className={`text-xs font-bold ${
-                          isPast ? "text-gray-600" : "text-gray-800"
+                          isPast ? "text-gray-600 dark:text-gray-300" : "text-gray-800 dark:text-gray-100"
                         }`}
                       >
                         {dateInfo.month}
                       </div>
                       <div
                         className={`text-xl font-bold ${
-                          isPast ? "text-gray-700" : "text-gray-900"
+                          isPast ? "text-gray-700 dark:text-gray-200" : "text-gray-900 dark:text-white"
                         }`}
                       >
                         {dateInfo.day}
                       </div>
                       <div
                         className={`text-xs font-medium ${
-                          isPast ? "text-gray-500" : "text-gray-600"
+                          isPast ? "text-gray-500 dark:text-gray-400" : "text-gray-600 dark:text-gray-300"
                         }`}
                       >
                         {dateInfo.year}
@@ -197,12 +197,12 @@ const Event = () => {
           </div>
         ) : (
           <div className='text-center py-20'>
-            <div className='rounded-lg border border-green-200 bg-green-50 p-12 max-w-md mx-auto'>
-              <Filter className='w-16 h-16 text-green mx-auto mb-4' />
-              <h3 className='text-2xl font-bold text-green mb-2'>
+            <div className='rounded-lg border border-green-200 bg-green-50 dark:bg-green-900/30 p-12 max-w-md mx-auto'>
+              <Filter className='w-16 h-16 text-green dark:text-green-400 mx-auto mb-4' />
+              <h3 className='text-2xl font-bold text-green dark:text-green-400 mb-2'>
                 No Events Found
               </h3>
-              <p className='text-gray-700'>
+              <p className='text-gray-700 dark:text-gray-200'>
                 No events are currently available in this category.
               </p>
             </div>
@@ -210,11 +210,11 @@ const Event = () => {
         )}
         {activeFilter === "upcoming" && filteredEvents.length > 0 && (
           <div className='text-center mt-18'>
-            <div className='rounded-lg border border-green-200 bg-green-50 p-8 max-w-2xl mx-auto'>
-              <h3 className='text-3xl font-bold text-gray-800 mb-4'>
+            <div className='rounded-lg border border-green-200 bg-green-50 dark:bg-green-900/30 p-8 max-w-2xl mx-auto'>
+              <h3 className='text-3xl font-bold text-gray-800 dark:text-gray-100 mb-4'>
                 Don't Miss Out!
               </h3>
-              <p className='text-gray-500 mb-6'>
+              <p className='text-gray-500 dark:text-gray-400 mb-6'>
                 Stay updated with all our upcoming events and be part of the
                 engineering community.
               </p>

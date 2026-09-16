@@ -41,32 +41,32 @@ const Complaints = () => {
     };
 
     return (
-        <div className="min-h-screen bg-white flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8 font-sans text-gray-900">
+        <div className="min-h-screen bg-white dark:bg-gray-900 flex flex-col items-center py-12 px-4 sm:px-6 lg:px-8 font-sans text-gray-900 dark:text-white">
             <div className="w-full max-w-3xl z-10">
                 <div className="mb-8">
-                    <Link to="/feedback" className="group inline-flex items-center text-sm font-medium text-gray-600 hover:text-green-700 bg-white/50 px-4 py-2 rounded-full border border-gray-200 shadow-sm backdrop-blur-sm hover:bg-white hover:shadow">
+                    <Link to="/feedback" className="group inline-flex items-center text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-green-700 dark:hover:text-green-400 bg-white/50 dark:bg-gray-900/50 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-800 shadow-sm backdrop-blur-sm hover:bg-white dark:hover:bg-gray-900 hover:shadow">
                         <ArrowLeft className="w-4 h-4 mr-2 transition-transform group-hover:-translate-x-1" />
                         Back to Feedback
                     </Link>
                 </div>
 
-                <div className="w-full bg-white border border-gray-200 shadow-lg rounded-3xl p-8 sm:p-10 relative overflow-hidden">
+                <div className="w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-lg rounded-3xl p-8 sm:p-10 relative overflow-hidden">
                     <div className="absolute top-0 right-0 w-64 h-64 bg-green/5 rounded-full blur-[80px] pointer-events-none opacity-50" />
 
                     <div className="relative z-10">
-                        <div className="flex items-center gap-5 mb-10 border-b border-gray-200 pb-8">
-                            <div className="w-16 h-16 bg-green-100 text-green-700 rounded-2xl flex items-center justify-center shrink-0">
+                        <div className="flex items-center gap-5 mb-10 border-b border-gray-200 dark:border-gray-800 pb-8">
+                            <div className="w-16 h-16 bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400 rounded-2xl flex items-center justify-center shrink-0">
                                 <MessageSquareWarning className="w-8 h-8" />
                             </div>
                             <div>
-                                <h1 className="text-3xl sm:text-4xl font-extrabold text-green-700 tracking-tight">Lodge a Complaint</h1>
-                                <p className="text-gray-600 mt-2 text-sm sm:text-base">We take your concerns seriously. Let us know what went wrong.</p>
+                                <h1 className="text-3xl sm:text-4xl font-extrabold text-green-700 dark:text-green-400 tracking-tight">Lodge a Complaint</h1>
+                                <p className="text-gray-600 dark:text-gray-300 mt-2 text-sm sm:text-base">We take your concerns seriously. Let us know what went wrong.</p>
                             </div>
                         </div>
 
                         {status === 'success' && (
-                            <div className="mb-8 p-5 bg-green-50 text-green-700 rounded-2xl border border-green-200 text-sm flex items-start gap-3 shadow-sm">
-                                <CheckCircle2 className="w-5 h-5 text-green shrink-0 mt-0.5" />
+                            <div className="mb-8 p-5 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-2xl border border-green-200 text-sm flex items-start gap-3 shadow-sm">
+                                <CheckCircle2 className="w-5 h-5 text-green dark:text-green-400 shrink-0 mt-0.5" />
                                 <div>
                                     <h4 className="font-bold mb-1">Complaint Submitted</h4>
                                     <p className="text-green-600">Your complaint has been successfully submitted. We will look into it promptly.</p>
@@ -86,17 +86,17 @@ const Complaints = () => {
 
                         <form className="space-y-8" onSubmit={handleSubmit}>
                             {/* Anonymity Toggle */}
-                            <div className="flex items-center justify-between p-5 bg-white rounded-2xl border border-gray-200 transition hover:border-gray-300 hover:shadow-md">
+                            <div className="flex items-center justify-between p-5 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 transition hover:border-gray-300 dark:hover:border-gray-700 hover:shadow-md">
                                 <div>
-                                    <h3 className="text-sm font-bold text-gray-900">Submit Anonymously</h3>
-                                    <p className="text-xs text-gray-500 mt-1">Hide your identity and contact information</p>
+                                    <h3 className="text-sm font-bold text-gray-900 dark:text-white">Submit Anonymously</h3>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">Hide your identity and contact information</p>
                                 </div>
                                 <button
                                     type="button"
                                     onClick={() => setIsAnonymous(!isAnonymous)}
-                                    className={`relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${isAnonymous ? 'bg-green-700' : 'bg-gray-200'}`}
+                                    className={`relative inline-flex h-7 w-12 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${isAnonymous ? 'bg-green-700' : 'bg-gray-200 dark:bg-gray-700'}`}
                                 >
-                                    <span className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${isAnonymous ? 'translate-x-5' : 'translate-x-0'}`} />
+                                    <span className={`pointer-events-none inline-block h-6 w-6 transform rounded-full bg-white dark:bg-gray-900 shadow ring-0 transition duration-200 ease-in-out ${isAnonymous ? 'translate-x-5' : 'translate-x-0'}`} />
                                 </button>
                             </div>
 
@@ -107,11 +107,11 @@ const Complaints = () => {
                                         type="button"
                                         onClick={() => setContactMethod('email')}
                                         className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border text-sm font-bold transition ${contactMethod === 'email'
-                                            ? 'border-green-700 bg-green-50 text-green-700 shadow-sm'
-                                            : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300'
+                                            ? 'border-green-700 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 shadow-sm'
+                                            : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-700'
                                             }`}
                                     >
-                                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${contactMethod === 'email' ? 'border-green-700' : 'border-gray-300'}`}>
+                                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${contactMethod === 'email' ? 'border-green-700' : 'border-gray-300 dark:border-gray-700'}`}>
                                             <div className={`w-2 h-2 rounded-full transition-colors ${contactMethod === 'email' ? 'bg-green-700' : 'bg-transparent'}`} />
                                         </div>
                                         Email
@@ -121,11 +121,11 @@ const Complaints = () => {
                                         type="button"
                                         onClick={() => setContactMethod('phone')}
                                         className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl border text-sm font-bold transition ${contactMethod === 'phone'
-                                            ? 'border-green-700 bg-green-50 text-green-700 shadow-sm'
-                                            : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:border-gray-300'
+                                            ? 'border-green-700 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 shadow-sm'
+                                            : 'border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 hover:border-gray-300 dark:hover:border-gray-700'
                                             }`}
                                     >
-                                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${contactMethod === 'phone' ? 'border-green-700' : 'border-gray-300'}`}>
+                                        <div className={`w-4 h-4 rounded-full border flex items-center justify-center transition-colors ${contactMethod === 'phone' ? 'border-green-700' : 'border-gray-300 dark:border-gray-700'}`}>
                                             <div className={`w-2 h-2 rounded-full transition-colors ${contactMethod === 'phone' ? 'bg-green-700' : 'bg-transparent'}`} />
                                         </div>
                                         Phone
@@ -133,7 +133,7 @@ const Complaints = () => {
                                 </div>
 
                                 <div>
-                                    <label htmlFor="contact" className="block text-sm font-bold text-gray-700 mb-2 pl-1">
+                                    <label htmlFor="contact" className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2 pl-1">
                                         {contactMethod === 'email' ? 'Email Address' : 'Phone Number'}
                                     </label>
                                     <input
@@ -142,7 +142,7 @@ const Complaints = () => {
                                         value={contactInfo}
                                         onChange={(e) => setContactInfo(e.target.value)}
                                         required={!isAnonymous}
-                                        className="w-full px-5 py-3.5 rounded-xl border border-gray-200 bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-700 outline-none transition text-gray-900 placeholder:text-gray-400 font-medium"
+                                        className="w-full px-5 py-3.5 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-green-500/20 focus:border-green-700 outline-none transition text-gray-900 dark:text-white placeholder:text-gray-400 font-medium"
                                         placeholder={contactMethod === 'email' ? 'you@example.com' : '+234 800 000 0000'}
                                     />
                                 </div>
@@ -150,7 +150,7 @@ const Complaints = () => {
 
                             {/* Details Section */}
                             <div>
-                                <label htmlFor="complaint" className="block text-sm font-bold text-gray-700 mb-2 pl-1">
+                                <label htmlFor="complaint" className="block text-sm font-bold text-gray-700 dark:text-gray-200 mb-2 pl-1">
                                     Complaint Details
                                 </label>
                                 <textarea
@@ -158,7 +158,7 @@ const Complaints = () => {
                                     rows="6"
                                     value={details}
                                     onChange={(e) => setDetails(e.target.value)}
-                                    className="w-full px-5 py-4 rounded-xl border border-gray-200 bg-white focus:ring-2 focus:ring-green-500/20 focus:border-green-700 outline-none resize-none transition text-gray-900 placeholder:text-gray-400 font-medium leading-relaxed"
+                                    className="w-full px-5 py-4 rounded-xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 focus:ring-2 focus:ring-green-500/20 focus:border-green-700 outline-none resize-none transition text-gray-900 dark:text-white placeholder:text-gray-400 font-medium leading-relaxed"
                                     placeholder="Please describe the issue in detail..."
                                     required
                                 ></textarea>
@@ -174,8 +174,8 @@ const Complaints = () => {
                             </button>
                         </form>
 
-                        <div className="mt-10 pt-8 border-t border-gray-200 flex items-center justify-center text-center">
-                            <p className="text-sm text-gray-500 max-w-md font-medium">
+                        <div className="mt-10 pt-8 border-t border-gray-200 dark:border-gray-800 flex items-center justify-center text-center">
+                            <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md font-medium">
                                 Your feedback helps us maintain the quality of our organization. We handle all complaints professionally and confidentially.
                             </p>
                         </div>

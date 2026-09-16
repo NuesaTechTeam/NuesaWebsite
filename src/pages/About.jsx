@@ -14,7 +14,7 @@ const About = () => {
   });
 
   return (
-    <div className='min-h-screen bg-white text-gray-800'>
+    <div className='min-h-screen bg-white dark:bg-gray-900 text-gray-800 dark:text-gray-100'>
       <Overview />
       <MissionVision />
       <Disciplines />

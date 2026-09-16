@@ -13,14 +13,14 @@ const ProjectModal = ({ isOpen, onClose, project }) => {
       onClick={onClose}
     >
       <div
-        className='relative max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white'
+        className='relative max-h-[88vh] w-full max-w-2xl overflow-y-auto rounded-lg bg-white dark:bg-gray-900'
         onClick={(event) => event.stopPropagation()}
       >
         <button
           type='button'
           onClick={onClose}
           aria-label='Close project details'
-          className='absolute right-4 top-4 rounded-full bg-white/90 p-2 text-gray-700 transition-colors duration-200 hover:bg-white hover:text-green'
+          className='absolute right-4 top-4 rounded-full bg-white/90 dark:bg-gray-900/90 p-2 text-gray-700 dark:text-gray-200 transition-colors duration-200 hover:bg-white dark:hover:bg-gray-900 hover:text-green dark:hover:text-green-400'
         >
           <X className='h-5 w-5' />
         </button>
@@ -32,11 +32,11 @@ const ProjectModal = ({ isOpen, onClose, project }) => {
         />
 
         <div className='p-6'>
-          <div className='mb-4 flex flex-wrap items-center gap-3 text-sm text-gray-600'>
+          <div className='mb-4 flex flex-wrap items-center gap-3 text-sm text-gray-600 dark:text-gray-300'>
             {project.year && <span>{project.year}</span>}
             {project.students && <span>{project.students} members</span>}
             {project.status && (
-              <span className='rounded-full bg-green-50 px-3 py-1 font-medium capitalize text-green-800'>
+              <span className='rounded-full bg-green-50 dark:bg-green-900/30 px-3 py-1 font-medium capitalize text-green-800 dark:text-green-400'>
                 {project.status}
               </span>
             )}
@@ -44,11 +44,11 @@ const ProjectModal = ({ isOpen, onClose, project }) => {
 
           <h2
             id='project-modal-title'
-            className='mb-3 text-2xl font-bold text-gray-950'
+            className='mb-3 text-2xl font-bold text-gray-950 dark:text-white'
           >
             {project.title}
           </h2>
-          <p className='whitespace-pre-line text-sm leading-relaxed text-gray-700 md:text-base'>
+          <p className='whitespace-pre-line text-sm leading-relaxed text-gray-700 dark:text-gray-200 md:text-base'>
             {project.summary}
           </p>
 
@@ -69,7 +69,7 @@ const ProjectModal = ({ isOpen, onClose, project }) => {
                 href={project.link}
                 target='_blank'
                 rel='noopener noreferrer'
-                className='inline-flex items-center gap-2 rounded-lg border border-green px-5 py-3 font-semibold text-green transition-colors duration-200 hover:bg-green hover:text-white'
+                className='inline-flex items-center gap-2 rounded-lg border border-green px-5 py-3 font-semibold text-green dark:text-green-400 transition-colors duration-200 hover:bg-green hover:text-white'
               >
                 Try Online
                 <ExternalLink className='h-4 w-4' />

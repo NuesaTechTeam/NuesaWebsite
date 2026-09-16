@@ -24,7 +24,7 @@ const blogFeatures = [
     title: "Student Articles",
     description:
       "Original content created by talented engineering students in our community",
-    color: "bg-green-100 text-green-600",
+    color: "bg-green-100 dark:bg-green-900/40 text-green-600 dark:text-green-400",
     accent: "border-green-200",
   },
 ];
@@ -38,13 +38,13 @@ const BlogHome = () => {
       navigate("/blog");
     };
   return (
-    <section className='bg-white py-16 lg:px-4'>
+    <section className='bg-white dark:bg-gray-900 py-16 lg:px-4'>
       <div className='max-w-7xl mx-auto'>
         <div className='text-center mb-12'>
-          <h2 className='text-4xl font-bold text-gray-900 mb-4'>
-            Discover. Learn. <span className='text-green'>Share.</span>
+          <h2 className='text-4xl font-bold text-gray-900 dark:text-white mb-4'>
+            Discover. Learn. <span className='text-green dark:text-green-400'>Share.</span>
           </h2>
-          <p className='text-xl text-gray-700 max-w-3xl mx-auto'>
+          <p className='text-xl text-gray-700 dark:text-gray-200 max-w-3xl mx-auto'>
             Dive into our vibrant community of writers and readers. From
             cutting-edge tech insights to student experiences, find stories that
             inspire and inform.
@@ -56,17 +56,17 @@ const BlogHome = () => {
           {blogFeatures.map((feature, index) => (
             <div
               key={index}
-              className={`bg-white rounded-xl p-6 border ${feature.accent} transition-colors duration-200 group`}
+              className={`bg-white dark:bg-gray-900 rounded-xl p-6 border ${feature.accent} transition-colors duration-200 group`}
             >
               <div
                 className={`w-12 h-12 rounded-lg ${feature.color} flex items-center justify-center mb-4`}
               >
                 <feature.icon className='w-5 h-5' />
               </div>
-              <h3 className='text-xl font-semibold text-green mb-2'>
+              <h3 className='text-xl font-semibold text-green dark:text-green-400 mb-2'>
                 {feature.title}
               </h3>
-              <p className='text-gray-700 leading-relaxed'>
+              <p className='text-gray-700 dark:text-gray-200 leading-relaxed'>
                 {feature.description}
               </p>
             </div>
@@ -74,9 +74,9 @@ const BlogHome = () => {
         </div>
 
         {/* posts */}
-        <div className='bg-white rounded-2xl p-8 mb-12 border border-gray-200'>
+        <div className='bg-white dark:bg-gray-900 rounded-2xl p-8 mb-12 border border-gray-200 dark:border-gray-800'>
           <div className='flex items-center justify-between mb-8'>
-            <h3 className='text-2xl font-bold text-gray-900'>
+            <h3 className='text-2xl font-bold text-gray-900 dark:text-white'>
               Latest from Our Community
             </h3>
           </div>
@@ -84,19 +84,19 @@ const BlogHome = () => {
           <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
             {blogPosts.slice(0, 3).map((post, index) => (
               <div key={index} className='group cursor-pointer'>
-                <div className='bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors duration-200'>
+                <div className='bg-gray-50 dark:bg-gray-900 rounded-lg p-4 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200'>
                   <div className='flex items-center justify-between mb-2'>
-                    <span className='text-xs font-medium text-green bg-green-100 px-2 py-1 rounded'>
+                    <span className='text-xs font-medium text-green dark:text-green-400 bg-green-100 dark:bg-green-900/40 px-2 py-1 rounded'>
                       {post.category}
                     </span>
                     {post.isFeatured && (
                       <Star className='w-4 h-4 text-yellow-500 fill-current' />
                     )}
                   </div>
-                  <h4 className='font-semibold text-green mb-2 group-hover:text-green-700 transition-colors duration-200'>
+                  <h4 className='font-semibold text-green dark:text-green-400 mb-2 group-hover:text-green-700 dark:group-hover:text-green-400 transition-colors duration-200'>
                     {post.title}
                   </h4>
-                  <div className='flex items-center justify-between text-sm text-gray-500'>
+                  <div className='flex items-center justify-between text-sm text-gray-500 dark:text-gray-400'>
                     <span>By {post.author}</span>
                   </div>
                 </div>

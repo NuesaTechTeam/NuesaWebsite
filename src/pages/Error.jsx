@@ -47,7 +47,7 @@ const Error = () => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-green-50 flex items-center justify-center py-8 px-1">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 dark:from-gray-900 to-green-50 dark:to-green-900/30 flex items-center justify-center py-8 px-1">
       <div className="max-w-4xl mx-auto text-center">
         
 
@@ -59,7 +59,7 @@ const Error = () => {
           
           {/* Main 404 Text */}
           <div className="relative z-10">
-            <h1 className="text-8xl md:text-9xl font-bold text-green mb-4 opacity-90">
+            <h1 className="text-8xl md:text-9xl font-bold text-green dark:text-green-400 mb-4 opacity-90">
               4<span className="relative">
                 0
                 <Wrench className="absolute top-2 left-1/2 transform -translate-x-1/2 text-green-600" size={20} />
@@ -67,30 +67,30 @@ const Error = () => {
             </h1>
             <div className="flex items-center justify-center mb-6">
               <Construction className="text-orange-500 mr-1" size={26} />
-              <span className="text-lg font-semibold text-gray-700">SYSTEM MALFUNCTION DETECTED</span>
+              <span className="text-lg font-semibold text-gray-700 dark:text-gray-200">SYSTEM MALFUNCTION DETECTED</span>
               <Construction className=" text-orange-500 ml-1" size={26} />
             </div>
           </div>
         </div>
 
         {/* Error Message */}
-        <div className="bg-white rounded-xl p-8 px-2 shadow-lg border border-gray-200 mb-8">
+        <div className="bg-white dark:bg-gray-900 rounded-xl p-8 px-2 shadow-lg border border-gray-200 dark:border-gray-800 mb-8">
           <div className="flex items-center justify-center mb-4">
             <AlertTriangle className=" text-orange-500 mr-1" size={30} />
-            <h2 className="text-2xl font-bold text-gray-900">Circuit Breaker Activated</h2>
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Circuit Breaker Activated</h2>
           </div>
-          <p className="text-gray-600 text-lg mb-6">
-            Oops! It looks like you've encountered a <span className="font-semibold text-green">routing error</span>. 
+          <p className="text-gray-600 dark:text-gray-300 text-lg mb-6">
+            Oops! It looks like you've encountered a <span className="font-semibold text-green dark:text-green-400">routing error</span>. 
             The page you're looking for seems to have been disconnected from our main circuit.
           </p>
           
           {/* Engineering-themed explanation */}
-          <div className="bg-green-50 rounded-lg p-4 mb-6">
+          <div className="bg-green-50 dark:bg-green-900/30 rounded-lg p-4 mb-6">
             <div className="flex items-start">
               <Zap className="text-green-600 mt-0.5 mr-3 flex-shrink-0" size={16} />
               <div className="text-left">
-                <p className="text-sm text-green font-medium mb-1">Engineering Diagnosis:</p>
-                <p className="text-sm text-green-700">
+                <p className="text-sm text-green dark:text-green-400 font-medium mb-1">Engineering Diagnosis:</p>
+                <p className="text-sm text-green-700 dark:text-green-400">
                   The requested URL pathway could not be established. This might be due to:
                   a broken link, mistyped address, or a page that's currently under maintenance.
                 </p>
@@ -112,7 +112,7 @@ const Error = () => {
             
             <button 
               onClick={handleRefresh}
-              className="group bg-white hover:bg-gray-50 text-green-700 border-2 border-green-700 font-semibold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
+              className="group bg-white dark:bg-gray-900 hover:bg-gray-50 dark:hover:bg-gray-800 text-green-700 dark:text-green-400 border-2 border-green-700 font-semibold py-3 px-6 rounded-lg transition duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
             >
               <span className="flex items-center justify-center">
                 <RefreshCw className="mr-2 group-hover:rotate-180 transition-transform duration-300" size={16} />
@@ -123,9 +123,9 @@ const Error = () => {
         </div>
 
         {/* Quick Navigation Links */}
-        <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-200">
-          <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center justify-center">
-            <Search className=" mr-2 text-green" size={18} />
+        <div className="bg-white dark:bg-gray-900 rounded-xl p-6 shadow-lg border border-gray-200 dark:border-gray-800">
+          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-6 flex items-center justify-center">
+            <Search className=" mr-2 text-green dark:text-green-400" size={18} />
             Quick Navigation
           </h3>
           <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -133,10 +133,10 @@ const Error = () => {
               <Link
                 key={index}
                 to={link.path}
-                className="group flex flex-col items-center p-4 rounded-lg hover:bg-green-50 transition duration-300 transform hover:scale-105"
+                className="group flex flex-col items-center p-4 rounded-lg hover:bg-green-50 dark:hover:bg-gray-800 transition duration-300 transform hover:scale-105"
               >
-                <link.icon className=" text-green mb-2 group-hover:scale-110 transition-transform duration-300" size={18} />
-                <span className="text-sm font-medium text-gray-700 group-hover:text-green-700 transition-colors duration-300">
+                <link.icon className=" text-green dark:text-green-400 mb-2 group-hover:scale-110 transition-transform duration-300" size={18} />
+                <span className="text-sm font-medium text-gray-700 dark:text-gray-200 group-hover:text-green-700 transition-colors duration-300">
                   {link.label}
                 </span>
               </Link>
@@ -146,12 +146,12 @@ const Error = () => {
 
         {/* Footer Message */}
         <div className="mt-8 text-center">
-          <p className="text-gray-500 text-sm">
+          <p className="text-gray-500 dark:text-gray-400 text-sm">
             Need help? Our engineering support team is here to assist you.
           </p>
           <Link 
             to="/contactus"
-            className="text-green hover:text-green-700 font-medium text-sm mt-2 transition-colors duration-300 inline-block"
+            className="text-green dark:text-green-400 hover:text-green-700 dark:hover:text-green-400 font-medium text-sm mt-2 transition-colors duration-300 inline-block"
           >
             Contact Technical Support →
           </Link>
