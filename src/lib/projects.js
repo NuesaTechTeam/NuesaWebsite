@@ -1,15 +1,5 @@
 export const ongoingProjects = [
   {
-    title: "The Engineering Hub",
-    summary:
-      'The "Engineering Hub" is an application built to support students in the College of Engineering. It brings academic schedules, review questions based on your notes and past questions, and helps you track your understanding of your courses.',
-    year: 2025,
-    students: 2,
-    image: "/images/projects/nuesa-app.jpg",
-    link: "https://engineeringhub.nuesaabuad.ng/",
-    appLink: "https://play.google.com/store/apps/details?id=com.engineeringhub.engineeringhub&pcampaignid=web_share",
-  },
-  {
     title: "NUESA Website",
     summary:
       "The NUESA Website serves as a central platform for engineering students. It provides announcements, downloadable academic materials, departmental timetables, event schedules, leadership profiles, project showcases, blog posts, and direct feedback channels for the association.",
@@ -43,13 +33,5 @@ export const pastProjects = [
     status: "completed",
     year: 2023,
     image: "/images/projects/2023-2024.webp",
-  },
-  {
-    title: "Findr",
-    summary:
-      "A simple platform designed to help university students connect with roommates before resumption, making it easier to build familiarity and plan ahead.",
-    status: "completed",
-    year: 2024,
-    image: "/images/projects/findr.webp",
   },
 ];

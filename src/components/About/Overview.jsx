@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import CountUp from "../CountUp";
 
 const Overview = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -52,19 +53,27 @@ const Overview = () => {
 
           <div className='mt-8 grid grid-cols-2 gap-4 text-left sm:grid-cols-4'>
             <div className='border-l border-green-200 pl-4'>
-              <h3 className='text-3xl font-bold text-green dark:text-green-400'>1K+</h3>
+              <h3 className='text-3xl font-bold text-green dark:text-green-400'>
+                <CountUp end={1000} suffix='+' format={(v) => (v >= 1000 ? "1K" : Math.round(v))} />
+              </h3>
               <p className='text-sm font-medium text-gray-600 dark:text-gray-300'>Members</p>
             </div>
             <div className='border-l border-green-200 pl-4'>
-              <h3 className='text-3xl font-bold text-green dark:text-green-400'>9</h3>
+              <h3 className='text-3xl font-bold text-green dark:text-green-400'>
+                <CountUp end={9} />
+              </h3>
               <p className='text-sm font-medium text-gray-600 dark:text-gray-300'>Departments</p>
             </div>
             <div className='border-l border-green-200 pl-4'>
-              <h3 className='text-3xl font-bold text-green dark:text-green-400'>10</h3>
+              <h3 className='text-3xl font-bold text-green dark:text-green-400'>
+                <CountUp end={10} />
+              </h3>
               <p className='text-sm font-medium text-gray-600 dark:text-gray-300'>Annual Events</p>
             </div>
             <div className='border-l border-green-200 pl-4'>
-              <h3 className='text-3xl font-bold text-green dark:text-green-400'>13</h3>
+              <h3 className='text-3xl font-bold text-green dark:text-green-400'>
+                <CountUp end={14} />
+              </h3>
               <p className='text-sm font-medium text-gray-600 dark:text-gray-300'>Years Active</p>
             </div>
           </div>

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { eventsData } from "../../lib/constants";
 import { Calendar, MapPin, Clock, ArrowRight, Sparkles } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import ShufflingImage from "../ShufflingImage";
+import CountUp from "../CountUp";
 
 const EventsHome = () => {
   const [currentEventIndex, setCurrentEventIndex] = useState(0);
@@ -122,7 +124,7 @@ const EventsHome = () => {
               <div className='grid grid-cols-2 gap-6 mb-12'>
                 <div className='bg-green-50 dark:bg-green-900/30 p-6 rounded-2xl border border-green-200'>
                   <div className='text-3xl font-bold text-green-600 mb-2'>
-                    {pastEvents.length}+
+                    <CountUp end={pastEvents.length} suffix='+' />
                   </div>
                   <div className='text-sm font-medium text-green-700 dark:text-green-400'>
                     Past Events
@@ -130,7 +132,7 @@ const EventsHome = () => {
                 </div>
                 <div className='bg-blue-50 p-6 rounded-2xl border border-blue-200'>
                   <div className='text-3xl font-bold text-blue-600 mb-2'>
-                    1k+
+                    <CountUp end={1000} suffix='+' format={(v) => (v >= 1000 ? "1k" : Math.round(v))} />
                   </div>
                   <div className='text-sm font-medium text-blue-700'>
                     Students Participated
@@ -204,14 +206,20 @@ const EventsHome = () => {
             <div className='relative'>
               <div className='bg-white dark:bg-gray-900 rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-800 transition-colors duration-200 hover:border-green-300 dark:hover:border-green-700'>
                 <div className='relative overflow-hidden'>
-                  <img
+                  <ShufflingImage
+                    images={currentEvent.images}
                     src={currentEvent.image}
                     alt={currentEvent.title}
                     className={`w-full ${
                       currentEvent.imageFit === "contain"
-                        ? "aspect-[4/5] object-contain bg-black"
-                        : "h-64 object-cover"
+                        ? "aspect-[4/5] bg-black"
+                        : "h-64"
                     }`}
+                    imgClassName={
+                      currentEvent.imageFit === "contain"
+                        ? "object-contain"
+                        : "object-cover"
+                    }
                   />
                   <div className='absolute top-4 left-4 right-4 flex justify-between items-start'>
                     <span
@@ -246,7 +254,7 @@ const EventsHome = () => {
                   <h3 className='text-2xl font-bold text-gray-900 dark:text-white mb-3 hover:text-green-600 dark:hover:text-green-400 transition-colors'>
                     {currentEvent.title}
                   </h3>
-                  <p className='text-gray-700 dark:text-gray-200 mb-4 leading-relaxed'>
+                  <p className='whitespace-pre-line text-gray-700 dark:text-gray-200 mb-4 leading-relaxed'>
                     {currentEvent.description}
                   </p>
 
@@ -305,16 +313,19 @@ const EventsHome = () => {
             <div className='grid grid-cols-2 gap-6 mb-12'>
               <div className='bg-green-50 dark:bg-green-900/30 p-6 rounded-2xl border border-green-200'>
                 <div className='text-3xl font-bold text-green-600 mb-2'>
-                  {hasUpcomingEvents
-                    ? `${upcomingEvents.length}+`
-                    : `${pastEvents.length}+`}
+                  <CountUp
+                    end={hasUpcomingEvents ? upcomingEvents.length : pastEvents.length}
+                    suffix='+'
+                  />
                 </div>
                 <div className='text-sm font-medium text-green-700 dark:text-green-400'>
                   {hasUpcomingEvents ? "Upcoming Events" : "Past Events"}
                 </div>
               </div>
               <div className='bg-blue-50 p-6 rounded-2xl border border-blue-200'>
-                <div className='text-3xl font-bold text-blue-600 mb-2'>1k+</div>
+                <div className='text-3xl font-bold text-blue-600 mb-2'>
+                  <CountUp end={1000} suffix='+' format={(v) => (v >= 1000 ? "1k" : Math.round(v))} />
+                </div>
                 <div className='text-sm font-medium text-blue-700'>
                   Students{" "}
                   {hasUpcomingEvents ? "Participating" : "Participated"}
@@ -390,14 +401,18 @@ const EventsHome = () => {
                   key={event.id}
                   className='bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden hover:border-green-300 dark:hover:border-green-700 transition-colors duration-200'
                 >
-                  <img
+                  <ShufflingImage
+                    images={event.images}
                     src={event.image}
                     alt={event.title}
                     className={`w-full ${
-                      event.imageFit === "contain"
-                        ? "h-40 object-contain bg-black"
-                        : "h-32 object-cover"
+                      event.imageFit === "contain" ? "h-40 bg-black" : "h-32"
                     }`}
+                    imgClassName={
+                      event.imageFit === "contain"
+                        ? "object-contain"
+                        : "object-cover"
+                    }
                   />
                   <div className='p-4'>
                     <h4 className='font-bold text-gray-900 dark:text-white mb-2 line-clamp-1'>

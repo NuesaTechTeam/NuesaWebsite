@@ -1,5 +1,6 @@
 import { ArrowRight, BookOpen, FileText, GraduationCap, Play, Star, Users } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
+import CountUp from "../CountUp";
 
 
 const features = [
@@ -24,9 +25,9 @@ const features = [
 ];
 
 const stats = [
-  { number: "50+", label: "Study Materials" },
-  { number: "9+", label: "Departments" },
-  { number: "100+", label: "Students Helped" },
+  { end: 50, suffix: "+", label: "Study Materials" },
+  { end: 9, suffix: "+", label: "Departments" },
+  { end: 100, suffix: "+", label: "Students Helped" },
 ];
 
 
@@ -58,7 +59,7 @@ const AcademicsHome = () => {
           {stats.map((stat, index) => (
             <div key={index} className='text-center'>
               <div className='text-3xl font-bold text-green dark:text-green-400 mb-2'>
-                {stat.number}
+                <CountUp end={stat.end} suffix={stat.suffix} />
               </div>
               <div className='text-gray-700 dark:text-gray-200'>{stat.label}</div>
             </div>

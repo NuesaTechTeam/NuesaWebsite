@@ -1,5 +1,6 @@
 import { MapPin, Clock, Calendar } from "lucide-react";
 import { Link } from "react-router-dom";
+import ShufflingImage from "../ShufflingImage";
 
 const EventCard = ({ event, isPast, isVisible, isEven }) => {
   const categoryColors = {
@@ -34,13 +35,15 @@ const EventCard = ({ event, isPast, isVisible, isEven }) => {
       >
         {/* poster */}
         <div className='relative overflow-hidden'>
-          <img
+          <ShufflingImage
+            images={event.images}
             src={event.image}
             alt={event.title}
-            className={`w-full transition-transform duration-200 hover:scale-[1.02] ${
-              event.imageFit === "contain"
-                ? "aspect-[4/5] object-contain bg-black"
-                : "h-50 object-cover"
+            className={`w-full ${
+              event.imageFit === "contain" ? "aspect-[4/5] bg-black" : "h-50"
+            }`}
+            imgClassName={`transition-transform duration-200 hover:scale-[1.02] ${
+              event.imageFit === "contain" ? "object-contain" : "object-cover"
             } ${isPast ? "grayscale opacity-80" : ""}`}
           />
           <div
@@ -69,7 +72,7 @@ const EventCard = ({ event, isPast, isVisible, isEven }) => {
           </h3>
 
           <p
-            className={`mb-4 leading-relaxed ${
+            className={`whitespace-pre-line mb-4 leading-relaxed ${
               isPast ? "text-gray-600 dark:text-gray-300" : "text-gray-500 dark:text-gray-400"
             }`}
           >

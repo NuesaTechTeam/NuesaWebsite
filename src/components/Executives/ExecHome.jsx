@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { currentExecutivesData } from "../../lib/constants"
 import ExecutiveCard from "./ExecutiveCard";
 import { ArrowRight } from "lucide-react";
+import CountUp from "../CountUp";
 
 const ExecHome = () => {
     const featuredExecutives = currentExecutivesData.slice(0, 4)
@@ -49,15 +50,21 @@ const ExecHome = () => {
         </div>
         <div className='mt-12 grid grid-cols-2 md:grid-cols-4 gap-8'>
           <div className='text-center'>
-            <div className='text-3xl font-bold text-green dark:text-green-400 mb-2'>12+</div>
+            <div className='text-3xl font-bold text-green dark:text-green-400 mb-2'>
+              <CountUp end={12} suffix='+' />
+            </div>
             <div className='text-gray-700 dark:text-gray-200 text-sm'>Executive Members</div>
           </div>
           <div className='text-center'>
-            <div className='text-3xl font-bold text-green dark:text-green-400 mb-2'>9</div>
+            <div className='text-3xl font-bold text-green dark:text-green-400 mb-2'>
+              <CountUp end={9} />
+            </div>
             <div className='text-gray-700 dark:text-gray-200 text-sm'>Engineering Departments</div>
           </div>
           <div className='text-center'>
-            <div className='text-3xl font-bold text-green dark:text-green-400 mb-2'>1000+</div>
+            <div className='text-3xl font-bold text-green dark:text-green-400 mb-2'>
+              <CountUp end={1000} suffix='+' />
+            </div>
             <div className='text-gray-700 dark:text-gray-200 text-sm'>Students Served</div>
           </div>
           <div className='text-center'>

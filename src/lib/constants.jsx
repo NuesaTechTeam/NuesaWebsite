@@ -246,8 +246,13 @@ export const eventsData = [
     time: "06:00 PM",
     venue: "Alfa Belgore Hall, ABUAD",
     description:
-      "Placeholder description for FÀÁJÍ LAWA. Full details will be announced soon.",
+      "NIGHT OF ELEGANCE: DINNER DRESS CODE\n\nCome dressed to impress in your finest traditional attire! 💃🏾🕺🏾\n\n\nLadies and gentlemen, let's celebrate our culture and style in grand fashion. ✨",
     image: "/images/events/faji-lawa.jpg",
+    images: [
+      "/images/events/faji-lawa.jpg",
+      "/images/events/faji-lawa-2.jpg",
+      "/images/events/faji-lawa-3.jpg",
+    ],
     imageFit: "contain",
     category: "Social",
     status: "upcoming",

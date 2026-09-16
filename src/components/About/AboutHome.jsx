@@ -8,6 +8,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import CountUp from "../CountUp";
 
 const AboutHome = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -141,19 +142,27 @@ const AboutHome = () => {
         {/* stats */}
         <div className='grid grid-cols-2 md:grid-cols-4 gap-8 mb-16'>
           <div className='text-center'>
-            <div className='text-3xl font-bold text-green dark:text-green-400 mb-2'>1k+</div>
+            <div className='text-3xl font-bold text-green dark:text-green-400 mb-2'>
+              <CountUp end={1000} suffix='+' format={(v) => (v >= 1000 ? "1k" : Math.round(v))} />
+            </div>
             <div className='text-gray-600 dark:text-gray-300'>Members</div>
           </div>
           <div className='text-center'>
-            <div className='text-3xl font-bold text-green dark:text-green-400 mb-2'>9</div>
+            <div className='text-3xl font-bold text-green dark:text-green-400 mb-2'>
+              <CountUp end={9} />
+            </div>
             <div className='text-gray-600 dark:text-gray-300'>Departments</div>
           </div>
           <div className='text-center'>
-            <div className='text-3xl font-bold text-green dark:text-green-400 mb-2'>10</div>
+            <div className='text-3xl font-bold text-green dark:text-green-400 mb-2'>
+              <CountUp end={10} />
+            </div>
             <div className='text-gray-600 dark:text-gray-300'>Annual Events</div>
           </div>
           <div className='text-center'>
-            <div className='text-3xl font-bold text-green dark:text-green-400 mb-2'>13</div>
+            <div className='text-3xl font-bold text-green dark:text-green-400 mb-2'>
+              <CountUp end={14} />
+            </div>
             <div className='text-gray-600 dark:text-gray-300'>Years Active</div>
           </div>
         </div>
