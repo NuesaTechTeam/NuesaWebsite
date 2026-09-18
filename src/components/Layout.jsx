@@ -5,13 +5,13 @@ import { useLocation } from 'react-router-dom';
 const Layout = ({ children }) => {
 
   const location = useLocation();
-  const fullWidthPages = ["/dinner", "/faji-lawa", "/apwen", "/academics"];
+  const fullWidthPages = ["/faji-lawa", "/apwen", "/academics"];
   const isFullWidthPage = fullWidthPages.includes(location.pathname);
 
   return (
     <div>
       <Navbar />
-      <main className={`bg-white dark:bg-gray-950 ${location.pathname === "/dinner" || location.pathname === "/faji-lawa" ? "mt-15" : location.pathname === "/apwen" ? "mt-10" : "mt-17"} ${!isFullWidthPage ? "px-5" : ""}`}>
+      <main className={`bg-white dark:bg-gray-950 ${location.pathname === "/faji-lawa" ? "mt-15" : location.pathname === "/apwen" ? "mt-10" : "mt-17"} ${!isFullWidthPage ? "px-5" : ""}`}>
         {children}
       </main>
       <Footer />

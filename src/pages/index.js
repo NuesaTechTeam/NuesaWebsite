@@ -7,7 +7,6 @@ import Executives from "./Executives.jsx"
 import Home from "./Home.jsx"
 import Projects from "./Projects.jsx"
 import Academics from "./Academics.jsx"
-import Dinner from "./Dinner.jsx"
 import FajiLawa from "./FajiLawa.jsx"
 import Elections from "./Elections.jsx"
 import Apwen from "./Apwen.jsx"
@@ -16,4 +15,4 @@ import Complaints from "./Complaints.jsx"
 import Suggestions from "./Suggestions.jsx"
 import Library from "./Library.jsx"
 
-export { About, Blog, ContactUs, Events, Error, Executives, Home, Projects, Academics, Dinner, FajiLawa, Elections, Apwen, Feedback, Complaints, Suggestions, Library }
+export { About, Blog, ContactUs, Events, Error, Executives, Home, Projects, Academics, FajiLawa, Elections, Apwen, Feedback, Complaints, Suggestions, Library }

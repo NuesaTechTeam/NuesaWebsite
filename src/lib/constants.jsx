@@ -40,10 +40,6 @@ export const navbarLinks = [
     title: "Library",
     url: "/library",
   },
-  // {
-  //   title: "Dinner",
-  //   url: "/dinner",
-  // },
   {
     title: "APWEN",
     url: "/apwen",
@@ -195,7 +191,6 @@ export const eventsData = [
     category: "Mafia",
     status: "past",
     featured: true,
-    detailsUrl: "/dinner",
   },
   {
     id: 7,

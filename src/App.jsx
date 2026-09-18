@@ -11,7 +11,6 @@ const Blog = lazy(() => import("./pages/Blog"));
 const Academics = lazy(() => import("./pages/Academics"));
 const Library = lazy(() => import("./pages/Library"));
 const ContactUs = lazy(() => import("./pages/ContactUs"));
-const Dinner = lazy(() => import("./pages/Dinner"));
 const FajiLawa = lazy(() => import("./pages/FajiLawa"));
 const Elections = lazy(() => import("./pages/Elections"));
 const Apwen = lazy(() => import("./pages/Apwen"));
@@ -41,7 +40,6 @@ function App() {
           <Route path='/academics' element={<Academics />} />
           <Route path='/library' element={<Library />} />
           <Route path='/contactus' element={<ContactUs />} />
-          <Route path='/dinner' element={<Dinner />} />
           <Route path='/faji-lawa' element={<FajiLawa />} />
           <Route path='/elections' element={<Elections />} />
           <Route path='/apwen' element={<Apwen />} />
