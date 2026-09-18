@@ -3,7 +3,9 @@
  * Set VITE_ELECTIONS_API_URL to enable it. When unset, the app falls back to
  * the local placeholder data so the UI keeps working during development.
  */
-const API_URL = (import.meta.env.VITE_ELECTIONS_API_URL || "").replace(/\/+$/, "");
+const API_URL = (
+  import.meta.env.VITE_ELECTIONS_API_URL || "https://elections-api.nuesaabuad.ng"
+).replace(/\/+$/, "");
 const TOKEN_KEY = "nuesa-elections-token";
 
 export const isElectionsApiConfigured = () => Boolean(API_URL);
