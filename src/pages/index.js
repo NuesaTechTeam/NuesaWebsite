@@ -9,11 +9,11 @@ import Projects from "./Projects.jsx"
 import Academics from "./Academics.jsx"
 import Dinner from "./Dinner.jsx"
 import FajiLawa from "./FajiLawa.jsx"
-import Videos from "./Videos.jsx"
-import HeartPage from "./Heart.jsx"
+import Elections from "./Elections.jsx"
+import Apwen from "./Apwen.jsx"
 import Feedback from "./Feedback.jsx"
 import Complaints from "./Complaints.jsx"
 import Suggestions from "./Suggestions.jsx"
 import Library from "./Library.jsx"
 
-export { About, Blog, ContactUs, Events, Error, Executives, Home, Projects, Academics, Dinner, FajiLawa, Videos, HeartPage, Feedback, Complaints, Suggestions, Library }
+export { About, Blog, ContactUs, Events, Error, Executives, Home, Projects, Academics, Dinner, FajiLawa, Elections, Apwen, Feedback, Complaints, Suggestions, Library }

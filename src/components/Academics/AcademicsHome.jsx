@@ -121,8 +121,8 @@ const AcademicsHome = () => {
               <Link to='/library' className='text-green-700 dark:text-green-400 hover:text-green-900 dark:hover:text-green-400 hover:underline'>
                 NUESA ABUAD Digital Library
               </Link>
-              <Link to='/heart' className='text-red-700 hover:text-red-900 hover:underline'>
-                H.E.A.R.T. Student Welfare &amp; Counseling
+              <Link to='/apwen' className='text-purple-700 dark:text-purple-400 hover:text-purple-900 dark:hover:text-purple-300 hover:underline'>
+                APWEN ABUAD Collegiate
               </Link>
             </div>
           </div>

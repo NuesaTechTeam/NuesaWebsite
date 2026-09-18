@@ -45,7 +45,7 @@ const Footer = () => {
             <h3 className='font-semibold text-gray-900 dark:text-white mb-4'>Resources</h3>
             <ul className='space-y-2'>
               {navbarLinks
-                .filter((link) => ["Academics", "Library", "H.E.A.R.T", "Videos", "Blog", "Feedback"].includes(link.title))
+                .filter((link) => ["Academics", "Library", "APWEN", "Blog", "Feedback"].includes(link.title))
                 .map((link) => (
                   <li key={link.title}>
                     <Link

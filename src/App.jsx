@@ -13,8 +13,8 @@ const Library = lazy(() => import("./pages/Library"));
 const ContactUs = lazy(() => import("./pages/ContactUs"));
 const Dinner = lazy(() => import("./pages/Dinner"));
 const FajiLawa = lazy(() => import("./pages/FajiLawa"));
-const Videos = lazy(() => import("./pages/Videos"));
-const HeartPage = lazy(() => import("./pages/Heart"));
+const Elections = lazy(() => import("./pages/Elections"));
+const Apwen = lazy(() => import("./pages/Apwen"));
 const Feedback = lazy(() => import("./pages/Feedback"));
 const Complaints = lazy(() => import("./pages/Complaints"));
 const Suggestions = lazy(() => import("./pages/Suggestions"));
@@ -43,8 +43,8 @@ function App() {
           <Route path='/contactus' element={<ContactUs />} />
           <Route path='/dinner' element={<Dinner />} />
           <Route path='/faji-lawa' element={<FajiLawa />} />
-          <Route path='/videos' element={<Videos />} />
-          <Route path='/heart' element={<HeartPage />} />
+          <Route path='/elections' element={<Elections />} />
+          <Route path='/apwen' element={<Apwen />} />
           <Route path='/feedback' element={<Feedback />} />
           <Route path='/feedback/complaints' element={<Complaints />} />
           <Route path='/feedback/suggestions' element={<Suggestions />} />

@@ -13,7 +13,7 @@ const POSTER_IMAGES = [
 ];
 
 const DESCRIPTION =
-  "NIGHT OF ELEGANCE: DINNER DRESS CODE\n\nCome dressed to impress in your finest traditional attire! 💃🏾🕺🏾\n\n\nLadies and gentlemen, let's celebrate our culture and style in grand fashion. ✨";
+  "NIGHT OF ELEGANCE: DINNER DRESS CODE\n\nCome dressed to impress in your finest traditional attire! 💃🏾🕺🏾\n\n\nLadies and gentlemen, let's celebrate our culture and style in grand fashion. ✨\n\nBooking starts 1st of October.";
 
 const FajiLawa = () => {
   useSEO({

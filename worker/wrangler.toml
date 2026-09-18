@@ -1,0 +1,25 @@
+name = "nuesa-elections"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+account_id = "a06481b3ed7ddcf617cc917bf38d39d4"
+
+routes = [
+  { pattern = "elections-api.nuesaabuad.ng", custom_domain = true }
+]
+
+# Non-secret configuration. Secrets are set with `wrangler secret put` (see README).
+[vars]
+ALLOWED_ORIGIN = "https://nuesaabuad.ng,http://localhost:5173"
+OTP_EMAIL_FROM = "NUESA Elections <elections@nuesaabuad.ng>"
+OTP_REPLY_TO = "nuesa.abuad.tech@gmail.com"
+TERMII_SENDER_ID = "NUESA"
+TERMII_CHANNEL = "dnd"
+
+[[kv_namespaces]]
+binding = "SESSIONS"
+id = "3e9b8dbda2814efdb09c7c3641c97dd9"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "nuesa-elections"
+database_id = "d235931f-634b-4203-92d2-0f0fe743638b"

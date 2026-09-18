@@ -1,0 +1,15 @@
+{
+  "name": "nuesa-elections-worker",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "db:init": "wrangler d1 execute nuesa-elections --remote --file=./schema.sql",
+    "db:init:local": "wrangler d1 execute nuesa-elections --local --file=./schema.sql"
+  },
+  "devDependencies": {
+    "wrangler": "^3.90.0"
+  }
+}

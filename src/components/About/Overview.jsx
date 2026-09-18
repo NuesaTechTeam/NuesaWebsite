@@ -25,13 +25,13 @@ const Overview = () => {
     <section className='px-4 pt-24 pb-16 sm:px-6 lg:px-8'>
       <div className='max-w-7xl mx-auto grid gap-10 md:grid-cols-[1.05fr_0.95fr] md:items-center'>
         <div className='relative overflow-hidden rounded-lg border border-green-100 dark:border-gray-800 bg-gray-100 dark:bg-gray-800'>
-          <div className='relative aspect-[4/3] w-full'>
+          <div className='relative aspect-[4/5] w-full'>
             {images.map((photo, index) => (
               <img
                 key={photo}
                 src={photo}
                 alt='NUESA executive'
-                className={`absolute inset-0 h-full w-full object-cover object-center transition-opacity duration-700 ${
+                className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-700 ${
                   index === currentSlide ? "opacity-100" : "opacity-0"
                 }`}
               />

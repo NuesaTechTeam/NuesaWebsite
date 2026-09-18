@@ -27,3 +27,8 @@ venv
 
 .env
 docs
+
+# Cloudflare Worker local secrets / build artifacts
+.dev.vars
+worker/.dev.vars
+.wrangler

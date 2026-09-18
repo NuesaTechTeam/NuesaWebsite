@@ -93,14 +93,14 @@ const AboutHome = () => {
         <div className='mb-12'>
           <div className='grid grid-cols-1 lg:grid-cols-2 gap-14 items-center'>
             <div className='relative mb-10 lg:mb-0'>
-              <div className='order-2 lg:order-1 relative overflow-hidden'>
-                <div className='relative h-90 lg:h-120'>
+              <div className='order-2 lg:order-1 relative overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-800'>
+                <div className='relative aspect-[4/5]'>
                   {images.map((photo, index) => (
                     <img
                       key={index}
                       src={photo}
                       alt="NUESA executive member"
-                      className={`rounded-2xl w-full h-90 lg:h-120 object-cover order-2 absolute transition-opacity duration-300 ${
+                      className={`absolute inset-0 h-full w-full object-contain transition-opacity duration-300 ${
                         index === currentSlide ? "opacity-100" : "opacity-0"
                       }`}
                     />

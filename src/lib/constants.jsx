@@ -45,12 +45,8 @@ export const navbarLinks = [
   //   url: "/dinner",
   // },
   {
-    title: "H.E.A.R.T",
-    url: "/heart",
-  },
-  {
-    title: "Videos",
-    url: "/videos",
+    title: "APWEN",
+    url: "/apwen",
   },
   {
     title: "Feedback",
@@ -246,7 +242,7 @@ export const eventsData = [
     time: "06:00 PM",
     venue: "Alfa Belgore Hall, ABUAD",
     description:
-      "NIGHT OF ELEGANCE: DINNER DRESS CODE\n\nCome dressed to impress in your finest traditional attire! 💃🏾🕺🏾\n\n\nLadies and gentlemen, let's celebrate our culture and style in grand fashion. ✨",
+      "NIGHT OF ELEGANCE: DINNER DRESS CODE\n\nCome dressed to impress in your finest traditional attire! 💃🏾🕺🏾\n\n\nLadies and gentlemen, let's celebrate our culture and style in grand fashion. ✨\n\nBooking starts 1st of October.",
     image: "/images/events/faji-lawa.jpg",
     images: [
       "/images/events/faji-lawa.jpg",
@@ -604,7 +600,6 @@ export const currentExecutivesData = [
       "Assistant General Secretary, Aerospace Engineering Students’ Association (AESA), 2025/2026.",
       "Member, NUESA Academic Committee, 2025/2026",
       "Member, Aerospace Engineering Students’ Association (AESA) Academic Committee 2025/2026",
-      "Volunteer, NUESA HEART 2025/2026",
       "Member, SRC Academic Committee, 2024/2025.",
       "Campus Ambassador, Afara Initiative Engineering Representative",
     ],
@@ -868,7 +863,6 @@ export const currentExecutivesData = [
       "Co-Founder, 5Trees Technologies.",
       "Head of Innovation, ASVA 2026/2027.",
       "Director of Hardware & Robotics, ASVA 2025/2026.",
-      "⁠PR committee, NUESA HEART 2025/26",
       "Engineer Pioneer Award Recipient, DevCon 2026.",
       "⁠Product lead, Signal 7.",
       "Multi-certified Full-Stack Software Developer and Robotics Engineer.",
