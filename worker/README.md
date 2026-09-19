@@ -21,8 +21,12 @@ Base URL: `https://<your-worker>.workers.dev`
 | `POST` | `/voter/otp/send` | — | `{ voterToken }` | `{ sent, channels, maskedEmail, maskedPhone }` |
 | `POST` | `/voter/otp/verify` | — | `{ voterToken, code }` | `{ ballotToken }` |
 | `POST` | `/vote` | ballot | `{ ballotToken, votes:[{ positionId, candidateId }] }` | `{ recorded: true }` |
-| `GET` | `/results` | — | — | `{ positions:[{ positionId, total, candidates:[{ candidateId, votes }] }] }` |
+| `GET` | `/results` | **admin** | — | `{ positions:[{ positionId, total, candidates:[{ candidateId, votes }] }] }` |
+| `GET` | `/stats` | **admin** | — | `{ registeredVoters }` |
 | `GET` | `/candidates` | — | — | `{ candidates:[...] }` (from `CANDIDATES_JSON`) |
+
+`/results` and `/stats` require `Authorization: Bearer <admin token>` and are
+edge-cached (15 s and 300 s respectively) so dashboard polling does not hammer D1.
 
 Errors return `{ error: "message" }` with an appropriate status code.
 
@@ -57,7 +61,7 @@ sheet with the service account email) so the data is not publicly readable. The
 ## Storage
 
 - **KV namespace `SESSIONS`** — admin sessions, voter tokens, OTP codes, ballot tokens.
-- **D1 database `DB`** — votes. Schema in `schema.sql`:
+- **D1 database `DB`** — votes + tallies. Schema in `schema.sql`:
 
 ```sql
 CREATE TABLE votes (
@@ -68,9 +72,21 @@ CREATE TABLE votes (
   created_at TEXT NOT NULL,
   UNIQUE (voter_key, position_id)
 );
+
+CREATE TABLE tallies (
+  position_id TEXT NOT NULL,
+  candidate_id TEXT NOT NULL,
+  votes INTEGER NOT NULL DEFAULT 0,
+  PRIMARY KEY (position_id, candidate_id)
+);
 ```
 
 The `UNIQUE (voter_key, position_id)` constraint is what prevents double voting.
+
+`tallies` holds running per-candidate totals. `castVote` updates it in the same
+batch as the `votes` insert, so `GET /results` reads a few dozen rows instead of
+scanning the whole `votes` table. `schema.sql` is idempotent and backfills
+`tallies` from any existing votes, so re-running `npm run db:init` is safe.
 
 ---
 
@@ -101,6 +117,38 @@ npx wrangler secret put CANDIDATES_JSON
 npm run dev
 npm run deploy
 ```
+
+### Rotating the admin password
+
+Admin credentials are Worker secrets, never in the repo. To change them:
+
+```bash
+cd worker
+npx wrangler secret put ADMIN_USERNAME   # enter the username at the prompt
+npx wrangler secret put ADMIN_PASSWORD   # enter the new password at the prompt
+```
+
+Existing admin sessions are not invalidated automatically, but they expire after
+8 hours. To force everyone out immediately, delete the `admin:*` keys in the
+`SESSIONS` KV namespace.
+
+### Going live (election day)
+
+Public live results means many browsers polling at once. Before opening the page
+to students:
+
+1. **Upgrade the Cloudflare account to Workers Paid ($5/mo).** The free plan
+   allows 100,000 requests/day, which ~1500 viewers polling every 30 s will
+   exceed. Paid also raises D1 limits well beyond what this workload needs.
+2. Apply the schema (creates `tallies` + backfills): `npm run db:init`.
+3. Re-check secrets (`VOTER_SHEET_CSV_URL`, `RESEND_API_KEY`, `TERMII_API_KEY`,
+   `ADMIN_USERNAME`, `ADMIN_PASSWORD`).
+4. `npm run deploy`.
+5. Confirm `/results` returns 401 without a token, and 200 with one.
+
+At ~1500 voters: writes are ~18k rows (well under the paid write allowance) and
+`/results` reads only the `tallies` table, so D1 load stays flat regardless of
+viewer count.
 
 ### Providers
 

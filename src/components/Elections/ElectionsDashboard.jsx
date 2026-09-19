@@ -423,7 +423,7 @@ const ElectionsDashboard = ({ onLogout }) => {
                 ? `Could not load live results: ${resultsError}`
                 : resultsLoading && !results
                   ? "Loading live results…"
-                  : `Tallies refresh automatically every 15s${lastUpdated ? ` · last updated ${lastUpdated.toLocaleTimeString()}` : ""}. Candidate names, photos and manifestos are placeholders until the candidate data is provided.`}
+                  : `Tallies refresh automatically every 30s${lastUpdated ? ` · last updated ${lastUpdated.toLocaleTimeString()}` : ""}. Candidate names, photos and manifestos are placeholders until the candidate data is provided.`}
             </span>
           ) : (
             "Showing placeholder candidates and sample tallies. Connect the elections API to show live results."

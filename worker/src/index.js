@@ -7,8 +7,12 @@
  *   POST /voter/otp/send     { voterToken } -> { sent, channels }
  *   POST /voter/otp/verify   { voterToken, code } -> { ballotToken }
  *   POST /vote               { ballotToken, votes:[{ positionId, candidateId }] } -> { recorded }
- *   GET  /results            -> { positions:[{ positionId, total, candidates:[{ candidateId, votes }] }] }
+ *   GET  /results            -> { positions:[{ positionId, total, candidates:[{ candidateId, votes }] }] }   (admin)
+ *   GET  /stats              -> { registeredVoters }                                                          (admin)
  *   GET  /candidates         -> candidates with photos/manifestos (from CANDIDATES_JSON var)
+ *
+ * /results and /stats require an admin Bearer token and are edge-cached for a
+ * short TTL so repeated dashboard polling does not hit D1.
  *
  * Bindings (wrangler.toml / secrets):
  *   SESSIONS (KV)   - admin sessions + voter/otp/ballot tokens
@@ -25,8 +29,10 @@ const OTP_TTL = 60 * 10;
 const BALLOT_TTL = 60 * 30;
 const MAX_OTP_ATTEMPTS = 5;
 
+const ADMIN_ONLY_ROUTES = new Set(["GET /results", "GET /stats"]);
+
 export default {
-  async fetch(request, env) {
+  async fetch(request, env, ctx) {
     const origin = request.headers.get("Origin") || "";
     const cors = corsHeaders(origin, env);
 
@@ -38,6 +44,10 @@ export default {
     const route = `${request.method} ${url.pathname}`;
 
     try {
+      if (ADMIN_ONLY_ROUTES.has(route) && !(await isAdmin(request, env))) {
+        return json({ error: "Unauthorized" }, 401, cors);
+      }
+
       let response;
 
       switch (route) {
@@ -54,13 +64,13 @@ export default {
           response = await otpVerify(request, env);
           break;
         case "POST /vote":
-          response = await castVote(request, env);
+          response = await castVote(request, env, ctx);
           break;
         case "GET /results":
-          response = await getResults(env);
+          response = await getResults(request, env, ctx);
           break;
         case "GET /stats":
-          response = await getStats(env);
+          response = await getStats(request, env, ctx);
           break;
         case "GET /candidates":
           response = await getCandidates(env);
@@ -69,10 +79,13 @@ export default {
           response = json({ error: "Not found" }, 404);
       }
 
+      // Rebuild the response so headers are mutable. Responses returned from
+      // cache.match() have immutable header guards, and CORS varies by Origin.
+      const finalResponse = new Response(response.body, response);
       for (const [key, value] of Object.entries(cors)) {
-        response.headers.set(key, value);
+        finalResponse.headers.set(key, value);
       }
-      return response;
+      return finalResponse;
     } catch (error) {
       return json({ error: error.message || "Server error" }, 500, cors);
     }
@@ -290,6 +303,22 @@ async function sendSms(env, to, code) {
 
 /* --------------------------------------------------------------- handlers */
 
+/** True when the request carries a valid admin Bearer token. */
+async function isAdmin(request, env) {
+  const header = request.headers.get("Authorization") || "";
+  const token = header.startsWith("Bearer ") ? header.slice(7).trim() : "";
+  if (!token) return false;
+  return Boolean(await env.SESSIONS.get(`admin:${token}`));
+}
+
+/**
+ * Small edge cache for read-heavy admin endpoints. The Cache API does not
+ * consume KV reads/writes and does not touch D1 on a hit.
+ */
+function cacheKeyFor(request, name) {
+  return new Request(new URL(`/__cache__/${name}`, request.url), { method: "GET" });
+}
+
 async function adminLogin(request, env) {
   const { username, password } = await readJson(request);
 
@@ -392,7 +421,7 @@ async function otpVerify(request, env) {
   return json({ ballotToken });
 }
 
-async function castVote(request, env) {
+async function castVote(request, env, ctx) {
   const { ballotToken, votes } = await readJson(request);
   const stored = await env.SESSIONS.get(`ballot:${ballotToken}`);
   if (!stored) return json({ error: "Your ballot session expired. Please sign in again." }, 401);
@@ -401,11 +430,16 @@ async function castVote(request, env) {
   }
 
   const { voterKey } = JSON.parse(stored);
-  const statements = votes.map((vote) =>
+  const createdAt = new Date().toISOString();
+  const statements = votes.flatMap((vote) => [
     env.DB.prepare(
       "INSERT INTO votes (voter_key, position_id, candidate_id, created_at) VALUES (?, ?, ?, ?)"
-    ).bind(voterKey, vote.positionId, vote.candidateId, new Date().toISOString())
-  );
+    ).bind(voterKey, vote.positionId, vote.candidateId, createdAt),
+    env.DB.prepare(
+      `INSERT INTO tallies (position_id, candidate_id, votes) VALUES (?, ?, 1)
+       ON CONFLICT (position_id, candidate_id) DO UPDATE SET votes = votes + 1`
+    ).bind(vote.positionId, vote.candidateId),
+  ]);
 
   try {
     await env.DB.batch(statements);
@@ -414,12 +448,22 @@ async function castVote(request, env) {
   }
 
   await env.SESSIONS.delete(`ballot:${ballotToken}`);
+  // Drop the cached results so the next dashboard poll reflects this vote.
+  if (ctx) ctx.waitUntil(caches.default.delete(cacheKeyFor(request, "results")));
   return json({ recorded: true });
 }
 
-async function getStats(env) {
+async function getStats(request, env, ctx) {
+  const cache = caches.default;
+  const key = cacheKeyFor(request, "stats");
+  const cached = await cache.match(key);
+  if (cached) return cached;
+
   const registeredVoters = await countVoters(env);
-  return json({ registeredVoters });
+  const response = json({ registeredVoters });
+  response.headers.set("Cache-Control", "public, max-age=300");
+  if (ctx) ctx.waitUntil(cache.put(key, response.clone()));
+  return response;
 }
 
 async function countVoters(env) {
@@ -435,9 +479,15 @@ async function countVoters(env) {
   return Math.max(rows.length - 1, 0);
 }
 
-async function getResults(env) {
+async function getResults(request, env, ctx) {
+  const cache = caches.default;
+  const key = cacheKeyFor(request, "results");
+  const cached = await cache.match(key);
+  if (cached) return cached;
+
+  // Reads the small aggregate table instead of scanning every vote row.
   const { results } = await env.DB.prepare(
-    "SELECT position_id AS positionId, candidate_id AS candidateId, COUNT(*) AS votes FROM votes GROUP BY position_id, candidate_id"
+    "SELECT position_id AS positionId, candidate_id AS candidateId, votes FROM tallies"
   ).all();
 
   const positions = {};
@@ -452,7 +502,10 @@ async function getResults(env) {
     positions[row.positionId].total += row.votes;
   }
 
-  return json({ positions: Object.values(positions) });
+  const response = json({ positions: Object.values(positions) });
+  response.headers.set("Cache-Control", "public, max-age=15");
+  if (ctx) ctx.waitUntil(cache.put(key, response.clone()));
+  return response;
 }
 
 async function getCandidates(env) {

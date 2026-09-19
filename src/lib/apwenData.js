@@ -15,9 +15,9 @@ export const APWEN_ABOUT = {
 export const APWEN_CONTACT = {
   name: "Chidimma Ikueze",
   role: "Welfare Director",
-  email: "cindyikueze@gmail.com",
-  phone: "07048229636",
-  whatsapp: "2347048229636",
+  email: "apwenabuad@gmail.com",
+  phone: "+234 817193837",
+  whatsapp: "234817193837",
   location: "Afe Babalola University, Ado-Ekiti, Ekiti State",
 };
 

@@ -1,10 +1,7 @@
 import { motion } from "framer-motion";
 import {
   ArrowRight,
-  BookOpen,
   Calendar,
-  Download,
-  ExternalLink,
   Eye,
   Mail,
   MapPin,
@@ -18,7 +15,6 @@ import { BsInstagram, BsLinkedin, BsSnapchat, BsTiktok } from "react-icons/bs";
 import useSEO from "../hooks/useSEO";
 import {
   APWEN_ABOUT,
-  APWEN_CALENDAR_PDF,
   APWEN_CONTACT,
   APWEN_EVENTS,
   APWEN_EXECUTIVES,
@@ -79,7 +75,6 @@ const Apwen = () => {
     { label: "Who We Are", icon: Users, section: "who-we-are" },
     { label: "Executives", icon: Users, section: "executives" },
     { label: "Events", icon: Calendar, section: "events" },
-    { label: "Calendar", icon: BookOpen, section: "calendar" },
     { label: "Testimonials", icon: Sparkles, section: "testimonials" },
     { label: "Contact", icon: MessageCircle, section: "contact" },
   ];
@@ -306,50 +301,6 @@ const Apwen = () => {
                 </div>
               </motion.div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Calendar */}
-      <section id='calendar' className='px-4 py-16 sm:px-6 lg:px-8'>
-        <div className='mx-auto max-w-5xl'>
-          <div className='mb-8 text-center'>
-            <p className='text-sm font-semibold uppercase tracking-wide text-purple-600 dark:text-purple-400'>
-              Plan Ahead
-            </p>
-            <h2 className='mt-2 text-3xl font-bold text-gray-900 dark:text-white md:text-4xl'>
-              Proposed Event Calendar
-            </h2>
-            <p className='mx-auto mt-3 max-w-2xl text-gray-600 dark:text-gray-300'>
-              Our proposed event calendar for the first semester.
-            </p>
-          </div>
-
-          <div className='overflow-hidden rounded-2xl border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900'>
-            <iframe
-              src={encodeURI(APWEN_CALENDAR_PDF)}
-              title='APWEN ABUAD Collegiate proposed event calendar'
-              className='h-[70vh] w-full'
-            />
-            <div className='flex flex-wrap justify-center gap-3 border-t border-gray-100 dark:border-gray-800 p-4'>
-              <a
-                href={encodeURI(APWEN_CALENDAR_PDF)}
-                target='_blank'
-                rel='noopener noreferrer'
-                className='inline-flex items-center rounded-lg border border-gray-300 dark:border-gray-700 px-4 py-2 text-sm font-semibold text-gray-700 dark:text-gray-200 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800'
-              >
-                <ExternalLink className='mr-2 h-4 w-4' />
-                Open in new tab
-              </a>
-              <a
-                href={encodeURI(APWEN_CALENDAR_PDF)}
-                download
-                className='inline-flex items-center rounded-lg bg-purple-600 px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-purple-700'
-              >
-                <Download className='mr-2 h-4 w-4' />
-                Download calendar
-              </a>
-            </div>
           </div>
         </div>
       </section>

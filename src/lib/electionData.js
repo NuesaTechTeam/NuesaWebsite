@@ -1,16 +1,10 @@
 // ---------------------------------------------------------------------------
 // BACKEND
 // The elections API lives in /worker (Cloudflare Worker + KV + D1). The frontend
-// uses it when VITE_ELECTIONS_API_URL is set (see src/lib/electionsApi.js).
-// When that variable is unset, the credentials below and the placeholder data
-// are used for local development only — they are NOT secure.
+// talks to it via VITE_ELECTIONS_API_URL (see src/lib/electionsApi.js).
+// Admin credentials live ONLY as Worker secrets — never in this bundle.
 // Remaining wiring: live results + candidates + the voter OTP flow on the UI.
 // ---------------------------------------------------------------------------
-export const ADMIN_CREDENTIALS = {
-  username: "NUESATECHTEAM",
-  password: "Hofode1380!",
-};
-
 export const ELECTION_META = {
   title: "NUESA ABUAD Elections",
   session: "2026/2027",

@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Lock, ShieldCheck, User } from "lucide-react";
-import { ADMIN_CREDENTIALS } from "../../lib/electionData";
 import { adminLogin, isElectionsApiConfigured } from "../../lib/electionsApi";
 
 const AdminLogin = ({ onSuccess }) => {
@@ -17,15 +16,12 @@ const AdminLogin = ({ onSuccess }) => {
     setIsSubmitting(true);
 
     try {
-      if (isElectionsApiConfigured()) {
-        await adminLogin(username, password);
-      } else {
-        const validUser = username.trim() === ADMIN_CREDENTIALS.username;
-        const validPass = password === ADMIN_CREDENTIALS.password;
-        if (!validUser || !validPass) {
-          throw new Error("Invalid username or password. Access denied.");
-        }
+      if (!isElectionsApiConfigured()) {
+        throw new Error(
+          "The elections API is not configured. Admin sign-in is unavailable."
+        );
       }
+      await adminLogin(username, password);
       onSuccess();
     } catch (err) {
       setError(err.message || "Invalid username or password. Access denied.");

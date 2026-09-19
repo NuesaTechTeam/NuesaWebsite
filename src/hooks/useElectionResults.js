@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getResults, getStats, isElectionsApiConfigured } from "../lib/electionsApi";
 
-const REFRESH_MS = 15000;
+const REFRESH_MS = 30000;
 
 export const useElectionResults = () => {
   const configured = isElectionsApiConfigured();
@@ -37,12 +37,33 @@ export const useElectionResults = () => {
       return undefined;
     }
 
-    load();
-    const timer = setInterval(load, REFRESH_MS);
+    let timer = null;
+
+    const start = () => {
+      if (timer) return;
+      load();
+      timer = setInterval(load, REFRESH_MS);
+    };
+
+    const stop = () => {
+      if (timer) {
+        clearInterval(timer);
+        timer = null;
+      }
+    };
+
+    const handleVisibility = () => {
+      if (document.hidden) stop();
+      else start();
+    };
+
+    start();
+    document.addEventListener("visibilitychange", handleVisibility);
 
     return () => {
       cancelledRef.current = true;
-      clearInterval(timer);
+      stop();
+      document.removeEventListener("visibilitychange", handleVisibility);
     };
   }, [configured, load]);
 
