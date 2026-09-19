@@ -1,3 +1,4 @@
+import { useCallback, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import {
   ArrowRight,
@@ -36,6 +37,24 @@ const fadeUp = {
 };
 
 const Apwen = () => {
+  const logoRef = useRef(null);
+  const logoSpinRef = useRef(null);
+
+  const spinLogo = useCallback(() => {
+    const node = logoRef.current;
+    if (!node) return;
+    logoSpinRef.current?.cancel();
+    logoSpinRef.current = node.animate(
+      [{ transform: "rotate(0deg)" }, { transform: "rotate(360deg)" }],
+      { duration: 900, easing: "ease-out" }
+    );
+  }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(spinLogo, 300);
+    return () => clearTimeout(timer);
+  }, [spinLogo]);
+
   useSEO({
     title: "APWEN ABUAD Collegiate | Women in Engineering",
     description:
@@ -128,9 +147,21 @@ const Apwen = () => {
             className='flex justify-center'
           >
             <img
+              ref={logoRef}
               src={APWEN_LOGO}
               alt='APWEN ABUAD Collegiate logo'
-              className='h-56 w-56 rounded-full object-contain md:h-72 md:w-72'
+              onClick={spinLogo}
+              onKeyDown={(event) => {
+                if (event.key === "Enter" || event.key === " ") {
+                  event.preventDefault();
+                  spinLogo();
+                }
+              }}
+              role='button'
+              tabIndex={0}
+              title='Click the logo'
+              aria-label='APWEN ABUAD Collegiate logo — click to spin'
+              className='h-56 w-56 cursor-pointer select-none rounded-full object-contain outline-none md:h-72 md:w-72'
             />
           </motion.div>
         </div>
