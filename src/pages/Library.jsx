@@ -1,627 +1,152 @@
 import React from "react";
-import { motion, AnimatePresence, LayoutGroup, useReducedMotion } from "framer-motion";
-import { Search, Filter, Loader2, BookOpen, Hash, X, Lock, Unlock, FileQuestion, SlidersHorizontal } from "lucide-react";
-import DropdownFilter from "../components/Academics/DropdownFilter";
-import ResourceCard from "../components/Academics/ResourceCard";
-import { useResourceSearch } from "../hooks/useResourceSearch";
-import Notes from "../components/Academics/Notes";
-import PastPapers from "../components/Academics/PastPapers";
-import { Database, History } from "lucide-react";
-import coursesData from "../../courses.json";
+import { motion, AnimatePresence } from "framer-motion";
+import { BookOpen, Database, History } from "lucide-react";
 import useSEO from "../hooks/useSEO";
-
-const SkeletonCard = () => (
-    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 flex flex-col justify-between h-[180px] overflow-hidden relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-gray-100/70 to-transparent -translate-x-full animate-[shimmer_1.5s_infinite]" />
-        <div>
-            <div className="flex justify-between items-start mb-5">
-                <div className="flex gap-3">
-                    <div className="w-10 h-10 bg-gray-200/70 dark:bg-gray-700/70 rounded-xl"></div>
-                    <div className="w-16 h-8 bg-gray-200/70 dark:bg-gray-700/70 rounded-md"></div>
-                </div>
-                <div className="w-10 h-6 bg-gray-200/70 dark:bg-gray-700/70 rounded-full"></div>
-            </div>
-            <div className="space-y-3">
-                <div className="w-full h-5 bg-gray-200/70 dark:bg-gray-700/70 rounded-md"></div>
-                <div className="w-3/4 h-5 bg-gray-200/70 dark:bg-gray-700/70 rounded-md"></div>
-            </div>
-        </div>
-        <div className="mt-6 pt-5 border-t border-gray-100 dark:border-gray-800 flex justify-between items-center">
-            <div className="w-24 h-4 bg-gray-200/70 dark:bg-gray-700/70 rounded"></div>
-            <div className="w-8 h-8 bg-gray-200/70 dark:bg-gray-700/70 rounded-full"></div>
-        </div>
-    </div>
-);
+import { DigitalCollection, LegacyCollection } from "../components/Library";
 
 const Library = () => {
-    useSEO({
-        title: "NUESA ABUAD Digital Library | Engineering Textbooks & Past Questions",
-        description: "Access NUESA ABUAD's digital library. Download engineering textbooks, past questions, lecture notes, and study materials for all levels and departments at Afe Babalola University.",
-        keywords: "NUESA Abuad library, Abuad engineering past questions, ABUAD engineering textbooks, Afe Babalola University engineering library, engineering courses study materials",
-        ogImage: "/images/blog/logo.jpg",
-        structuredData: {
-            "@context": "https://schema.org",
-            "@type": "CollectionPage",
-            "name": "NUESA ABUAD Digital Library",
-            "description": "Access NUESA ABUAD's digital library. Download engineering textbooks, past questions, lecture notes, and study materials for all levels and departments at Afe Babalola University.",
-            "url": "https://nuesaabuad.ng/library",
-            "about": {
-                "@type": "Thing",
-                "name": "Engineering Education & Academic Resources"
-            },
-            "provider": {
-                "@type": "EducationalOrganization",
-                "name": "Nigerian Universities Engineering Students Association (NUESA) ABUAD Chapter",
-                "url": "https://nuesaabuad.ng"
-            },
-            "potentialAction": {
-                "@type": "SearchAction",
-                "target": "https://nuesaabuad.ng/library?q={search_term_string}",
-                "query-input": "required name=search_term_string"
-            }
-        }
-    });
+  useSEO({
+    title: "NUESA ABUAD Digital Library | Engineering Textbooks & Past Questions",
+    description:
+      "Access NUESA ABUAD's digital library. Download engineering textbooks, past questions, lecture notes, and study materials for all levels and departments at Afe Babalola University.",
+    keywords:
+      "NUESA Abuad library, Abuad engineering past questions, ABUAD engineering textbooks, Afe Babalola University engineering library, engineering courses study materials",
+    ogImage: "/images/blog/logo.jpg",
+    structuredData: {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      name: "NUESA ABUAD Digital Library",
+      description:
+        "Access NUESA ABUAD's digital library. Download engineering textbooks, past questions, lecture notes, and study materials for all levels and departments at Afe Babalola University.",
+      url: "https://nuesaabuad.ng/library",
+      about: {
+        "@type": "Thing",
+        name: "Engineering Education & Academic Resources",
+      },
+      provider: {
+        "@type": "EducationalOrganization",
+        name: "Nigerian Universities Engineering Students Association (NUESA) ABUAD Chapter",
+        url: "https://nuesaabuad.ng",
+      },
+      potentialAction: {
+        "@type": "SearchAction",
+        target: "https://nuesaabuad.ng/library?q={search_term_string}",
+        "query-input": "required name=search_term_string",
+      },
+    },
+  });
 
-    const shouldReduceMotion = useReducedMotion();
-    const {
-        documents,
-        loading,
-        error,
-        searchQuery,
-        setSearchQuery,
-        selectedLevel,
-        setSelectedLevel,
-        selectedDept,
-        setSelectedDept,
-        nextCursor,
-        totalCount,
-        isPQLocked,
-        setIsPQLocked,
-        matchedCourse,
-        fetchDocs,
-        levels,
-        departments
-    } = useResourceSearch();
+  const [showLegacy, setShowLegacy] = React.useState(false);
 
-    const [showLegacy, setShowLegacy] = React.useState(false);
-    const [showDropdown, setShowDropdown] = React.useState(false);
-    const [activeSuggestionIndex, setActiveSuggestionIndex] = React.useState(0);
-    const dropdownRef = React.useRef(null);
+  return (
+    <main className='relative min-h-screen overflow-hidden bg-[#F9FAFB] px-4 pb-16 pt-24 font-sans dark:bg-gray-950 md:px-8 lg:px-12'>
+      <div className='relative z-10 mx-auto max-w-7xl'>
+        {/* Hero Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
+          className='mb-16 text-center'
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.5 }}
+            className='mb-6 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 shadow-sm dark:border-gray-800 dark:bg-gray-900'
+          >
+            <BookOpen className='h-5 w-5 text-green-600' />
+            <span className='text-sm font-bold uppercase tracking-wide text-gray-800 dark:text-gray-100'>
+              NUESA Digital Library
+            </span>
+          </motion.div>
+          <h1 className='mb-6 text-5xl font-extrabold leading-tight tracking-tight text-gray-950 dark:text-white md:text-7xl'>
+            NUESA ABUAD Digital Library
+          </h1>
+          <p className='mx-auto max-w-2xl text-lg font-medium leading-relaxed text-gray-600 dark:text-gray-300 md:text-xl'>
+            Engineering textbooks, past questions, lecture notes, and study materials for ABUAD
+            engineering students.
+          </p>
+        </motion.div>
 
-    React.useEffect(() => {
-        function handleClickOutside(event) {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-                setShowDropdown(false);
-            }
-        }
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+        {/* Mode Toggle */}
+        <motion.div
+          className='mb-12 flex justify-center'
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.2 }}
+        >
+          <div
+            className='relative inline-flex items-center rounded-2xl border border-gray-200 bg-gray-100 p-1.5 dark:border-gray-800 dark:bg-gray-800'
+            role='group'
+            aria-label='Library collection mode'
+          >
+            {/* Sliding active background indicator */}
+            <motion.div
+              className='absolute inset-y-1.5 left-1.5 rounded-xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900'
+              layout
+              initial={false}
+              animate={{
+                width: showLegacy ? "48%" : "51%",
+                x: showLegacy ? "103%" : "0%",
+              }}
+              transition={{ type: "spring", stiffness: 300, damping: 30 }}
+            />
 
-    const filteredCourses = React.useMemo(() => {
-        if (!searchQuery || searchQuery.length < 2) return [];
-        const query = searchQuery.toLowerCase();
-        return coursesData.filter(c =>
-            (c.code.toLowerCase().includes(query) || (c.title && c.title.toLowerCase().includes(query)))
-        ).slice(0, 5);
-    }, [searchQuery]);
+            <button
+              type='button'
+              onClick={() => setShowLegacy(false)}
+              aria-pressed={!showLegacy}
+              className={`relative z-10 flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-bold transition-colors duration-300 sm:w-auto ${
+                !showLegacy
+                  ? "text-green-700 dark:text-green-400"
+                  : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              }`}
+            >
+              <Database className='h-4 w-4' />
+              Digital Collection
+            </button>
+            <button
+              type='button'
+              onClick={() => setShowLegacy(true)}
+              aria-pressed={showLegacy}
+              className={`relative z-10 flex w-full items-center justify-center gap-2 rounded-xl px-6 py-3 text-sm font-bold transition-colors duration-300 sm:w-auto ${
+                showLegacy
+                  ? "text-amber-700 dark:text-amber-300"
+                  : "text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+              }`}
+            >
+              <History className='h-4 w-4' />
+              Legacy Archive
+            </button>
+          </div>
+        </motion.div>
 
-    React.useEffect(() => {
-        setActiveSuggestionIndex(0);
-    }, [searchQuery]);
-
-    const handleSearchSubmit = (e) => {
-        e.preventDefault();
-        setShowDropdown(false);
-        fetchDocs(false);
-    };
-
-    const handleSearchKeyDown = (event) => {
-        if (!showDropdown || filteredCourses.length === 0 || isPQLocked) return;
-
-        if (event.key === "ArrowDown" || event.key === "ArrowUp") {
-            event.preventDefault();
-            setActiveSuggestionIndex((current) => {
-                const direction = event.key === "ArrowDown" ? 1 : -1;
-                return (current + direction + filteredCourses.length) % filteredCourses.length;
-            });
-        }
-
-        if (event.key === "Enter") {
-            event.preventDefault();
-            handleCourseSelect(filteredCourses[activeSuggestionIndex].code);
-        }
-
-        if (event.key === "Escape") {
-            setShowDropdown(false);
-        }
-    };
-
-    const handleCourseSelect = (courseCode) => {
-        setSearchQuery(courseCode);
-        setShowDropdown(false);
-        fetchDocs(false, courseCode);
-    };
-
-    const clearFilters = () => {
-        setSearchQuery("");
-        setSelectedLevel("All");
-        setSelectedDept("All");
-        setIsPQLocked(false);
-        setShowDropdown(false);
-        fetchDocs(false, "", { level: "All", department: "All", pqLocked: false });
-    };
-
-    const hasActiveFilters = searchQuery || selectedLevel !== "All" || selectedDept !== "All" || isPQLocked;
-    const resultCount = documents.length;
-    const resultLabel = totalCount > resultCount && resultCount > 0
-        ? `Showing ${resultCount} of ${totalCount} resources`
-        : `Found ${totalCount || resultCount} resources`;
-
-    const containerVariants = {
-        hidden: { opacity: 0 },
-        visible: {
-            opacity: 1,
-            transition: { staggerChildren: shouldReduceMotion ? 0 : 0.05 }
-        }
-    };
-
-    const cardVariants = {
-        hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 8, scale: shouldReduceMotion ? 1 : 0.98 },
-        visible: {
-            opacity: 1, y: 0, scale: 1,
-            transition: shouldReduceMotion ? { duration: 0.15 } : { type: "spring", damping: 25, stiffness: 120 }
-        },
-        exit: { opacity: 0, scale: shouldReduceMotion ? 1 : 0.98, transition: { duration: 0.15 } }
-    };
-
-    return (
-        <main className="min-h-screen pt-24 pb-16 px-4 md:px-8 lg:px-12 bg-[#F9FAFB] dark:bg-gray-950 relative overflow-hidden font-sans">
-            <div className="max-w-7xl mx-auto relative z-10">
-                {/* Hero Section */}
-                <motion.div
-                    initial={{ opacity: 0, y: 30 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.6, ease: "easeOut" }}
-                    className="text-center mb-16"
-                >
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: 0.2, duration: 0.5 }}
-                        className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm mb-6"
-                    >
-                        <BookOpen className="w-5 h-5 text-green-600" />
-                        <span className="text-sm font-bold text-gray-800 dark:text-gray-100 tracking-wide uppercase">NUESA Digital Library</span>
-                    </motion.div>
-                    <h1 className="text-5xl md:text-7xl font-extrabold text-gray-950 dark:text-white tracking-tight leading-tight mb-6">
-                        NUESA ABUAD Digital Library
-                    </h1>
-                    <p className="text-lg md:text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto font-medium leading-relaxed">
-                        Engineering textbooks, past questions, lecture notes, and study materials for ABUAD engineering students.
-                    </p>
-                </motion.div>
-
-                {/* Mode Toggle */}
-                <motion.div
-                    className="flex justify-center mb-12"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: 0.2 }}
-                >
-                    <div className="inline-flex items-center p-1.5 bg-gray-100 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-800 relative" role="group" aria-label="Library collection mode">
-                        {/* Sliding active background indicator */}
-                        <motion.div
-                            className="absolute inset-y-1.5 left-1.5 bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-800"
-                            layout
-                            initial={false}
-                            animate={{
-                                width: showLegacy ? "48%" : "51%",
-                                x: showLegacy ? "103%" : "0%"
-                            }}
-                            transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                        />
-
-                        <button
-                            type="button"
-                            onClick={() => setShowLegacy(false)}
-                            aria-pressed={!showLegacy}
-                            className={`relative z-10 flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-colors duration-300 w-full sm:w-auto justify-center ${!showLegacy
-                                ? "text-green-700 dark:text-green-400"
-                                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                                }`}
-                        >
-                            <Database className="w-4 h-4" />
-                            Digital Collection
-                        </button>
-                        <button
-                            type="button"
-                            onClick={() => setShowLegacy(true)}
-                            aria-pressed={showLegacy}
-                            className={`relative z-10 flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-colors duration-300 w-full sm:w-auto justify-center ${showLegacy
-                                ? "text-amber-700 dark:text-amber-300"
-                                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                                }`}
-                        >
-                            <History className="w-4 h-4" />
-                            Legacy Archive
-                        </button>
-                    </div>
-                </motion.div>
-
-                <AnimatePresence mode="wait">
-                    {!showLegacy ? (
-                        <motion.div
-                            key="digital-collection"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.3 }}
-                        >
-                            {/* Search & Filter Hub */}
-                            <motion.div
-                                className="relative z-40 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 p-5 md:p-6 mb-12 overflow-visible"
-                                initial={{ opacity: 0, y: 40 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ type: "spring", damping: 25, delay: 0.1 }}
-                            >
-                                <div className="mb-5 flex items-start gap-3 border-b border-gray-100 dark:border-gray-800 pb-5">
-                                    <div className="rounded-xl bg-green-50 dark:bg-green-900/30 p-2.5 text-green-700 dark:text-green-400">
-                                        <SlidersHorizontal className="h-5 w-5" />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-lg font-bold text-gray-950 dark:text-white">Find a resource</h2>
-                                        <p className="text-sm text-gray-500 dark:text-gray-400">
-                                            Search by course code or title, then narrow results by level and department.
-                                        </p>
-                                    </div>
-                                </div>
-
-                                <div className="relative z-40 max-w-5xl mx-auto space-y-5">
-                                    <div className="relative group w-full" ref={dropdownRef}>
-                                        <label htmlFor="library-search" className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.15em] mb-2 flex items-center gap-2 pl-1">
-                                            <Search className="w-3.5 h-3.5 text-gray-400" />
-                                            Course or title
-                                        </label>
-                                        <form onSubmit={handleSearchSubmit} className="flex flex-col gap-3 sm:flex-row">
-                                            <div className="relative flex-1">
-                                                <Search className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-green-500 transition-colors w-5 h-5 pointer-events-none" />
-                                                <input
-                                                    id="library-search"
-                                                    type="text"
-                                                    placeholder={isPQLocked ? "Search locked to Past Questions" : "Search course codes, titles, e.g. 'EEE 509'..."}
-                                                    value={isPQLocked ? "PQ" : searchQuery}
-                                                    onChange={(e) => {
-                                                        setSearchQuery(e.target.value);
-                                                        setShowDropdown(true);
-                                                    }}
-                                                    onFocus={() => setShowDropdown(true)}
-                                                    onKeyDown={handleSearchKeyDown}
-                                                    disabled={isPQLocked}
-                                                    className={`w-full pl-14 pr-4 py-4 rounded-2xl border-2 outline-none transition text-base md:text-lg font-semibold
-                                        ${isPQLocked
-                                                        ? 'bg-gray-100/50 dark:bg-gray-800/50 border-gray-200 dark:border-gray-700 text-gray-400 cursor-not-allowed italic shadow-inner'
-                                                        : 'bg-white dark:bg-gray-900 border-gray-200 dark:border-gray-700 hover:border-green-200 focus:bg-white dark:focus:bg-gray-900 focus:ring-[4px] focus:ring-green-500/20 focus:border-green-400 placeholder:text-gray-400 dark:placeholder-gray-500 text-gray-800 dark:text-white'
-                                                    }`}
-                                                />
-                                            </div>
-                                            <button
-                                                type="submit"
-                                                disabled={loading}
-                                                className="inline-flex items-center justify-center rounded-xl bg-green px-6 py-4 text-sm font-bold text-white transition-colors duration-200 hover:bg-green-700 disabled:cursor-not-allowed disabled:bg-gray-300 sm:w-auto"
-                                            >
-                                                {loading && documents.length === 0 ? (
-                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                ) : (
-                                                    <Search className="mr-2 h-4 w-4" />
-                                                )}
-                                                <span>Search</span>
-                                            </button>
-                                        </form>
-
-                                        {/* Autocomplete Dropdown */}
-                                        <AnimatePresence>
-                                            {showDropdown && searchQuery.length >= 2 && !isPQLocked && filteredCourses.length > 0 && (
-                                                <motion.div
-                                                    initial={{ opacity: 0, y: -10, scale: 0.98 }}
-                                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                    exit={{ opacity: 0, y: -10, scale: 0.98 }}
-                                                    transition={{ duration: 0.2 }}
-                                                    className="absolute top-[calc(100%+8px)] left-0 w-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl shadow-[0_16px_40px_rgba(0,0,0,0.14)] overflow-hidden z-[80] p-2"
-                                                >
-                                                    <div className="text-xs font-bold text-gray-400 uppercase tracking-wider px-3 pb-2 pt-1">
-                                                        Suggested Courses
-                                                    </div>
-                                                    {filteredCourses.map((course, index) => (
-                                                        <button
-                                                            type="button"
-                                                            key={course.code}
-                                                            onMouseEnter={() => setActiveSuggestionIndex(index)}
-                                                            onClick={() => handleCourseSelect(course.code)}
-                                                            className={`w-full text-left px-4 py-3 rounded-lg transition-colors flex flex-col gap-1 group/item ${index === activeSuggestionIndex ? "bg-green-50 dark:bg-green-900/30" : "hover:bg-green-50 dark:hover:bg-green-900/30"}`}
-                                                        >
-                                                            <div className="flex items-center justify-between">
-                                                                <span className="font-bold text-green-700 dark:text-green-400 bg-green-100/50 dark:bg-green-900/40 px-2 py-0.5 rounded text-sm shrink-0">
-                                                                    {course.code}
-                                                                </span>
-                                                                <span className="text-gray-400 text-xs font-medium group-hover/item:text-green-500 transition-colors">Select ↵</span>
-                                                            </div>
-                                                            <span className="text-gray-600 dark:text-gray-300 text-sm font-medium line-clamp-1">
-                                                                {course.title}
-                                                            </span>
-                                                        </button>
-                                                    ))}
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
-
-                                    </div>
-
-                                    <div className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] md:items-end">
-                                        <div className="min-w-0">
-                                            <DropdownFilter
-                                                label="Level"
-                                                icon={Filter}
-                                                options={levels}
-                                                selected={selectedLevel}
-                                                onSelect={setSelectedLevel}
-                                            />
-                                        </div>
-                                        <div className="min-w-0">
-                                            <DropdownFilter
-                                                label="Dept"
-                                                icon={Hash}
-                                                options={departments}
-                                                selected={selectedDept}
-                                                onSelect={setSelectedDept}
-                                            />
-                                        </div>
-                                        <div className="flex flex-wrap gap-2 md:justify-end">
-                                            <button
-                                                type="button"
-                                                onClick={() => setIsPQLocked(!isPQLocked)}
-                                                className={`px-4 py-3 rounded-xl transition duration-200 flex items-center gap-2 font-bold text-xs uppercase tracking-wider ${isPQLocked ? 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 hover:bg-amber-200 dark:hover:bg-amber-900/50 border border-amber-200 dark:border-amber-800/60 shadow-sm' : 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-200 border border-transparent'}`}
-                                                title={isPQLocked ? "Unlock standard search" : "Lock search to Past Questions"}
-                                            >
-                                                {isPQLocked ? <Lock className="w-4 h-4" /> : <Unlock className="w-4 h-4" />}
-                                                <span>PQ Only</span>
-                                            </button>
-                                            {(searchQuery || selectedLevel !== "All" || selectedDept !== "All") && (
-                                                <button
-                                                    type="button"
-                                                    onClick={clearFilters}
-                                                    className="px-4 py-3 bg-gray-100 dark:bg-gray-800 hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 rounded-xl transition-colors shrink-0"
-                                                    title="Clear Filters"
-                                                >
-                                                    <span className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider">
-                                                        <X className="w-4 h-4" />
-                                                        Clear
-                                                    </span>
-                                                </button>
-                                            )}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {hasActiveFilters && (
-                                    <div className="mt-5 flex flex-wrap items-center gap-2 border-t border-gray-100 pt-5">
-                                        <span className="text-xs font-bold uppercase tracking-wide text-gray-400">Active</span>
-                                        {searchQuery && !isPQLocked && (
-                                            <span className="rounded-full bg-gray-100 dark:bg-gray-800 px-3 py-1.5 text-xs font-semibold text-gray-700 dark:text-gray-200">
-                                                Search: {searchQuery}
-                                            </span>
-                                        )}
-                                        {isPQLocked && (
-                                            <span className="rounded-full bg-amber-100 dark:bg-amber-900/30 px-3 py-1.5 text-xs font-semibold text-amber-800 dark:text-amber-300">
-                                                Past Questions only
-                                            </span>
-                                        )}
-                                        {selectedLevel !== "All" && (
-                                            <span className="rounded-full bg-green-50 dark:bg-green-900/30 px-3 py-1.5 text-xs font-semibold text-green-800 dark:text-green-400">
-                                                {selectedLevel}L
-                                            </span>
-                                        )}
-                                        {selectedDept !== "All" && (
-                                            <span className="rounded-full bg-green-50 dark:bg-green-900/30 px-3 py-1.5 text-xs font-semibold text-green-800 dark:text-green-400">
-                                                {selectedDept}
-                                            </span>
-                                        )}
-                                        <button
-                                            type="button"
-                                            onClick={clearFilters}
-                                            className="rounded-full px-3 py-1.5 text-xs font-bold text-red-600 transition-colors hover:bg-red-50 dark:hover:bg-red-900/30"
-                                        >
-                                            Clear all
-                                        </button>
-                                    </div>
-                                )}
-                            </motion.div>
-
-                            {/* Results Section */}
-                            <div className="flex flex-col gap-4 mb-8 px-2 md:px-4">
-                                <div className="flex items-center justify-between">
-                                    <motion.div
-                                        className="flex items-center gap-3"
-                                        initial={{ opacity: 0, x: -10 }}
-                                        animate={{ opacity: 1, x: 0 }}
-                                    >
-                                        <div className="w-2.5 h-2.5 rounded-full bg-green-500" />
-                                        <span className="text-sm text-gray-500 dark:text-gray-400 font-semibold tracking-wide uppercase">
-                                            <span className="text-gray-900 dark:text-white font-bold text-base">{resultLabel}</span>
-                                        </span>
-                                    </motion.div>
-
-                                    <AnimatePresence>
-                                        {matchedCourse && (
-                                            <motion.div
-                                                initial={{ opacity: 0, scale: 0.95 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                exit={{ opacity: 0, scale: 0.95 }}
-                                                className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-900/30 border border-green-200/60 dark:border-green-800/60 rounded-xl"
-                                            >
-                                                <BookOpen className="w-4 h-4 text-green-600" />
-                                                <span className="text-xs text-green-800 dark:text-green-400 font-medium">
-                                                    Searching for: <strong className="font-bold">{matchedCourse.code}</strong> - {matchedCourse.title}
-                                                </span>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </div>
-                                <AnimatePresence>
-                                    {matchedCourse && (
-                                        <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: "auto" }}
-                                            exit={{ opacity: 0, height: 0 }}
-                                            className="sm:hidden overflow-hidden"
-                                        >
-                                            <div className="inline-flex items-center gap-2 px-3 py-1.5 bg-green-50 dark:bg-green-900/30 border border-green-200/60 dark:border-green-800/60 rounded-xl w-full">
-                                                <BookOpen className="w-4 h-4 text-green-600 shrink-0" />
-                                                <span className="text-xs text-green-800 dark:text-green-400 font-medium truncate">
-                                                    Searching for: <strong className="font-bold">{matchedCourse.code}</strong> - {matchedCourse.title}
-                                                </span>
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
-
-                            <LayoutGroup>
-                                <motion.div
-                                    className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 px-1"
-                                    variants={containerVariants}
-                                    initial="hidden"
-                                    animate="visible"
-                                    layout
-                                >
-                                    <AnimatePresence mode="popLayout">
-                                        {loading && documents.length === 0 ? (
-                                            [...Array(8)].map((_, i) => <SkeletonCard key={`skeleton-${i}`} />)
-                                        ) : error ? (
-                                            <motion.div
-                                                className="col-span-full py-24 text-center"
-                                                initial={{ opacity: 0 }}
-                                                animate={{ opacity: 1 }}
-                                            >
-                                                <div className="bg-red-50/50 dark:bg-red-900/20 backdrop-blur-sm text-red-600 dark:text-red-400 p-8 rounded-3xl inline-flex flex-col items-center gap-4 border border-red-100 dark:border-red-900/40 shadow-sm max-w-sm mx-auto">
-                                                    <div className="w-16 h-16 bg-red-100 dark:bg-red-900/40 text-red-500 dark:text-red-400 rounded-full flex items-center justify-center mb-2 shadow-inner">
-                                                        <X className="w-8 h-8" />
-                                                    </div>
-                                                    <h3 className="font-bold text-lg text-red-900 dark:text-red-300">Connection Error</h3>
-                                                    <p className="text-sm text-red-700/80 dark:text-red-300/80 text-center">{error}</p>
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => fetchDocs()}
-                                                        className="mt-4 px-6 py-2.5 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-colors duration-200"
-                                                    >
-                                                        Retry
-                                                    </button>
-                                                </div>
-                                            </motion.div>
-                                        ) : documents.length === 0 ? (
-                                            <motion.div
-                                                className="col-span-full py-32 text-center flex flex-col items-center justify-center"
-                                                initial={{ opacity: 0, scale: 0.95 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                            >
-                                                <div className="relative mb-6">
-                                                    <div className="absolute inset-0 bg-gray-200/50 dark:bg-gray-700/50 rounded-full blur-2xl transform scale-150 opacity-60"></div>
-                                                    <div className="bg-white/80 dark:bg-gray-900/80 border border-white dark:border-gray-800 shadow-sm w-28 h-28 rounded-full flex items-center justify-center relative z-10 backdrop-blur-sm">
-                                                        <FileQuestion className="w-12 h-12 text-gray-400" />
-                                                    </div>
-                                                </div>
-                                                <h3 className="text-3xl font-extrabold text-gray-800 dark:text-gray-100 mb-3 tracking-tight">Nothing Found</h3>
-                                                <p className="text-gray-500 dark:text-gray-400 max-w-md mx-auto font-medium text-lg leading-relaxed">
-                                                    We explored every shelf but couldn't find matches. Broaden your search or check your spelling.
-                                                </p>
-                                                {(searchQuery || selectedLevel !== "All" || selectedDept !== "All") && (
-                                                    <button
-                                                        type="button"
-                                                        onClick={clearFilters}
-                                                        className="mt-8 px-8 py-3 bg-gray-900 text-white hover:bg-gray-800 rounded-2xl font-bold transition-colors duration-200"
-                                                    >
-                                                        Reset Filters
-                                                    </button>
-                                                )}
-                                            </motion.div>
-                                        ) : (
-                                            documents.map((doc) => (
-                                                <ResourceCard
-                                                    key={doc.id}
-                                                    doc={doc}
-                                                    variants={cardVariants}
-                                                />
-                                            ))
-                                        )}
-                                    </AnimatePresence>
-                                </motion.div>
-                            </LayoutGroup>
-
-                            {/* Pagination */}
-                            <AnimatePresence>
-                                {nextCursor && (
-                                    <motion.div
-                                        className="mt-20 flex justify-center"
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -20 }}
-                                    >
-                                        <button
-                                            onClick={() => fetchDocs(true)}
-                                            disabled={loading}
-                                            className="group relative inline-flex items-center gap-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 text-gray-800 dark:text-gray-100 px-10 py-4 rounded-full font-bold hover:border-green-300 dark:hover:border-green-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden"
-                                        >
-                                            {loading ? (
-                                                <Loader2 className="w-5 h-5 text-green-600 animate-spin" />
-                                            ) : (
-                                                <>
-                                                    <span className="relative z-10 text-sm tracking-wide uppercase">Load More</span>
-                                                </>
-                                            )}
-                                        </button>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </motion.div>
-                    ) : (
-                        <motion.div
-                            key="legacy-archive"
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.3 }}
-                            className="space-y-16"
-                        >
-                            <div className="max-w-4xl mx-auto">
-                                <motion.div
-                                    className="bg-amber-50/80 dark:bg-amber-900/30 backdrop-blur-sm border border-amber-200/60 dark:border-amber-800/60 p-5 rounded-2xl flex items-start gap-4 shadow-sm"
-                                    initial={{ scale: 0.98, opacity: 0 }}
-                                    animate={{ scale: 1, opacity: 1 }}
-                                >
-                                    <div className="p-2.5 bg-amber-100/80 dark:bg-amber-900/40 rounded-xl text-amber-600 dark:text-amber-300 shadow-sm shrink-0">
-                                        <History className="w-6 h-6" />
-                                    </div>
-                                    <div>
-                                        <h4 className="font-bold text-amber-900 dark:text-amber-300 text-lg">Legacy Archive Active</h4>
-                                        <p className="text-sm text-amber-800/80 dark:text-amber-300/80 leading-relaxed font-medium mt-1">
-                                            You are browsing the old static archives of Lecture Notes and Past Papers. New materials are actively being added to the primary Digital Collection above.
-                                        </p>
-                                    </div>
-                                </motion.div>
-                            </div>
-
-                            {/* Re-using the existing legacy components but inside the new Library boundary */}
-                            <div className="[&>section]:!py-0">
-                                <Notes />
-                                <div className="h-16"></div> {/* Spacer */}
-                                <PastPapers />
-                            </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
-        </main >
-    );
+        <AnimatePresence mode='wait'>
+          {!showLegacy ? (
+            <motion.div
+              key='digital-collection'
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <DigitalCollection />
+            </motion.div>
+          ) : (
+            <motion.div
+              key='legacy-archive'
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <LegacyCollection />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+    </main>
+  );
 };
 
 export default Library;
