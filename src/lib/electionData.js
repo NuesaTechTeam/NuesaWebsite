@@ -8,7 +8,6 @@
 export const ELECTION_META = {
   title: "NUESA ABUAD Elections",
   session: "2026/2027",
-  registeredVoters: 500,
   status: "pending",
 };
 
@@ -80,16 +79,16 @@ export const OTP_STEPS = [
 ];
 
 // ---------------------------------------------------------------------------
-// PLACEHOLDER DATA
-// Replace this whole section once the verified Google Form responses (voters,
-// candidates, photos and manifestos) are ready.
+// PLACEHOLDER CANDIDATES
+// Names, photos and manifestos are placeholders until the verified Google Form
+// responses are ready. No vote counts are stored here — live tallies come only
+// from the API, so the results page stays empty until real votes are cast.
 // ---------------------------------------------------------------------------
 const PLACEHOLDER_MANIFESTO =
   "Manifesto placeholder. This is where the candidate's manifesto will appear once submitted — it also serves as their speech.";
 
 export const CANDIDATES = ELECTED_POSITIONS.flatMap((position, pIndex) => {
   const candidateCount = 2 + (pIndex % 2);
-  const base = 60 + ((pIndex * 37) % 120);
 
   return Array.from({ length: candidateCount }, (_, cIndex) => ({
     id: `${position.id}-${cIndex + 1}`,
@@ -97,7 +96,6 @@ export const CANDIDATES = ELECTED_POSITIONS.flatMap((position, pIndex) => {
     name: `Candidate ${String.fromCharCode(65 + cIndex)}`,
     photo: "",
     manifesto: PLACEHOLDER_MANIFESTO,
-    votes: Math.max(0, base - cIndex * (18 + ((pIndex * 7) % 25))),
   }));
 });
 
@@ -106,9 +104,3 @@ export const getPositionById = (positionId) =>
 
 export const getCandidatesByPosition = (positionId) =>
   CANDIDATES.filter((candidate) => candidate.positionId === positionId);
-
-export const getPositionTotalVotes = (positionId) =>
-  getCandidatesByPosition(positionId).reduce((sum, candidate) => sum + candidate.votes, 0);
-
-export const getTotalVotesCast = () =>
-  CANDIDATES.reduce((sum, candidate) => sum + candidate.votes, 0);

@@ -19,7 +19,6 @@ import {
   VOTER_CONTACT_FIELDS,
   VOTER_LOGIN_FIELDS,
   VOTER_PROFILE_FIELDS,
-  getPositionTotalVotes,
 } from "../../lib/electionData";
 import { useElectionResults } from "../../hooks/useElectionResults";
 import CountUp from "../CountUp";
@@ -333,8 +332,8 @@ const ElectionsDashboard = ({ onLogout }) => {
           0
         )
       : null;
-    const ballotsCast = livePresidentVotes ?? getPositionTotalVotes("president");
-    const registered = registeredVoters ?? ELECTION_META.registeredVoters;
+    const ballotsCast = livePresidentVotes ?? 0;
+    const registered = registeredVoters ?? 0;
     const turnout = registered > 0 ? (ballotsCast / registered) * 100 : 0;
     return { ballotsCast, registered, turnout };
   }, [votesByPosition, registeredVoters]);

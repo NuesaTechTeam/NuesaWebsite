@@ -6,7 +6,7 @@ const PositionResult = ({ position, index = 0, votesByCandidate }) => {
   const candidates = getCandidatesByPosition(position.id)
     .map((candidate) => ({
       ...candidate,
-      votes: votesByCandidate?.[candidate.id] ?? candidate.votes,
+      votes: votesByCandidate?.[candidate.id] ?? 0,
     }))
     .sort((a, b) => b.votes - a.votes);
   const total = candidates.reduce((sum, candidate) => sum + candidate.votes, 0);
