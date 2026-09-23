@@ -1,5 +1,6 @@
 import { Dialog } from "radix-ui";
 import { X } from "lucide-react";
+import { sanitizeHtml } from "../../lib/sanitizeHtml";
 
 const ArticleModal = ({ post, onClose }) => {
   if (!post) return null;
@@ -47,11 +48,10 @@ const ArticleModal = ({ post, onClose }) => {
               </div>
 
               <Dialog.Description asChild>
-                {/* Content is static, curated data from blogPosts.js (never user input);
-                    the submit form posts to EmailJS and does not write here. Safe to render. */}
+                {/* Approved submissions are public input, so sanitize the HTML. */}
                 <div
                   className="text-[15px] text-gray-700 dark:text-gray-200 leading-relaxed whitespace-pre-wrap [&>p]:mb-4"
-                  dangerouslySetInnerHTML={{ __html: post.content }}
+                  dangerouslySetInnerHTML={{ __html: sanitizeHtml(post.content) }}
                 />
               </Dialog.Description>
             </div>

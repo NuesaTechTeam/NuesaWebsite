@@ -4,6 +4,11 @@ const CategorySection = ({ activeCategory, setActiveCategory }) => {
     "Announcements",
     "Events",
     "Student Contributions",
+    "Academic Tips",
+    "Projects & Innovations",
+    "Events Recaps",
+    "Career & Internship Tips",
+    "Tech & Trends",
   ];
 
   return (

@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import emailjs from "@emailjs/browser";
+import { submitBlog } from "../../lib/blogApi";
 
 const CTASection = ({ scrollIntoView }) => {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
@@ -32,47 +33,51 @@ const CTASection = ({ scrollIntoView }) => {
     window.open(`https://wa.me/?text=${text}`, "_blank");
   };
 
-const handleFormSubmit = (e) => {
+const handleFormSubmit = async (e) => {
     e.preventDefault();
 
-    // Replace with your NEW Public Key
-    emailjs.init("I_mhIENGLPNaiT96V");
-
-    const templateParams = {
-      title: formData.title,
-      author: formData.author,
-      from_name: formData.author,
-      email: formData.email,
-      reply_to: formData.email,
-      category: formData.category,
-      content: formData.content,
-      message: formData.content,
-    };
-
-    emailjs
-      .send(
-        "service_mdn74w9",  // Replace with your NEW Service ID
-        "template_pedcd6o", // Replace with your NEW Template ID
-        templateParams
-      )
-      .then(() => {
-        setSubmitted(true);
-        setTimeout(() => {
-          setSubmitted(false);
-          setShowSubmitModal(false);
-          setFormData({
-            title: "",
-            author: "",
-            category: "",
-            email: "",
-            content: "",
-          });
-        }, 2000);
-      })
-      .catch((err) => {
-        console.error("Submission failed:", err);
-        alert(`Submission failed: ${err?.text || "Check console"}`);
+    // Store the submission for editorial review (source of truth).
+    try {
+      await submitBlog({
+        title: formData.title,
+        author: formData.author,
+        email: formData.email,
+        category: formData.category,
+        content: formData.content,
       });
+    } catch (err) {
+      console.error("Submission failed:", err);
+      alert(`Submission failed: ${err?.message || "Please try again."}`);
+      return;
+    }
+
+    // Email notification is best-effort — the submission is already saved.
+    emailjs.init("I_mhIENGLPNaiT96V");
+    emailjs
+      .send("service_mdn74w9", "template_pedcd6o", {
+        title: formData.title,
+        author: formData.author,
+        from_name: formData.author,
+        email: formData.email,
+        reply_to: formData.email,
+        category: formData.category,
+        content: formData.content,
+        message: formData.content,
+      })
+      .catch((err) => console.error("Notification email failed:", err));
+
+    setSubmitted(true);
+    setTimeout(() => {
+      setSubmitted(false);
+      setShowSubmitModal(false);
+      setFormData({
+        title: "",
+        author: "",
+        category: "",
+        email: "",
+        content: "",
+      });
+    }, 2000);
   };
   return (
     <section ref={submitRef} className="py-16 md:py-24 px-4 border-t border-green-100">

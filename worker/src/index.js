@@ -11,6 +11,11 @@
  *   GET  /stats              -> { registeredVoters }                                                          (admin)
  *   GET  /candidates         -> candidates with photos/manifestos (from CANDIDATES_JSON var)
  *
+ *   POST /blog/submissions             { title, author, email, category, content } -> { id }
+ *   GET  /blog/submissions?status=     (admin) list blog submissions
+ *   POST /blog/submissions/:id/status  (admin) { status: approved|rejected }
+ *   GET  /blog/posts                   approved blog posts for the public site
+ *
  * /results and /stats require an admin Bearer token and are edge-cached for a
  * short TTL so repeated dashboard polling does not hit D1.
  *
@@ -49,8 +54,35 @@ export default {
       }
 
       let response;
+      let handled = false;
 
-      switch (route) {
+      /* ------------------------------------------------------------ blog */
+      if (url.pathname === "/blog/posts" && request.method === "GET") {
+        response = await blogPublicPosts(request, env, ctx);
+        handled = true;
+      } else if (url.pathname === "/blog/submissions" && request.method === "POST") {
+        response = await blogSubmit(request, env);
+        handled = true;
+      } else if (url.pathname === "/blog/submissions" && request.method === "GET") {
+        if (!(await isAdmin(request, env))) {
+          return json({ error: "Unauthorized" }, 401, cors);
+        }
+        response = await blogListSubmissions(request, env);
+        handled = true;
+      } else {
+        const statusMatch = url.pathname.match(/^\/blog\/submissions\/([^/]+)\/status$/);
+        if (statusMatch && request.method === "POST") {
+          if (!(await isAdmin(request, env))) {
+            return json({ error: "Unauthorized" }, 401, cors);
+          }
+          response = await blogUpdateStatus(request, env, ctx, statusMatch[1]);
+          handled = true;
+        }
+      }
+
+      if (handled) {
+        // fall through to CORS + return below
+      } else switch (route) {
         case "POST /admin/login":
           response = await adminLogin(request, env);
           break;
@@ -515,4 +547,96 @@ async function getCandidates(env) {
   } catch {
     return json({ error: "CANDIDATES_JSON is not valid JSON" }, 500);
   }
+}
+
+/* --------------------------------------------------------------- blog */
+
+const BLOG_STATUSES = new Set(["pending", "approved", "rejected"]);
+const MAX_BLOG_CONTENT = 100000;
+
+function cleanField(value, max) {
+  return String(value || "").trim().slice(0, max);
+}
+
+async function blogSubmit(request, env) {
+  const body = await readJson(request);
+  const title = cleanField(body.title, 200);
+  const author = cleanField(body.author, 120);
+  const email = cleanField(body.email, 200);
+  const category = cleanField(body.category, 80);
+  const content = String(body.content || "").trim();
+
+  if (!title || !author || !content) {
+    return json({ error: "Title, author and content are required" }, 400);
+  }
+  if (content.length > MAX_BLOG_CONTENT) {
+    return json({ error: "Submission is too long" }, 413);
+  }
+
+  const id = crypto.randomUUID();
+  await env.DB.prepare(
+    `INSERT INTO blog_submissions (id, title, author, email, category, content, status, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)`
+  )
+    .bind(id, title, author, email, category, content, new Date().toISOString())
+    .run();
+
+  return json({ id, status: "pending" }, 201);
+}
+
+async function blogListSubmissions(request, env) {
+  const url = new URL(request.url);
+  const status = url.searchParams.get("status");
+
+  let query =
+    "SELECT id, title, author, email, category, content, status, created_at, reviewed_at FROM blog_submissions";
+  const binds = [];
+  if (status && BLOG_STATUSES.has(status)) {
+    query += " WHERE status = ?";
+    binds.push(status);
+  }
+  query += " ORDER BY created_at DESC LIMIT 200";
+
+  const { results } = await env.DB.prepare(query).bind(...binds).all();
+  return json({ submissions: results || [] });
+}
+
+async function blogUpdateStatus(request, env, ctx, id) {
+  const { status } = await readJson(request);
+  if (!BLOG_STATUSES.has(String(status)) || status === "pending") {
+    return json({ error: "Status must be 'approved' or 'rejected'" }, 400);
+  }
+
+  const result = await env.DB.prepare(
+    "UPDATE blog_submissions SET status = ?, reviewed_at = ? WHERE id = ?"
+  )
+    .bind(status, new Date().toISOString(), id)
+    .run();
+
+  if (!result.meta || result.meta.changes === 0) {
+    return json({ error: "Submission not found" }, 404);
+  }
+
+  if (ctx) ctx.waitUntil(caches.default.delete(cacheKeyFor(request, "blog-posts")));
+  return json({ id, status });
+}
+
+async function blogPublicPosts(request, env, ctx) {
+  const cache = caches.default;
+  const key = cacheKeyFor(request, "blog-posts");
+  const cached = await cache.match(key);
+  if (cached) return cached;
+
+  const { results } = await env.DB.prepare(
+    `SELECT id, title, author, category, content, created_at, reviewed_at
+     FROM blog_submissions
+     WHERE status = 'approved'
+     ORDER BY reviewed_at DESC, created_at DESC
+     LIMIT 100`
+  ).all();
+
+  const response = json({ posts: results || [] });
+  response.headers.set("Cache-Control", "public, max-age=60");
+  if (ctx) ctx.waitUntil(cache.put(key, response.clone()));
+  return response;
 }

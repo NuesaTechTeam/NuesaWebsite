@@ -29,3 +29,19 @@ SELECT position_id, candidate_id, COUNT(*)
 FROM votes
 GROUP BY position_id, candidate_id
 ON CONFLICT (position_id, candidate_id) DO UPDATE SET votes = excluded.votes;
+
+-- Blog submissions awaiting editorial review. `content` holds the rich-text
+-- HTML from the submit form (sanitized before rendering on the site).
+CREATE TABLE IF NOT EXISTS blog_submissions (
+  id TEXT PRIMARY KEY,
+  title TEXT NOT NULL,
+  author TEXT NOT NULL,
+  email TEXT,
+  category TEXT,
+  content TEXT NOT NULL,
+  status TEXT NOT NULL DEFAULT 'pending',  -- pending | approved | rejected
+  created_at TEXT NOT NULL,
+  reviewed_at TEXT
+);
+
+CREATE INDEX IF NOT EXISTS idx_blog_status ON blog_submissions (status);

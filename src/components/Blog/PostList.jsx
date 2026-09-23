@@ -1,12 +1,14 @@
 import React from "react";
-import { blogPosts } from "../../lib/blogPosts";
 import PostCard from "./PostCard";
+import { usePublishedPosts } from "../../hooks/usePublishedPosts";
 
 const PostList = ({ activeCategory }) => {
+  const posts = usePublishedPosts();
+
   const filteredPosts =
     activeCategory === "All"
-      ? blogPosts.filter((p) => !p.isFeatured)
-      : blogPosts.filter(
+      ? posts.filter((p) => !p.isFeatured)
+      : posts.filter(
           (post) => post.category === activeCategory && !post.isFeatured
         );
 

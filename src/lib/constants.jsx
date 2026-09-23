@@ -610,7 +610,7 @@ export const currentExecutivesData = [
     department: "Mechanical Engineering",
     year: "500 Level",
     image: "/images/executives/current/Agboyinu Setin Gabriel.jpeg",
-    bio: "I am a Final-Year Mechanical Engineering student at Afe Babalola University with a passion for robotics, automation, intelligent manufacturing, and automotive engineering. I am is committed to using technology to solve real-world problems while fostering innovation and technical excellence within the engineering community. As Technical Director of NUESA, I aims to strengthen the association's digital presence and promote practical engineering among students.",
+    bio: "I am a Final-Year Mechanical Engineering student at Afe Babalola University with a passion for robotics, automation, intelligent manufacturing, and automotive engineering. I am committed to using technology to solve real-world problems while fostering innovation and technical excellence within the engineering community. As Technical Director of NUESA, I aim to strengthen the association's digital presence and promote practical engineering among students.",
     achievements: [
       "Technical Director, NUESA ABUAD 26/27 administration.",
       "A member of ACMC 2022-present(ABUAD Chapel Multimedia Crew)",

@@ -25,6 +25,7 @@
     "axios": "^1.9.0",
     "classnames": "^2.5.1",
     "cloudinary": "^2.6.1",
+    "dompurify": "^3.4.16",
     "framer-motion": "^12.19.1",
     "hamburger-react": "^2.5.2",
     "lucide-react": "^0.515.0",
