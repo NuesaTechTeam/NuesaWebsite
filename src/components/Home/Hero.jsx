@@ -3,7 +3,7 @@ import AnimatedBackground from "../AnimatedBackground";
 
 const Hero = () => {
   return (
-    <section className='relative overflow-hidden bg-white py-8 pb-18 dark:bg-gray-900 lg:px-4'>
+    <section className='relative overflow-hidden bg-white px-4 py-8 pb-18 dark:bg-gray-900 sm:px-6 lg:px-8'>
       <AnimatedBackground />
       <div className='relative z-10 max-w-7xl mx-auto'>
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-12 items-center'>

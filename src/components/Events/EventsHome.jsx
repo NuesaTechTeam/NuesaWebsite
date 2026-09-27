@@ -92,7 +92,7 @@ const EventsHome = () => {
 
   if (featuredEvents.length === 0) {
     return (
-      <section className='py-12 bg-white dark:bg-gray-900'>
+      <section className='bg-white px-4 py-12 dark:bg-gray-900 sm:px-6 lg:px-8'>
         <div className='max-w-7xl mx-auto'>
           {/* header */}
           <div className='text-center mb-16'>
@@ -169,7 +169,7 @@ const EventsHome = () => {
   }
 
   return (
-    <section className='py-12 bg-white dark:bg-gray-900'>
+    <section className='bg-white px-4 py-12 dark:bg-gray-900 sm:px-6 lg:px-8'>
       <div className='max-w-7xl mx-auto'>
         {/* header */}
         <div className='text-center mb-16'>

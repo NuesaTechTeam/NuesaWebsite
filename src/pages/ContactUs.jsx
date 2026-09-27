@@ -8,7 +8,7 @@ const ContactUs = () => {
   });
 
   return (
-    <div className='min-h-screen py-12  sm:px-6 lg:px-8'>
+    <div className='min-h-screen px-4 py-12 sm:px-6 lg:px-8'>
       <div>
         {/* header for contact us form */}
         <div className='max-w-7xl mx-auto'>

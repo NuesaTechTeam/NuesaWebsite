@@ -47,7 +47,7 @@ const Error = () => {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 dark:from-gray-900 to-green-50 dark:to-green-900/30 flex items-center justify-center py-8 px-1">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 dark:from-gray-900 to-green-50 dark:to-green-900/30 flex items-center justify-center px-4 py-8 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto text-center">
         
 

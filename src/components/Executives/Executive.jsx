@@ -21,7 +21,7 @@ const Executive = () => {
   const pastExecs = pastExecutivesByYear.find((y) => y.year === selectedYear)?.executives ?? [];
 
     return (
-      <div className='py-12 lg:px-4'>
+      <div className='px-4 py-12 sm:px-6 lg:px-8'>
         <div className='max-w-7xl mx-auto'>
           {/* header */}
           <div className='text-center mb-12'>

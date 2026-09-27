@@ -12,7 +12,7 @@ const ExecHome = () => {
     }
 
   return (
-    <section className='bg-white dark:bg-gray-900 py-16 lg:px-4'>
+    <section className='bg-white px-4 py-16 dark:bg-gray-900 sm:px-6 lg:px-8'>
       <div className='max-w-7xl mx-auto'>
         <div className='text-center mb-12'>
           <h2 className='text-3xl font-bold text-gray-900 dark:text-white mb-4'>

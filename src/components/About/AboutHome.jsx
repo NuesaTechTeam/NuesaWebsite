@@ -29,7 +29,7 @@ const AboutHome = () => {
   };
 
   return (
-    <section className='bg-white dark:bg-gray-900 py-12 lg:px-4 overflow-hidden'>
+    <section className='overflow-hidden bg-white px-4 py-12 dark:bg-gray-900 sm:px-6 lg:px-8'>
       <div className='max-w-7xl mx-auto'>
         <div className='text-center mb-10'>
           <div className='flex items-center justify-center mb-4'>
