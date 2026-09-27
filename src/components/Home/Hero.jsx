@@ -1,15 +1,17 @@
 import { ChevronDown } from "lucide-react";
+import AnimatedBackground from "../AnimatedBackground";
 
 const Hero = () => {
   return (
-    <section className='bg-white dark:bg-gray-900 py-8 pb-18  lg:px-4 overflow-hidden relative'>
-      <div className='max-w-7xl mx-auto'>
+    <section className='relative overflow-hidden bg-white py-8 pb-18 dark:bg-gray-900 lg:px-4'>
+      <AnimatedBackground />
+      <div className='relative z-10 max-w-7xl mx-auto'>
         <div className='grid grid-cols-1 lg:grid-cols-2 gap-12 items-center'>
           <div className='space-y-8'>
             <div className='space-y-6'>
               <h1 className='text-4xl lg:text-6xl font-bold text-green dark:text-green-400 leading-tight'>
                 Nigerian Universities Engineering Students Association
-                <span className='block text-green-700 dark:text-green-400 mt-2'>ABUAD Chapter</span>
+                <span className='text-shimmer mt-2 block'>ABUAD Chapter</span>
               </h1>
               <p className='text-lg text-gray-700 dark:text-gray-200 leading-relaxed max-w-lg'>
                 Empowering future engineers through innovation, collaboration,
@@ -18,13 +20,17 @@ const Hero = () => {
             </div>
           </div>
           <div className='relative'>
-            <div className='absolute z-10 -top-6 -left-2 md:-left-6 bg-white dark:bg-gray-900 p-4 rounded-lg shadow-lg transform rotate-[-5deg] hover:rotate-0 transition-transform duration-300 '>
-              <span className='text-green dark:text-green-400 font-bold'>
-                Engineering Excellence
-              </span>
+            <div className='animate-floaty absolute z-10 -top-6 -left-2 md:-left-6'>
+              <div className='transform rotate-[-5deg] rounded-lg bg-white p-4 shadow-lg transition-transform duration-300 hover:rotate-0 hover:scale-105 dark:bg-gray-900'>
+                <span className='font-bold text-green dark:text-green-400'>
+                  Engineering Excellence
+                </span>
+              </div>
             </div>
-            <div className='absolute z-10 -bottom-6 -right-2 md:-right-6 bg-white dark:bg-gray-900 p-4 rounded-lg shadow-lg transform rotate-[5deg] hover:rotate-0 transition-transform duration-300 '>
-              <span className='text-green dark:text-green-400 font-bold'>High Standards</span>
+            <div className='animate-floaty absolute z-10 -bottom-6 -right-2 md:-right-6' style={{ animationDelay: "1.3s" }}>
+              <div className='transform rotate-[5deg] rounded-lg bg-white p-4 shadow-lg transition-transform duration-300 hover:rotate-0 hover:scale-105 dark:bg-gray-900'>
+                <span className='font-bold text-green dark:text-green-400'>High Standards</span>
+              </div>
             </div>
             <div className='group relative w-full overflow-hidden rounded-lg h-130'>
               

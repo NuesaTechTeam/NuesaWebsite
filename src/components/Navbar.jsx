@@ -79,16 +79,23 @@ const Navbar = () => {
   return (
     <>
       <nav className='fixed left-0 top-0 w-full z-nav bg-white/80 dark:bg-gray-900/80 backdrop-blur-md w-full mx-auto flex items-center justify-between py-2 shadow-md px-4 md:px-8 lg:px-12'>
-        <Link to='/' className='flex items-center gap-2'>
-          <img src={logo} alt='nuesa abuad' className="h-10 w-10 object-contain" />
-          <h1 className="font-semibold text-black dark:text-white text-lg">NUESA ABUAD</h1>
+        <Link to='/' className='group flex items-center gap-2'>
+          <img
+            src={logo}
+            alt='nuesa abuad'
+            className="h-10 w-10 object-contain transition-transform duration-300 ease-out group-hover:scale-110 group-hover:-rotate-6"
+          />
+          <h1 className="font-semibold text-black dark:text-white text-lg transition-colors duration-200 group-hover:text-green dark:group-hover:text-green-400">
+            NUESA ABUAD
+          </h1>
         </Link>
         <div className='hidden md:flex items-center gap-x-1 overflow-x-scroll scrollbar-hidden'>
           {primaryLinks.map((link) => (
             <Link
               key={link.title}
               to={link.url}
-              className={`px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-100 hover:text-green-700 dark:hover:bg-gray-800 dark:hover:text-green-400 rounded transition-colors duration-200 ${
+              data-active={location.pathname === link.url}
+              className={`link-underline px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-100 hover:text-green-700 dark:hover:bg-gray-800 dark:hover:text-green-400 rounded transition-colors duration-200 active:scale-95 ${
                 location.pathname === link.url ? "bg-green-100 text-green-700 font-medium dark:bg-green-900/40 dark:text-green-400" : ""
               }`}
             >
@@ -132,7 +139,7 @@ const Navbar = () => {
           <ThemeToggle />
           <DropdownMenu.Root>
             <DropdownMenu.Trigger asChild>
-              <button className='hidden lg:inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 hover:bg-green/90 px-5 py-2 text-sm w-fit text-white bg-green h-auto active:scale-[0.97]'>
+              <button className='btn-lively hidden lg:inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full font-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 hover:bg-green/90 px-5 py-2 text-sm w-fit text-white bg-green h-auto'>
                 Follow us
               </button>
             </DropdownMenu.Trigger>
@@ -186,7 +193,11 @@ const Navbar = () => {
                       : "text-gray-700 dark:text-gray-200"
                   }`}
                 >
-                  <Link to={link.url} onClick={() => setIsOpen(false)}>
+                  <Link
+                    to={link.url}
+                    onClick={() => setIsOpen(false)}
+                    className='inline-block transition-transform duration-200 hover:translate-x-1'
+                  >
                     {link.title}
                   </Link>
                 </Motion.div>

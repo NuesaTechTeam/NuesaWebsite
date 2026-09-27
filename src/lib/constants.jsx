@@ -798,6 +798,7 @@ export const currentExecutivesData = [
     image: "/images/executives/current/chineye.jpeg",
     bio: "I am a friendly, smiling face who is always willing to engage and offer support to the best of my abilities. I believe in fostering a supportive environment where every student feels seen, heard, and empowered to thrive.",
     achievements: [
+      "Vice President, NUESA 2025/2026",
       "Director of Engineering, ABUAD Green Club 2026/2027",
       "⁠General Secretary, Literary and Debating Society ABUAD",
       "⁠Assistant General Secretary, BESA 2024/2025",
@@ -805,7 +806,6 @@ export const currentExecutivesData = [
       "⁠Social Committee, SRC 2024/2025",
       "Lead Content Developer, Studysmart, 2023/2024 & 2024/2025",
       "Member, ASVA.",
-      "Vice President, NUESA 2025/2026",
     ],
     social: {
       whatsapp: "#",

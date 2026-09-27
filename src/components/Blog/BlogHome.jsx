@@ -38,7 +38,7 @@ const BlogHome = () => {
       navigate("/blog");
     };
   return (
-    <section className='bg-white dark:bg-gray-900 py-16 lg:px-4'>
+    <section className='bg-white dark:bg-gray-900 py-12 lg:px-4'>
       <div className='max-w-7xl mx-auto'>
         <div className='text-center mb-12'>
           <h2 className='text-4xl font-bold text-gray-900 dark:text-white mb-4'>
@@ -84,7 +84,7 @@ const BlogHome = () => {
           <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
             {blogPosts.slice(0, 3).map((post, index) => (
               <div key={index} className='group cursor-pointer'>
-                <div className='bg-gray-50 dark:bg-gray-900 rounded-lg p-4 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors duration-200'>
+                <div className='card-lively bg-gray-50 dark:bg-gray-900 rounded-lg p-4 hover:bg-gray-100 dark:hover:bg-gray-800'>
                   <div className='flex items-center justify-between mb-2'>
                     <span className='text-xs font-medium text-green dark:text-green-400 bg-green-100 dark:bg-green-900/40 px-2 py-1 rounded'>
                       {post.category}
@@ -127,7 +127,7 @@ const BlogHome = () => {
                 onClick={() => {
                   navigate("/blog?view=submit");
                 }}
-                className='group bg-white text-green font-semibold py-3 px-6 rounded-lg transition-colors duration-200 hover:bg-green-50'
+                className='btn-lively group bg-white text-green font-semibold py-3 px-6 rounded-lg hover:bg-green-50'
               >
                 <span className='flex items-center'>
                   <Plus className='mr-2 w-5 h-5 group-hover:rotate-90 transition-transform duration-300' />
@@ -140,7 +140,7 @@ const BlogHome = () => {
                   const blogUrl = `${window.location.origin}/blog`;
                   window.open(`https://wa.me/?text=${encodeURIComponent(`Read NUESA ABUAD articles: ${blogUrl}`)}`, "_blank");
                 }}
-                className='group bg-green-600 hover:bg-green-500 text-white font-semibold py-3 px-6 rounded-lg transition-colors duration-200'
+                className='btn-lively group bg-green-600 hover:bg-green-500 text-white font-semibold py-3 px-6 rounded-lg'
               >
                 <span className='flex items-center'>
                   <Share2 className='mr-2 w-5 h-5' />

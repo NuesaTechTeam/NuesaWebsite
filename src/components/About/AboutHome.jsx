@@ -1,52 +1,10 @@
-import {
-  Target,
-  Sparkles,
-  Users,
-  GraduationCap,
-  ArrowRight,
-  Info,
-} from "lucide-react";
+import { Users, ArrowRight, Info } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CountUp from "../CountUp";
 
 const AboutHome = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
-
-  const pillars = [
-    {
-      title: "Mission",
-      text: "Empowering students to lead in engineering through excellence, leadership, and vision.",
-      icon: <Target className='w-6 h-6 text-green-600' />,
-    },
-    {
-      title: "Innovation",
-      text: "Encouraging creativity and problem-solving to build practical solutions for society.",
-      icon: <Sparkles className='w-6 h-6 text-green-600' />,
-    },
-    {
-      title: "Community",
-      text: "Fostering a sense of belonging and collaboration across all engineering disciplines.",
-      icon: <Users className='w-6 h-6 text-green-600' />,
-    },
-    {
-      title: "Learning",
-      text: "Promoting continuous academic growth and professional development opportunities.",
-      icon: <GraduationCap className='w-6 h-6 text-green-600' />,
-    },
-  ];
-
-  const disciplines = [
-    "Civil Engineering",
-    "Mechatronics Engineering",
-    "Electrical Engineering",
-    "Mechanical Engineering",
-    "Computer Engineering",
-    "Chemical Engineering",
-    "Petroleum Engineering",
-    "Biomedical Engineering",
-    "Aeronautical Engineering",
-  ];
 
   const images = [
     "/images/executives/current/gregory.jpeg",
@@ -71,7 +29,7 @@ const AboutHome = () => {
   };
 
   return (
-    <section className='bg-white dark:bg-gray-900 py-16 lg:px-4 overflow-hidden'>
+    <section className='bg-white dark:bg-gray-900 py-12 lg:px-4 overflow-hidden'>
       <div className='max-w-7xl mx-auto'>
         <div className='text-center mb-10'>
           <div className='flex items-center justify-center mb-4'>
@@ -167,50 +125,6 @@ const AboutHome = () => {
           </div>
         </div>
 
-        {/* pillars */}
-        <div className='mb-16'>
-          <h3 className='text-2xl font-bold text-green dark:text-green-400 text-center mb-8'>
-            Our Foundation
-          </h3>
-          <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
-            {pillars.map((pillar, index) => {
-              return (
-                <div
-                  key={index}
-                  className='bg-green-50 dark:bg-green-900/30 rounded-lg p-4 text-center border border-green-100 dark:border-gray-800 transition-colors duration-200 hover:bg-green-100 dark:hover:bg-gray-800'
-                >
-                  <div className='inline-flex items-center justify-center w-10 h-10 bg-green-200 dark:bg-gray-700 rounded-lg mb-4'>
-                    {pillar.icon}
-                  </div>
-                  <h4 className='text-lg font-semibold text-gray-900 dark:text-white mb-2'>
-                    {pillar.title}
-                  </h4>
-                  <p className='text-gray-700 dark:text-gray-200 text-sm'>{pillar.text}</p>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* disciplines */}
-        <div className='mb-16'>
-          <h3 className='text-2xl font-bold text-gray-900 dark:text-white text-center mb-8'>
-            Engineering Disciplines
-          </h3>
-          <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4'>
-            {disciplines.map((discipline, index) => (
-              <div
-                key={index}
-                className='bg-green-50 dark:bg-green-900/30 rounded-lg p-4 text-center hover:bg-green-100 dark:hover:bg-gray-800 transition-colors duration-200'
-              >
-                <div className='text-sm font-medium text-green-800 dark:text-green-400'>
-                  {discipline}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* president message */}
         <div className='hidden bg-gradient-to-r from-green-50 to-green-100 rounded-2xl p-8 mb-12'>
           <div className='max-w-4xl mx-auto'>
@@ -242,7 +156,7 @@ const AboutHome = () => {
         <div className='text-center'>
           <button
             onClick={handleAboutButton}
-            className='inline-flex items-center px-8 py-4 bg-green text-white font-semibold rounded-lg hover:bg-green-700 duration-200 transition-colors cursor-pointer'
+            className='btn-lively inline-flex items-center px-8 py-4 bg-green text-white font-semibold rounded-lg hover:bg-green-700 cursor-pointer'
           >
             Learn More About NUESA
             <ArrowRight className='ml-2' size={20} />

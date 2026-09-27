@@ -7,7 +7,7 @@ const PostCard = ({ title, image, excerpt, author, date, content, category, size
 
   return (
     <>
-      <article className={`group bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-green-200 shadow-[0_4px_20px_rgba(15,81,50,0.06)] hover:shadow-[0_12px_40px_rgba(15,81,50,0.12)] transition duration-300 overflow-hidden hover:-translate-y-1 flex flex-col h-full`}>
+      <article className={`group card-lively bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-green-200 shadow-[0_4px_20px_rgba(15,81,50,0.06)] overflow-hidden flex flex-col h-full`}>
         <div className="relative overflow-hidden">
           <img
             src={image}

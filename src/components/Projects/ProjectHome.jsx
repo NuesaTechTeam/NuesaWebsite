@@ -128,7 +128,7 @@ const ProjectHome = () => {
                                 href={project.appLink}
                                 target='_blank'
                                 rel='noopener noreferrer'
-                                className='inline-flex items-center gap-1.5 rounded-lg bg-green px-3.5 py-2 text-xs font-semibold text-white transition-colors duration-200 hover:bg-green-dark'
+                                className='btn-lively inline-flex items-center gap-1.5 rounded-lg bg-green px-3.5 py-2 text-xs font-semibold text-white hover:bg-green-dark'
                               >
                                 <FaGooglePlay className='h-3.5 w-3.5' />
                                 Download App
@@ -139,7 +139,7 @@ const ProjectHome = () => {
                                 href={project.link}
                                 target='_blank'
                                 rel='noopener noreferrer'
-                                className='inline-flex items-center gap-1.5 rounded-lg border border-green px-3.5 py-2 text-xs font-semibold text-green dark:text-green-400 transition-colors duration-200 hover:bg-green hover:text-white'
+                                className='btn-lively inline-flex items-center gap-1.5 rounded-lg border border-green px-3.5 py-2 text-xs font-semibold text-green dark:text-green-400 hover:bg-green hover:text-white'
                               >
                                 Try Online
                                 <ExternalLink className='h-3.5 w-3.5' />
@@ -180,13 +180,13 @@ const ProjectHome = () => {
             {pastProjects.slice(0, 4).map((project) => (
               <article
                 key={`${project.title}-${project.year}`}
-                className='overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 transition-colors duration-200 hover:border-green-300 dark:hover:border-green-700'
+                className='group card-lively overflow-hidden rounded-lg border border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900 hover:border-green-300 dark:hover:border-green-700'
               >
                 <div className='h-48 overflow-hidden'>
                   <img
                     src={project.image}
                     alt={project.title}
-                    className='h-full w-full object-cover'
+                    className='h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105'
                   />
                 </div>
 
@@ -211,7 +211,7 @@ const ProjectHome = () => {
           <button
             type='button'
             onClick={handleProjectButton}
-            className='inline-flex items-center rounded-lg bg-green px-8 py-4 font-semibold text-white transition-colors duration-200 hover:bg-green-dark'
+            className='btn-lively inline-flex items-center rounded-lg bg-green px-8 py-4 font-semibold text-white hover:bg-green-dark'
           >
             View All Projects
             <ArrowRight className='ml-2 h-5 w-5' />

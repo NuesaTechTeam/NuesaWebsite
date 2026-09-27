@@ -23,11 +23,11 @@ const EventCard = ({ event, isPast, isVisible, isEven }) => {
       className={`ml-12 md:ml-0 md:w-5/12 ${isEven ? "md:pr-12" : "md:pl-12"}`}
     >
       <div
-        className={`${
+        className={`card-lively ${
           isPast ? "bg-gray-50 dark:bg-gray-900" : "bg-white dark:bg-gray-900"
         } rounded-lg overflow-hidden border ${
           isPast ? "border-gray-200 dark:border-gray-800" : "border-green-200"
-        } transition-[border-color,box-shadow,transform] duration-200 hover:border-green-300 dark:hover:border-green-700 ${
+        } hover:border-green-300 dark:hover:border-green-700 ${
           isVisible
             ? "opacity-100 translate-y-0 translate-x-0"
             : "opacity-100 translate-y-0 translate-x-0"

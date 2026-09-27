@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { eventsData } from "../../lib/constants";
-import { Calendar, MapPin, Clock, ArrowRight, Sparkles } from "lucide-react";
+import { Calendar, MapPin, Clock, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import ShufflingImage from "../ShufflingImage";
 import CountUp from "../CountUp";
@@ -92,7 +92,7 @@ const EventsHome = () => {
 
   if (featuredEvents.length === 0) {
     return (
-      <section className='py-16 bg-white dark:bg-gray-900'>
+      <section className='py-12 bg-white dark:bg-gray-900'>
         <div className='max-w-7xl mx-auto'>
           {/* header */}
           <div className='text-center mb-16'>
@@ -155,7 +155,7 @@ const EventsHome = () => {
               <div className='space-y-4'>
                 <button
                   onClick={handleEventButton}
-                  className='w-full lg:w-auto bg-green hover:bg-green-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition-colors duration-200 flex items-center justify-center group cursor-pointer'
+                  className='btn-lively w-full lg:w-auto bg-green hover:bg-green-700 text-white px-8 py-4 rounded-lg font-bold text-lg flex items-center justify-center group cursor-pointer'
                 >
                   View Past Events
                   <ArrowRight className='size-7 ml-2 group-hover:translate-x-1 transition-transform' />
@@ -169,7 +169,7 @@ const EventsHome = () => {
   }
 
   return (
-    <section className='py-16 bg-white dark:bg-gray-900'>
+    <section className='py-12 bg-white dark:bg-gray-900'>
       <div className='max-w-7xl mx-auto'>
         {/* header */}
         <div className='text-center mb-16'>
@@ -379,7 +379,7 @@ const EventsHome = () => {
             <div className='space-y-4'>
               <button
                 onClick={handleEventButton}
-                className='w-full lg:w-auto bg-green hover:bg-green-700 text-white px-8 py-4 rounded-lg font-bold text-lg transition-colors duration-200 flex items-center justify-center group cursor-pointer'
+                className='btn-lively w-full lg:w-auto bg-green hover:bg-green-700 text-white px-8 py-4 rounded-lg font-bold text-lg flex items-center justify-center group cursor-pointer'
               >
                 {hasUpcomingEvents ? "View All Events" : "View All Past Events"}
                 <ArrowRight className='size-7 ml-2 group-hover:translate-x-1 transition-transform' />
@@ -388,65 +388,6 @@ const EventsHome = () => {
           </div>
         </div>
 
-        <div className='mt-12'>
-          <h3 className='text-2xl font-bold text-green dark:text-green-400 text-center mb-12'>
-            {hasUpcomingEvents ? "Also Coming Up" : "More Past Events"}
-          </h3>
-          <div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-            {featuredEvents
-              .filter((_, index) => index !== currentEventIndex)
-              .slice(0, 2)
-              .map((event) => (
-                <div
-                  key={event.id}
-                  className='bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-800 overflow-hidden hover:border-green-300 dark:hover:border-green-700 transition-colors duration-200'
-                >
-                  <ShufflingImage
-                    images={event.images}
-                    src={event.image}
-                    alt={event.title}
-                    className={`w-full ${
-                      event.imageFit === "contain" ? "h-40 bg-black" : "h-32"
-                    }`}
-                    imgClassName={
-                      event.imageFit === "contain"
-                        ? "object-contain"
-                        : "object-cover"
-                    }
-                  />
-                  <div className='p-4'>
-                    <h4 className='font-bold text-gray-900 dark:text-white mb-2 line-clamp-1'>
-                      {event.title}
-                    </h4>
-                    <div className='flex items-center text-gray-500 dark:text-gray-400 text-sm'>
-                      <Calendar className='w-3 h-3 mr-1' />
-                      <span>{event.date}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-
-            <div className='bg-green-50 dark:bg-green-900/30 rounded-2xl border border-dashed border-green-300 p-6 flex flex-col items-center justify-center text-center hover:bg-green-100 dark:hover:bg-gray-800 transition-colors duration-200 cursor-pointer'>
-              {hasUpcomingEvents ? (
-                upcomingEvents.length - 3 > 0 && (
-                  <div className='text-green dark:text-green-400 mb-2'>
-                    <Sparkles className='size-7 mx-auto mb-2' />
-                    <div className='text-lg font-bold'>
-                      {upcomingEvents.length - 3}+ More
-                    </div>
-                    <div className='text-sm'>Exciting Events</div>
-                  </div>
-                )
-              ) : (
-                <div className='text-green dark:text-green-400 mb-2'>
-                  <Sparkles className='size-7 mx-auto mb-2' />
-                  <div className='text-lg font-bold'>New Events</div>
-                  <div className='text-sm'>Coming Soon</div>
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
       </div>
     </section>
   );

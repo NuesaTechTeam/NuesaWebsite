@@ -57,7 +57,7 @@ const ContactHome = () => {
   };
 
   return (
-    <section className="bg-white dark:bg-gray-900 py-16 lg:px-4">
+    <section className="bg-white dark:bg-gray-900 py-12 lg:px-4">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
@@ -115,7 +115,7 @@ const ContactHome = () => {
                 </div>
                 <button
                   onClick={handleQuickSubmit}
-                  className="w-full bg-green text-white py-3 rounded-lg font-medium hover:bg-green-700 flex items-center justify-center"
+                  className="btn-lively w-full bg-green text-white py-3 rounded-lg font-medium hover:bg-green-700 flex items-center justify-center"
                 >
                   <Send className="size-5 mr-2" />
                   Send Message
@@ -181,7 +181,7 @@ const ContactHome = () => {
               </p>
               <button
                 onClick={handleContactButton}
-                className="bg-white dark:bg-gray-900 text-green dark:text-green-400 px-6 py-2 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-gray-800 inline-flex items-center cursor-pointer"
+                className="btn-lively bg-white dark:bg-gray-900 text-green dark:text-green-400 px-6 py-2 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-gray-800 inline-flex items-center cursor-pointer"
               >
                 Visit Contact Page
                 <ArrowRight className="size-5 ml-2" />

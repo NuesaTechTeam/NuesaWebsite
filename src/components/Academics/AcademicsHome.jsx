@@ -40,7 +40,7 @@ const AcademicsHome = () => {
     navigate("/academics");
   };
   return (
-    <section className='bg-white dark:bg-gray-900 py-16 lg:px-4'>
+    <section className='bg-white dark:bg-gray-900 py-12 lg:px-4'>
       <div className='max-w-7xl mx-auto'>
         <div className='text-center mb-10'>
           <h2 className='text-4xl font-bold text-gray-900 dark:text-white mb-4'>
@@ -106,7 +106,7 @@ const AcademicsHome = () => {
 
             <button
               onClick={handleAcademicsButton}
-              className='group bg-green hover:bg-green-700 text-white font-semibold py-4 px-8 rounded-lg transition-colors duration-200'>
+              className='btn-lively group bg-green hover:bg-green-700 text-white font-semibold py-4 px-8 rounded-lg'>
               <span className='flex items-center'>
                 Explore Academic Resources
                 <ArrowRight className='ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform duration-300' />
@@ -118,11 +118,8 @@ const AcademicsHome = () => {
             </div>
 
             <div className='mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-semibold'>
-              <Link to='/library' className='text-green-700 dark:text-green-400 hover:text-green-900 dark:hover:text-green-400 hover:underline'>
+              <Link to='/library' className='link-underline text-green-700 dark:text-green-400 hover:text-green-900 dark:hover:text-green-400'>
                 NUESA ABUAD Digital Library
-              </Link>
-              <Link to='/apwen' className='text-purple-700 dark:text-purple-400 hover:text-purple-900 dark:hover:text-purple-300 hover:underline'>
-                APWEN ABUAD Collegiate
               </Link>
             </div>
           </div>

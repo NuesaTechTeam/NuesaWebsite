@@ -127,10 +127,10 @@ const Disciplines = () => {
     <section className='px-4 py-16 sm:px-6 lg:px-8'>
       <div className='max-w-7xl mx-auto text-center'>
         <h2 className='text-3xl md:text-4xl font-bold text-gray-950 dark:text-white mb-3'>
-          Engineering Departments
+          Engineering Programs
         </h2>
         <p className='mx-auto mb-10 max-w-2xl text-gray-700 dark:text-gray-200'>
-          NUESA serves students across the college, so the page should make each department easy to scan without making every card compete for attention.
+          NUESA serves students across the college, so the page should make each program easy to scan without making every card compete for attention.
         </p>
 
       <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 text-left'>

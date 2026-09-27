@@ -17,7 +17,8 @@ const LibraryResourceCard = ({ doc, variants }) => {
     <motion.div
       variants={variants}
       layout
-      className='group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 transition-[border-color,transform] duration-200 hover:-translate-y-0.5 hover:border-green-400 dark:border-gray-800 dark:bg-gray-900'
+      whileHover={{ y: -6 }}
+      className='group card-lively relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-100 bg-white p-6 hover:border-green-400 dark:border-gray-800 dark:bg-gray-900'
     >
       <div className='relative z-10'>
         <div className='mb-5 flex items-start justify-between gap-3'>

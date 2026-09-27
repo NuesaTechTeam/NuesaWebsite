@@ -13,7 +13,8 @@ const ResourceCard = ({
     <motion.div
       variants={variants}
       layout
-      className="group relative flex flex-col justify-between bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 transition-[border-color,transform] duration-200 hover:border-green-400 hover:-translate-y-0.5 overflow-hidden"
+      whileHover={{ y: -6 }}
+      className="group card-lively relative flex flex-col justify-between bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 hover:border-green-400 overflow-hidden"
     >
       <div className="relative z-10">
         <div className="flex justify-between items-start mb-5">

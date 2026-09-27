@@ -3,7 +3,7 @@ import { collegeGallery } from "../../lib/constants";
 
 const CollegeEnvironment = () => {
   return (
-    <section className='bg-white dark:bg-gray-900 py-14 lg:px-4'>
+    <section className='bg-white dark:bg-gray-900 py-10 lg:px-4'>
       <div className='max-w-7xl mx-auto'>
         <div className='text-center mb-10'>
           <h2 className='text-4xl font-bold text-gray-900 dark:text-white mb-4'>

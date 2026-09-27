@@ -11,7 +11,7 @@ const PresidentMessage = () => {
           <img
             src="/images/about/gregory.jpeg"
             alt="NUESA President"
-            className="w-full h-100 md:h-[32rem] object-cover object-top"
+            className="w-full h-auto object-contain"
           />
         </div>
       </div>
@@ -23,45 +23,56 @@ const PresidentMessage = () => {
         </h2>
 
         <div className="max-w-prose text-gray-700 dark:text-gray-200 text-base md:text-lg leading-relaxed space-y-4">
+          <p>Dear Engineering Students,</p>
+
           <p>
-            Dear Fellow Engineering Students,
+            It is with great honour and a deep sense of responsibility that I
+            welcome you to a new chapter of NUESA, Afe Babalola University.
           </p>
 
           <p>
-            It is with great humility and a deep sense of responsibility that I welcome you to a new and exciting chapter in the life of our association. As your President, I consider it a privilege to serve you and to lead an administration that is committed to your growth, well-being, and success.
+            As your President, I believe leadership is more than occupying a
+            position; it is about service, representation, and creating
+            opportunities for the people we serve.
           </p>
 
           <p className="font-semibold italic text-green-700 dark:text-green-400">
-            This tenure is anchored on a clear vision: “Reformation: Sustaining Policies and Advancing Possibilities.”
+            Our administration is built on a clear vision of Continuity, Growth
+            and Innovation.
           </p>
 
           <p>
-            We are here to build on the strengths of past administrations while pushing boundaries to unlock new opportunities for every engineering student. From academic support and professional development to student welfare and vibrant campus life, this administration is focused on real impact.
+            We are committed to building on the progress of previous
+            administrations while introducing new ideas that will strengthen our
+            academic, professional, social and welfare experiences as
+            engineering students. We want a NUESA that communicates better,
+            creates meaningful opportunities, embraces innovation, and ensures
+            that every student has a voice.
           </p>
 
           <p>
-            This website stands as one of many steps in that direction — a space designed to keep you informed, connected, and involved. Through it, we hope to bridge the gap between leadership and students, ensuring that everyone feels seen, heard, and valued.
+            However, this vision cannot be achieved by the executive council
+            alone. NUESA belongs to all of us. Your ideas, participation and
+            support will be essential in making this administration successful.
           </p>
 
           <p>
-            We invite you to be active participants in this journey. Share your ideas. Engage with our programs. Hold us accountable. The legacy we build is not about individuals, but about a community moving forward together.
+            There will be challenges, but our commitment remains to serve with
+            purpose, remain accountable, and leave NUESA better than we found
+            it.
           </p>
 
           <p>
-            Here’s to a tenure marked by vision, progress, and unity.
+            Together, let us build an engineering community defined by
+            Continuity, Growth and Innovation.
           </p>
+
+          <p>The future of the college is ours to build.</p>
 
           <div className="mt-6 font-medium">
-            <p>With all sincerity,</p>
-            <p>Kienabere Alaibi Emmanuel</p>
-            <p>President, NUESA</p>
-            <p>Afe Babalola University, Ado-Ekiti</p>
-            <p className="italic text-sm text-green-600">“Reformation: Sustaining Policies and Advancing Possibilities”</p>
+            <p>Gregory Akidima</p>
+            <p>President, NUESA ABUAD</p>
           </div>
-
-          <p>
-            NUESA is more than a union — it is a family, a force, and a future. I encourage every student to get involved, contribute, and grow with us. Together, we engineer greatness.
-          </p>
         </div>
 
         <Link to="/executives">
