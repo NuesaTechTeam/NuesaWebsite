@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
+  Activity,
   BarChart3,
   Fingerprint,
   LogOut,
@@ -21,6 +22,7 @@ import {
   VOTER_PROFILE_FIELDS,
 } from "../../lib/electionData";
 import { useElectionResults } from "../../hooks/useElectionResults";
+import { runDiagnostics } from "../../lib/electionsApi";
 import CountUp from "../CountUp";
 import PositionResult from "./PositionResult";
 import CandidateCard from "./CandidateCard";
@@ -32,6 +34,7 @@ const TABS = [
   { id: "positions", label: "Positions", icon: Vote },
   { id: "ballot", label: "Voter Ballot", icon: Fingerprint },
   { id: "verification", label: "Verification", icon: ShieldCheck },
+  { id: "diagnostics", label: "Diagnostics", icon: Activity },
 ];
 
 const fadeUp = {
@@ -312,6 +315,130 @@ const VerificationTab = ({ onGoToBallot }) => (
   </div>
 );
 
+const DiagnosticsTab = () => {
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const [result, setResult] = useState(null);
+
+  const run = async () => {
+    if (!email && !phone) {
+      setError("Enter an email and/or a phone number.");
+      return;
+    }
+    setError("");
+    setBusy(true);
+    setResult(null);
+    try {
+      const data = await runDiagnostics({
+        toEmail: email.trim() || undefined,
+        toPhone: phone.trim() || undefined,
+      });
+      setResult(data);
+    } catch (err) {
+      setError(err.message || "Diagnostics failed.");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <div className='grid grid-cols-1 gap-6 lg:grid-cols-2'>
+      <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900'>
+        <h2 className='text-lg font-bold text-gray-900 dark:text-white'>Delivery diagnostics</h2>
+        <p className='mt-2 text-sm text-gray-600 dark:text-gray-300'>
+          Sends a real test OTP and shows exactly what Resend (email) and Termii (SMS) replied.
+          The code is shown below — you can ignore it.
+        </p>
+
+        <div className='mt-5 space-y-4'>
+          <div>
+            <label className='mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-200'>
+              Test email
+            </label>
+            <input
+              type='email'
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder='you@example.com'
+              className='w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-green focus:ring-2 focus:ring-green/30 dark:border-gray-700 dark:bg-gray-950 dark:text-white'
+            />
+          </div>
+          <div>
+            <label className='mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-200'>
+              Test phone
+            </label>
+            <input
+              type='tel'
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              placeholder='e.g. 08012345678'
+              className='w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 outline-none focus:border-green focus:ring-2 focus:ring-green/30 dark:border-gray-700 dark:bg-gray-950 dark:text-white'
+            />
+          </div>
+          <button
+            type='button'
+            onClick={run}
+            disabled={busy}
+            className='btn-lively inline-flex items-center gap-2 rounded-lg bg-green px-5 py-2.5 text-sm font-semibold text-white disabled:opacity-60'
+          >
+            {busy ? <RefreshCw className='h-4 w-4 animate-spin' /> : <Activity className='h-4 w-4' />}
+            Run test
+          </button>
+        </div>
+
+        {error && (
+          <p className='mt-4 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/30 dark:text-red-400'>
+            {error}
+          </p>
+        )}
+      </div>
+
+      <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900'>
+        <h3 className='text-lg font-bold text-gray-900 dark:text-white'>Result</h3>
+        {!result ? (
+          <p className='mt-3 text-sm text-gray-500 dark:text-gray-400'>
+            Run a test to see Resend/Termii responses here.
+          </p>
+        ) : (
+          <div className='mt-3 space-y-4'>
+            <div className='text-xs text-gray-500 dark:text-gray-400'>
+              Config: email {result.config?.email ? "ok" : "missing"} · sms{" "}
+              {result.config?.sms ? "ok" : "missing"} · sender {result.config?.smsSenderId || "—"} /
+              channel {result.config?.smsChannel || "—"}
+            </div>
+            {[result.results?.email, result.results?.sms].filter(Boolean).map((r) => (
+              <div
+                key={r.channel}
+                className={`rounded-lg border p-3 text-sm ${
+                  r.sent
+                    ? "border-green-200 bg-green-50 dark:border-green-900/40 dark:bg-green-900/20"
+                    : "border-red-200 bg-red-50 dark:border-red-900/40 dark:bg-red-900/20"
+                }`}
+              >
+                <div className='flex items-center justify-between gap-2'>
+                  <span className='font-bold uppercase tracking-wide text-gray-700 dark:text-gray-200'>
+                    {r.channel}
+                  </span>
+                  <span className={r.sent ? "text-green-700 dark:text-green-400" : "text-red-600 dark:text-red-400"}>
+                    {r.sent ? "sent ✓" : "failed ✗"} {r.status ? `(${r.status})` : ""}
+                  </span>
+                </div>
+                {(r.reason || r.detail) && (
+                  <pre className='mt-2 whitespace-pre-wrap break-words text-xs text-gray-600 dark:text-gray-300'>
+                    {r.reason || r.detail}
+                  </pre>
+                )}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const ElectionsDashboard = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState("results");
   const {
@@ -510,6 +637,7 @@ const ElectionsDashboard = ({ onLogout }) => {
               {activeTab === "verification" && (
                 <VerificationTab onGoToBallot={() => setActiveTab("ballot")} />
               )}
+              {activeTab === "diagnostics" && <DiagnosticsTab />}
             </motion.div>
           </AnimatePresence>
         </div>

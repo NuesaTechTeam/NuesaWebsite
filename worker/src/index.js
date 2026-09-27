@@ -16,6 +16,7 @@
  *   POST /blog/submissions/:id/status  (admin) { status: approved|rejected }
  *   GET  /blog/posts                   approved blog posts for the public site
  *   GET  /blog/images/:id              cover image for a submission (public, cached)
+ *   POST /admin/diagnostics           (admin) { toEmail?, toPhone? } -> provider responses
  *
  * /results and /stats require an admin Bearer token and are edge-cached for a
  * short TTL so repeated dashboard polling does not hit D1.
@@ -81,6 +82,12 @@ export default {
             return json({ error: "Unauthorized" }, 401, cors);
           }
           response = await blogUpdateStatus(request, env, ctx, statusMatch[1]);
+          handled = true;
+        } else if (url.pathname === "/admin/diagnostics" && request.method === "POST") {
+          if (!(await isAdmin(request, env))) {
+            return json({ error: "Unauthorized" }, 401, cors);
+          }
+          response = await adminDiagnostics(request, env);
           handled = true;
         }
       }
@@ -303,7 +310,9 @@ async function findVoter(env, matricNumber, invoiceNumber) {
 /* ------------------------------------------------------------------- mail */
 
 async function sendEmail(env, to, code) {
-  if (!env.RESEND_API_KEY || !to) return { channel: "email", sent: false };
+  if (!to) return { channel: "email", sent: false, reason: "No email address on record" };
+  if (!env.RESEND_API_KEY) return { channel: "email", sent: false, reason: "RESEND_API_KEY is not configured" };
+
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -318,11 +327,17 @@ async function sendEmail(env, to, code) {
       text: `Your one-time verification code is ${code}. It expires in 10 minutes. If you did not request this, ignore this message.`,
     }),
   });
-  return { channel: "email", sent: response.ok };
+
+  if (response.ok) return { channel: "email", sent: true, status: response.status };
+
+  const detail = await response.text().catch(() => "");
+  return { channel: "email", sent: false, status: response.status, detail: detail.slice(0, 400) };
 }
 
 async function sendSms(env, to, code) {
-  if (!env.TERMII_API_KEY || !to) return { channel: "sms", sent: false };
+  if (!to) return { channel: "sms", sent: false, reason: "No phone number on record" };
+  if (!env.TERMII_API_KEY) return { channel: "sms", sent: false, reason: "TERMII_API_KEY is not configured" };
+
   const response = await fetch("https://api.ng.termii.com/api/sms/send", {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -335,7 +350,47 @@ async function sendSms(env, to, code) {
       channel: env.TERMII_CHANNEL || "dnd",
     }),
   });
-  return { channel: "sms", sent: response.ok };
+
+  const raw = await response.text().catch(() => "");
+  let parsed = null;
+  try { parsed = JSON.parse(raw); } catch { /* keep raw */ }
+
+  // Termii returns HTTP 200 even for some failures, so inspect the body too.
+  const ok =
+    response.ok &&
+    (!parsed || !["error", "failed", "failure"].includes(String(parsed.code || parsed.status || "").toLowerCase()));
+
+  return {
+    channel: "sms",
+    sent: ok,
+    status: response.status,
+    detail: (parsed ? JSON.stringify(parsed) : raw).slice(0, 400),
+  };
+}
+
+/** Admin-only: send a real test OTP to a given email/phone and return provider responses. */
+async function adminDiagnostics(request, env) {
+  const { toEmail, toPhone } = await readJson(request);
+  if (!toEmail && !toPhone) {
+    return json({ error: "Provide toEmail and/or toPhone" }, 400);
+  }
+
+  const code = randomOtp();
+  const results = {};
+  if (toEmail) results.email = await sendEmail(env, toEmail, code);
+  if (toPhone) results.sms = await sendSms(env, toPhone, code);
+
+  return json({
+    sentCode: code,
+    config: {
+      email: Boolean(env.RESEND_API_KEY),
+      emailFrom: env.OTP_EMAIL_FROM || null,
+      sms: Boolean(env.TERMII_API_KEY),
+      smsSenderId: env.TERMII_SENDER_ID || null,
+      smsChannel: env.TERMII_CHANNEL || null,
+    },
+    results,
+  });
 }
 
 /* --------------------------------------------------------------- handlers */
@@ -418,7 +473,18 @@ async function otpSend(request, env) {
 
   const channels = [emailResult, smsResult].filter((result) => result.sent);
   if (channels.length === 0) {
-    return json({ error: "Could not send the verification code. Please try again." }, 502);
+    return json(
+      {
+        error: "Could not send the verification code. Please try again.",
+        failures: [emailResult, smsResult].map((result) => ({
+          channel: result.channel,
+          status: result.status,
+          reason: result.reason,
+          detail: result.detail,
+        })),
+      },
+      502
+    );
   }
 
   return json({

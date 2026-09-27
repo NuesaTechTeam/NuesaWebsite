@@ -75,3 +75,7 @@ export const getResults = () => request("/results", { token: getAdminToken() });
 export const getStats = () => request("/stats", { token: getAdminToken() });
 
 export const getCandidates = () => request("/candidates");
+
+/** Admin: send a test OTP and return the raw provider responses. */
+export const runDiagnostics = (payload) =>
+  request("/admin/diagnostics", { method: "POST", body: payload, token: getAdminToken() });
