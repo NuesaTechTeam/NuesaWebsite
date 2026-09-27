@@ -7,6 +7,28 @@ import "react-quill/dist/quill.snow.css";
 import emailjs from "@emailjs/browser";
 import { submitBlog } from "../../lib/blogApi";
 
+/** Resize + re-encode an image in the browser so uploads stay small. */
+const compressImage = (file, maxDim = 1280, quality = 0.82) =>
+  new Promise((resolve, reject) => {
+    const objectUrl = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      URL.revokeObjectURL(objectUrl);
+      const scale = Math.min(1, maxDim / Math.max(img.width, img.height));
+      const canvas = document.createElement("canvas");
+      canvas.width = Math.round(img.width * scale);
+      canvas.height = Math.round(img.height * scale);
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+      resolve(canvas.toDataURL("image/jpeg", quality));
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(objectUrl);
+      reject(new Error("Could not read that image."));
+    };
+    img.src = objectUrl;
+  });
+
 const CTASection = ({ scrollIntoView }) => {
   const [showSubmitModal, setShowSubmitModal] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -17,8 +39,50 @@ const CTASection = ({ scrollIntoView }) => {
     email: "",
     content: "",
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [imagePreview, setImagePreview] = useState("");
+  const [imageError, setImageError] = useState("");
 
   const submitRef = useRef(null);
+
+  const handleImageChange = (event) => {
+    const file = event.target.files?.[0];
+    setImageError("");
+    if (!file) {
+      setImageFile(null);
+      setImagePreview("");
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      setImageError("Please choose an image file.");
+      return;
+    }
+    if (file.size > 12 * 1024 * 1024) {
+      setImageError("That image is too large (max 12MB).");
+      return;
+    }
+    setImageFile(file);
+    setImagePreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return URL.createObjectURL(file);
+    });
+  };
+
+  const resetForm = () => {
+    setFormData({
+      title: "",
+      author: "",
+      category: "",
+      email: "",
+      content: "",
+    });
+    setImageFile(null);
+    setImagePreview((prev) => {
+      if (prev) URL.revokeObjectURL(prev);
+      return "";
+    });
+    setImageError("");
+  };
 
   useEffect(() => {
     if (scrollIntoView && submitRef.current) {
@@ -36,6 +100,22 @@ const CTASection = ({ scrollIntoView }) => {
 const handleFormSubmit = async (e) => {
     e.preventDefault();
 
+    // Compress the optional cover image before sending.
+    let image;
+    if (imageFile) {
+      try {
+        image = await compressImage(imageFile);
+        if (image.length > 2400000) image = await compressImage(imageFile, 900, 0.7);
+        if (image.length > 2600000) {
+          setImageError("That image is still too large — please choose a smaller one.");
+          return;
+        }
+      } catch (err) {
+        setImageError(err.message || "Could not process the image.");
+        return;
+      }
+    }
+
     // Store the submission for editorial review (source of truth).
     try {
       await submitBlog({
@@ -44,6 +124,7 @@ const handleFormSubmit = async (e) => {
         email: formData.email,
         category: formData.category,
         content: formData.content,
+        image,
       });
     } catch (err) {
       console.error("Submission failed:", err);
@@ -70,13 +151,7 @@ const handleFormSubmit = async (e) => {
     setTimeout(() => {
       setSubmitted(false);
       setShowSubmitModal(false);
-      setFormData({
-        title: "",
-        author: "",
-        category: "",
-        email: "",
-        content: "",
-      });
+      resetForm();
     }, 2000);
   };
   return (
@@ -192,6 +267,31 @@ const handleFormSubmit = async (e) => {
                     <option>Student Contributions</option>
                     <option>Tech & Trends</option>
                   </select>
+                  <div>
+                    <label
+                      htmlFor="blog-cover"
+                      className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-200"
+                    >
+                      Cover image <span className="text-gray-400">(optional)</span>
+                    </label>
+                    <input
+                      id="blog-cover"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="w-full cursor-pointer rounded-md border border-gray-200 px-4 py-2 text-sm file:mr-3 file:rounded-md file:border-0 file:bg-green file:px-3 file:py-1.5 file:text-white dark:border-gray-800 dark:bg-gray-900 dark:text-white"
+                    />
+                    {imagePreview && (
+                      <img
+                        src={imagePreview}
+                        alt="Cover preview"
+                        className="mt-3 h-36 w-full rounded-md object-cover"
+                      />
+                    )}
+                    {imageError && (
+                      <p className="mt-2 text-xs font-medium text-red-500">{imageError}</p>
+                    )}
+                  </div>
                   <div className="bg-white dark:bg-gray-900 border border-green-300 rounded min-h-[200px] max-h-[400px] overflow-auto">
                     <ReactQuill
                       theme="snow"

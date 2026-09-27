@@ -25,7 +25,7 @@ const normalizeSubmission = (submission) => ({
   category: submission.category || "Student Contributions",
   excerpt: stripHtml(submission.content).slice(0, 160),
   content: submission.content,
-  image: "/images/blog/logo.jpg",
+  image: submission.image_url || "/images/blog/logo.jpg",
   author: submission.author,
   date: formatDate(submission.created_at),
   isFeatured: false,

@@ -45,3 +45,12 @@ CREATE TABLE IF NOT EXISTS blog_submissions (
 );
 
 CREATE INDEX IF NOT EXISTS idx_blog_status ON blog_submissions (status);
+
+-- Optional cover image for a submission. The image row shares the submission's
+-- id, so we avoid altering blog_submissions. `data` is base64 (no data: prefix).
+CREATE TABLE IF NOT EXISTS blog_images (
+  id TEXT PRIMARY KEY,
+  content_type TEXT NOT NULL,
+  data TEXT NOT NULL,
+  created_at TEXT NOT NULL
+);

@@ -11,10 +11,11 @@
  *   GET  /stats              -> { registeredVoters }                                                          (admin)
  *   GET  /candidates         -> candidates with photos/manifestos (from CANDIDATES_JSON var)
  *
- *   POST /blog/submissions             { title, author, email, category, content } -> { id }
+ *   POST /blog/submissions             { title, author, email, category, content, image? } -> { id }
  *   GET  /blog/submissions?status=     (admin) list blog submissions
  *   POST /blog/submissions/:id/status  (admin) { status: approved|rejected }
  *   GET  /blog/posts                   approved blog posts for the public site
+ *   GET  /blog/images/:id              cover image for a submission (public, cached)
  *
  * /results and /stats require an admin Bearer token and are edge-cached for a
  * short TTL so repeated dashboard polling does not hit D1.
@@ -57,7 +58,11 @@ export default {
       let handled = false;
 
       /* ------------------------------------------------------------ blog */
-      if (url.pathname === "/blog/posts" && request.method === "GET") {
+      if (url.pathname.startsWith("/blog/images/") && request.method === "GET") {
+        const imageId = decodeURIComponent(url.pathname.slice("/blog/images/".length));
+        response = await blogGetImage(request, env, ctx, imageId);
+        handled = true;
+      } else if (url.pathname === "/blog/posts" && request.method === "GET") {
         response = await blogPublicPosts(request, env, ctx);
         handled = true;
       } else if (url.pathname === "/blog/submissions" && request.method === "POST") {
@@ -553,9 +558,25 @@ async function getCandidates(env) {
 
 const BLOG_STATUSES = new Set(["pending", "approved", "rejected"]);
 const MAX_BLOG_CONTENT = 100000;
+const MAX_IMAGE_CHARS = 2_600_000; // ~1.9 MB binary after base64
 
 function cleanField(value, max) {
   return String(value || "").trim().slice(0, max);
+}
+
+/** Parse a `data:<type>;base64,<data>` URL. Returns null if not a valid image. */
+function parseImageDataUrl(value) {
+  if (typeof value !== "string") return null;
+  const match = value.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/s);
+  if (!match) return null;
+  const contentType = match[1].toLowerCase();
+  const data = match[2].replace(/\s/g, "");
+  if (!data || data.length > MAX_IMAGE_CHARS) return null;
+  return { contentType, data };
+}
+
+function imageUrlFor(request, id, hasImage) {
+  return hasImage ? `${new URL(request.url).origin}/blog/images/${encodeURIComponent(id)}` : null;
 }
 
 async function blogSubmit(request, env) {
@@ -573,15 +594,30 @@ async function blogSubmit(request, env) {
     return json({ error: "Submission is too long" }, 413);
   }
 
+  const image = body.image ? parseImageDataUrl(body.image) : null;
+  if (body.image && !image) {
+    return json({ error: "The cover image is invalid or too large." }, 413);
+  }
+
   const id = crypto.randomUUID();
+  const createdAt = new Date().toISOString();
+
   await env.DB.prepare(
     `INSERT INTO blog_submissions (id, title, author, email, category, content, status, created_at)
      VALUES (?, ?, ?, ?, ?, ?, 'pending', ?)`
   )
-    .bind(id, title, author, email, category, content, new Date().toISOString())
+    .bind(id, title, author, email, category, content, createdAt)
     .run();
 
-  return json({ id, status: "pending" }, 201);
+  if (image) {
+    await env.DB.prepare(
+      "INSERT INTO blog_images (id, content_type, data, created_at) VALUES (?, ?, ?, ?)"
+    )
+      .bind(id, image.contentType, image.data, createdAt)
+      .run();
+  }
+
+  return json({ id, status: "pending", hasImage: Boolean(image) }, 201);
 }
 
 async function blogListSubmissions(request, env) {
@@ -589,16 +625,33 @@ async function blogListSubmissions(request, env) {
   const status = url.searchParams.get("status");
 
   let query =
-    "SELECT id, title, author, email, category, content, status, created_at, reviewed_at FROM blog_submissions";
+    `SELECT b.id, b.title, b.author, b.email, b.category, b.content, b.status,
+            b.created_at, b.reviewed_at,
+            CASE WHEN i.id IS NOT NULL THEN 1 ELSE 0 END AS has_image
+     FROM blog_submissions b
+     LEFT JOIN blog_images i ON i.id = b.id`;
   const binds = [];
   if (status && BLOG_STATUSES.has(status)) {
-    query += " WHERE status = ?";
+    query += " WHERE b.status = ?";
     binds.push(status);
   }
-  query += " ORDER BY created_at DESC LIMIT 200";
+  query += " ORDER BY b.created_at DESC LIMIT 200";
 
   const { results } = await env.DB.prepare(query).bind(...binds).all();
-  return json({ submissions: results || [] });
+  const submissions = (results || []).map((row) => ({
+    id: row.id,
+    title: row.title,
+    author: row.author,
+    email: row.email,
+    category: row.category,
+    content: row.content,
+    status: row.status,
+    created_at: row.created_at,
+    reviewed_at: row.reviewed_at,
+    image_url: imageUrlFor(request, row.id, row.has_image),
+  }));
+
+  return json({ submissions });
 }
 
 async function blogUpdateStatus(request, env, ctx, id) {
@@ -628,15 +681,53 @@ async function blogPublicPosts(request, env, ctx) {
   if (cached) return cached;
 
   const { results } = await env.DB.prepare(
-    `SELECT id, title, author, category, content, created_at, reviewed_at
-     FROM blog_submissions
-     WHERE status = 'approved'
-     ORDER BY reviewed_at DESC, created_at DESC
+    `SELECT b.id, b.title, b.author, b.category, b.content, b.created_at, b.reviewed_at,
+            CASE WHEN i.id IS NOT NULL THEN 1 ELSE 0 END AS has_image
+     FROM blog_submissions b
+     LEFT JOIN blog_images i ON i.id = b.id
+     WHERE b.status = 'approved'
+     ORDER BY b.reviewed_at DESC, b.created_at DESC
      LIMIT 100`
   ).all();
 
-  const response = json({ posts: results || [] });
+  const posts = (results || []).map((row) => ({
+    id: row.id,
+    title: row.title,
+    author: row.author,
+    category: row.category,
+    content: row.content,
+    created_at: row.created_at,
+    reviewed_at: row.reviewed_at,
+    image_url: imageUrlFor(request, row.id, row.has_image),
+  }));
+
+  const response = json({ posts });
   response.headers.set("Cache-Control", "public, max-age=60");
+  if (ctx) ctx.waitUntil(cache.put(key, response.clone()));
+  return response;
+}
+
+async function blogGetImage(request, env, ctx, id) {
+  const cache = caches.default;
+  const key = cacheKeyFor(request, `blog-image:${id}`);
+  const cached = await cache.match(key);
+  if (cached) return cached;
+
+  const row = await env.DB.prepare(
+    "SELECT content_type, data FROM blog_images WHERE id = ?"
+  )
+    .bind(id)
+    .first();
+
+  if (!row) return json({ error: "Image not found" }, 404);
+
+  const binary = Uint8Array.from(atob(row.data), (char) => char.charCodeAt(0));
+  const response = new Response(binary, {
+    headers: {
+      "content-type": row.content_type || "application/octet-stream",
+      "cache-control": "public, max-age=31536000, immutable",
+    },
+  });
   if (ctx) ctx.waitUntil(cache.put(key, response.clone()));
   return response;
 }

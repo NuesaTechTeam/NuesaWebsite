@@ -189,6 +189,14 @@ const SubmissionCard = ({ submission, onApprove, onReject, busy }) => {
         </span>
       </div>
 
+      {submission.image_url && (
+        <img
+          src={submission.image_url}
+          alt={`Cover for ${submission.title}`}
+          className='mt-4 h-48 w-full rounded-lg object-cover'
+        />
+      )}
+
       <div
         className={`relative mt-4 overflow-hidden rounded-lg border border-gray-100 bg-gray-50 p-4 text-sm leading-relaxed text-gray-700 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-200 ${
           expanded ? "" : "max-h-40"
