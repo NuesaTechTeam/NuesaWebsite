@@ -17,6 +17,7 @@ import useSEO from "../hooks/useSEO";
 import { sanitizeHtml } from "../lib/sanitizeHtml";
 import {
   adminLogin,
+  checkAdminSession,
   setAdminToken,
   getAdminToken,
   isElectionsApiConfigured,
@@ -248,7 +249,8 @@ const SubmissionCard = ({ submission, onApprove, onReject, busy }) => {
 const BlogAdmin = () => {
   useSEO({ title: "Blog Admin | NUESA", description: "Blog submissions review." });
 
-  const [authed, setAuthed] = React.useState(() => Boolean(getAdminToken()));
+  const [authed, setAuthed] = React.useState(false);
+  const [checking, setChecking] = React.useState(() => Boolean(getAdminToken()));
   const [activeTab, setActiveTab] = React.useState("pending");
   const [submissions, setSubmissions] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
@@ -266,6 +268,30 @@ const BlogAdmin = () => {
     } finally {
       setLoading(false);
     }
+  }, []);
+
+  // Validate any stored token with the server before showing the panel.
+  React.useEffect(() => {
+    if (!getAdminToken()) {
+      setChecking(false);
+      return undefined;
+    }
+    let cancelled = false;
+    checkAdminSession()
+      .then(() => {
+        if (!cancelled) {
+          setAuthed(true);
+          setChecking(false);
+        }
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setAdminToken("");
+        setChecking(false);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   React.useEffect(() => {
@@ -289,6 +315,14 @@ const BlogAdmin = () => {
     setAuthed(false);
     setSubmissions([]);
   };
+
+  if (checking) {
+    return (
+      <div className='flex min-h-[60vh] items-center justify-center'>
+        <div className='h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-green' />
+      </div>
+    );
+  }
 
   if (!authed) return <LoginPanel onSuccess={() => setAuthed(true)} />;
 

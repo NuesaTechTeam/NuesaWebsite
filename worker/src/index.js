@@ -35,8 +35,14 @@ const ADMIN_SESSION_TTL = 60 * 60 * 8;
 const OTP_TTL = 60 * 10;
 const BALLOT_TTL = 60 * 30;
 const MAX_OTP_ATTEMPTS = 5;
+const MAX_LOGIN_ATTEMPTS = 10;
 
-const ADMIN_ONLY_ROUTES = new Set(["GET /results", "GET /stats"]);
+const ADMIN_ONLY_ROUTES = new Set([
+  "GET /results",
+  "GET /stats",
+  "GET /admin/session",
+  "GET /admin/ballots",
+]);
 
 export default {
   async fetch(request, env, ctx) {
@@ -109,6 +115,12 @@ export default {
           break;
         case "POST /vote":
           response = await castVote(request, env, ctx);
+          break;
+        case "GET /admin/session":
+          response = json({ ok: true });
+          break;
+        case "GET /admin/ballots":
+          response = await getBallots(env);
           break;
         case "GET /results":
           response = await getResults(request, env, ctx);
@@ -411,16 +423,42 @@ function cacheKeyFor(request, name) {
   return new Request(new URL(`/__cache__/${name}`, request.url), { method: "GET" });
 }
 
+/** Constant-time string comparison (reduces timing leakage on credentials). */
+function safeEqual(a, b) {
+  const left = String(a ?? "");
+  const right = String(b ?? "");
+  if (left.length !== right.length) return false;
+  let diff = 0;
+  for (let i = 0; i < left.length; i += 1) {
+    diff |= left.charCodeAt(i) ^ right.charCodeAt(i);
+  }
+  return diff === 0;
+}
+
 async function adminLogin(request, env) {
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  const attemptKey = `login-attempts:${ip}`;
+  const attempts = Number(await env.SESSIONS.get(attemptKey)) || 0;
+
+  if (attempts >= MAX_LOGIN_ATTEMPTS) {
+    return json({ error: "Too many login attempts. Please try again later." }, 429);
+  }
+
   const { username, password } = await readJson(request);
 
   if (!env.ADMIN_USERNAME || !env.ADMIN_PASSWORD) {
     return json({ error: "Admin credentials are not configured" }, 500);
   }
 
-  if (String(username).trim() !== env.ADMIN_USERNAME || password !== env.ADMIN_PASSWORD) {
+  const validUser = safeEqual(String(username || "").trim(), env.ADMIN_USERNAME);
+  const validPass = safeEqual(password, env.ADMIN_PASSWORD);
+  if (!validUser || !validPass) {
+    await env.SESSIONS.put(attemptKey, String(attempts + 1), { expirationTtl: 600 });
     return json({ error: "Invalid username or password" }, 401);
   }
+
+  // Successful login clears the attempt counter.
+  await env.SESSIONS.delete(attemptKey);
 
   const token = randomToken();
   await env.SESSIONS.put(`admin:${token}`, "1", { expirationTtl: ADMIN_SESSION_TTL });
@@ -609,6 +647,34 @@ async function getResults(request, env, ctx) {
   response.headers.set("Cache-Control", "public, max-age=15");
   if (ctx) ctx.waitUntil(cache.put(key, response.clone()));
   return response;
+}
+
+/** Admin: every recorded ballot, grouped by voter (matric number + choices). */
+async function getBallots(env) {
+  const { results } = await env.DB.prepare(
+    `SELECT voter_key AS voterKey, position_id AS positionId,
+            candidate_id AS candidateId, created_at AS createdAt
+     FROM votes
+     ORDER BY voter_key, position_id`
+  ).all();
+
+  const byVoter = new Map();
+  for (const row of results || []) {
+    if (!byVoter.has(row.voterKey)) {
+      byVoter.set(row.voterKey, {
+        voterKey: row.voterKey,
+        matric: String(row.voterKey).split(":")[0],
+        votedAt: row.createdAt,
+        votes: [],
+      });
+    }
+    byVoter.get(row.voterKey).votes.push({
+      positionId: row.positionId,
+      candidateId: row.candidateId,
+    });
+  }
+
+  return json({ ballots: [...byVoter.values()] });
 }
 
 async function getCandidates(env) {

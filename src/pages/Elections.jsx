@@ -1,8 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import useSEO from "../hooks/useSEO";
 import { AdminLogin, ElectionsDashboard } from "../components/Elections";
-
-const SESSION_KEY = "nuesa-elections-auth";
+import {
+  checkAdminSession,
+  getAdminToken,
+  setAdminToken,
+} from "../lib/electionsApi";
 
 const Elections = () => {
   useSEO({
@@ -11,36 +14,46 @@ const Elections = () => {
       "NUESA ABUAD online elections portal. Restricted to authorised technical team members.",
   });
 
-  const [isAuthed, setIsAuthed] = useState(() => {
-    try {
-      return sessionStorage.getItem(SESSION_KEY) === "true";
-    } catch {
-      return false;
-    }
-  });
+  // The gate is decided by the SERVER, not by a client-side flag. A stored
+  // token only counts if the worker confirms it is still valid.
+  const [status, setStatus] = useState(() => (getAdminToken() ? "checking" : "guest"));
 
-  const handleSuccess = () => {
-    try {
-      sessionStorage.setItem(SESSION_KEY, "true");
-    } catch {
-      // ignore storage access errors
-    }
-    setIsAuthed(true);
-  };
+  useEffect(() => {
+    if (status !== "checking") return undefined;
+
+    let cancelled = false;
+    checkAdminSession()
+      .then(() => {
+        if (!cancelled) setStatus("authed");
+      })
+      .catch(() => {
+        if (cancelled) return;
+        setAdminToken("");
+        setStatus("guest");
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [status]);
 
   const handleLogout = () => {
-    try {
-      sessionStorage.removeItem(SESSION_KEY);
-    } catch {
-      // ignore storage access errors
-    }
-    setIsAuthed(false);
+    setAdminToken("");
+    setStatus("guest");
   };
 
-  return isAuthed ? (
+  if (status === "checking") {
+    return (
+      <div className='flex min-h-[60vh] items-center justify-center'>
+        <div className='h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-green' />
+      </div>
+    );
+  }
+
+  return status === "authed" ? (
     <ElectionsDashboard onLogout={handleLogout} />
   ) : (
-    <AdminLogin onSuccess={handleSuccess} />
+    <AdminLogin onSuccess={() => setStatus("authed")} />
   );
 };
 

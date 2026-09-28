@@ -1,9 +1,10 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   Activity,
   BarChart3,
   Fingerprint,
+  ListChecks,
   LogOut,
   RefreshCw,
   ShieldCheck,
@@ -20,9 +21,10 @@ import {
   VOTER_CONTACT_FIELDS,
   VOTER_LOGIN_FIELDS,
   VOTER_PROFILE_FIELDS,
+  getPositionById,
 } from "../../lib/electionData";
 import { useElectionResults } from "../../hooks/useElectionResults";
-import { runDiagnostics } from "../../lib/electionsApi";
+import { getBallots, runDiagnostics } from "../../lib/electionsApi";
 import CountUp from "../CountUp";
 import PositionResult from "./PositionResult";
 import CandidateCard from "./CandidateCard";
@@ -34,6 +36,7 @@ const TABS = [
   { id: "positions", label: "Positions", icon: Vote },
   { id: "ballot", label: "Voter Ballot", icon: Fingerprint },
   { id: "verification", label: "Verification", icon: ShieldCheck },
+  { id: "ballots", label: "Ballots", icon: ListChecks },
   { id: "diagnostics", label: "Diagnostics", icon: Activity },
 ];
 
@@ -314,6 +317,128 @@ const VerificationTab = ({ onGoToBallot }) => (
     </motion.div>
   </div>
 );
+
+const CANDIDATE_NAME_BY_ID = CANDIDATES.reduce((map, candidate) => {
+  map[candidate.id] = candidate.name;
+  return map;
+}, {});
+
+const formatBallotTime = (iso) => {
+  if (!iso) return "";
+  try {
+    return new Date(iso).toLocaleString(undefined, {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
+  } catch {
+    return iso;
+  }
+};
+
+const BallotsTab = () => {
+  const [ballots, setBallots] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [query, setQuery] = useState("");
+
+  const load = async () => {
+    setLoading(true);
+    setError("");
+    try {
+      const data = await getBallots();
+      setBallots(data?.ballots || []);
+    } catch (err) {
+      setError(err.message || "Could not load ballots.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  const filtered = (ballots || []).filter((ballot) =>
+    ballot.matric.toLowerCase().includes(query.trim().toLowerCase())
+  );
+
+  return (
+    <div>
+      <div className='mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between'>
+        <div>
+          <h2 className='text-lg font-bold text-gray-900 dark:text-white'>Recorded ballots</h2>
+          <p className='text-sm text-gray-500 dark:text-gray-400'>
+            {ballots ? `${ballots.length} voter(s) have cast a ballot.` : "Loading…"}
+          </p>
+        </div>
+        <div className='flex items-center gap-2'>
+          <input
+            type='text'
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder='Search matric number…'
+            className='rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 outline-none focus:border-green focus:ring-2 focus:ring-green/30 dark:border-gray-700 dark:bg-gray-950 dark:text-white'
+          />
+          <button
+            type='button'
+            onClick={load}
+            className='inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800'
+          >
+            <RefreshCw className={`h-4 w-4 ${loading ? "animate-spin" : ""}`} />
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      {error && (
+        <p className='mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-600 dark:border-red-900/40 dark:bg-red-900/30 dark:text-red-400'>
+          {error}
+        </p>
+      )}
+
+      {loading && !ballots ? (
+        <div className='flex justify-center py-20'>
+          <RefreshCw className='h-8 w-8 animate-spin text-green-600' />
+        </div>
+      ) : filtered.length === 0 ? (
+        <p className='py-20 text-center text-gray-500 dark:text-gray-400'>No ballots recorded yet.</p>
+      ) : (
+        <div className='space-y-4'>
+          {filtered.map((ballot) => (
+            <div
+              key={ballot.voterKey}
+              className='rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-gray-900'
+            >
+              <div className='flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 pb-3 dark:border-gray-800'>
+                <span className='font-mono text-sm font-bold uppercase tracking-wide text-gray-900 dark:text-white'>
+                  {ballot.matric}
+                </span>
+                <span className='text-xs text-gray-500 dark:text-gray-400'>
+                  {formatBallotTime(ballot.votedAt)} · {ballot.votes.length} positions
+                </span>
+              </div>
+              <div className='mt-3 grid grid-cols-1 gap-x-6 gap-y-1.5 sm:grid-cols-2'>
+                {ballot.votes.map((vote) => (
+                  <div
+                    key={vote.positionId}
+                    className='flex items-center justify-between gap-3 text-sm'
+                  >
+                    <span className='text-gray-500 dark:text-gray-400'>
+                      {getPositionById(vote.positionId)?.title || vote.positionId}
+                    </span>
+                    <span className='text-right font-medium text-gray-800 dark:text-gray-100'>
+                      {CANDIDATE_NAME_BY_ID[vote.candidateId] || vote.candidateId}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
 
 const DiagnosticsTab = () => {
   const [email, setEmail] = useState("");
@@ -637,6 +762,7 @@ const ElectionsDashboard = ({ onLogout }) => {
               {activeTab === "verification" && (
                 <VerificationTab onGoToBallot={() => setActiveTab("ballot")} />
               )}
+              {activeTab === "ballots" && <BallotsTab />}
               {activeTab === "diagnostics" && <DiagnosticsTab />}
             </motion.div>
           </AnimatePresence>

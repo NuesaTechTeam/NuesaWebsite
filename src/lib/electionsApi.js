@@ -46,6 +46,10 @@ export const setAdminToken = (token) => {
   }
 };
 
+/** Confirms the stored admin token is still valid on the server. */
+export const checkAdminSession = () =>
+  request("/admin/session", { token: getAdminToken() });
+
 export const adminLogin = async (username, password) => {
   const data = await request("/admin/login", {
     method: "POST",
@@ -79,3 +83,6 @@ export const getCandidates = () => request("/candidates");
 /** Admin: send a test OTP and return the raw provider responses. */
 export const runDiagnostics = (payload) =>
   request("/admin/diagnostics", { method: "POST", body: payload, token: getAdminToken() });
+
+/** Admin: every recorded ballot grouped by voter (matric + choices). */
+export const getBallots = () => request("/admin/ballots", { token: getAdminToken() });
