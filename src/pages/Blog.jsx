@@ -39,12 +39,12 @@ const Blog = () => {
       </header>
 
       <main className="space-y-4">
-        <FeaturedSection />
         <CategorySection
           activeCategory={activeCategory}
           setActiveCategory={setActiveCategory}
         />
         <PostList activeCategory={activeCategory} />
+        <FeaturedSection />
         <CTASection scrollIntoView={view === "submit"} />
       </main>
     </div>
