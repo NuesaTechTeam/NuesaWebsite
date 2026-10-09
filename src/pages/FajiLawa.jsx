@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { ArrowRight, Calendar, MapPin } from "lucide-react";
+import { Calendar, MapPin } from "lucide-react";
 import useSEO from "../hooks/useSEO";
 import ShufflingImage from "../components/ShufflingImage";
 
-const BOOKING_URL = "https://dinner.nuesaabuad.ng";
+const BOOKING_COMING_SOON = "Would soon be available";
 
 const POSTER_IMAGES = [
   "/images/events/faji-lawa.jpg",
@@ -83,15 +83,13 @@ const FajiLawa = () => {
 
               {/* CTA Buttons */}
               <div className="space-y-4">
-                <a
-                  href={BOOKING_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="group inline-flex font-neue items-center bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-black px-6 py-3 rounded-lg font-semibold text-lg transition duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-amber-500/25"
+                <span
+                  role="status"
+                  aria-disabled="true"
+                  className="inline-flex font-neue items-center cursor-not-allowed rounded-lg border border-amber-500/40 bg-amber-500/15 px-6 py-3 text-lg font-semibold tracking-wide text-amber-200/80"
                 >
-                  RESERVE YOUR SEAT
-                  <ArrowRight className="ml-3 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                </a>
+                  {BOOKING_COMING_SOON}
+                </span>
 
                 <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-400">
                   <span className="flex items-center">
@@ -143,15 +141,13 @@ const FajiLawa = () => {
           <p className="whitespace-pre-line text-xl text-gray-300 mb-8 font-lora">
             {DESCRIPTION}
           </p>
-          <a
-            href={BOOKING_URL}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex font-neue items-center bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-black px-6 py-3 rounded-lg font-bold text-lg transition duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-amber-500/25"
+          <span
+            role="status"
+            aria-disabled="true"
+            className="inline-flex font-neue cursor-not-allowed items-center rounded-lg border border-amber-500/40 bg-amber-500/15 px-6 py-3 text-lg font-bold tracking-wide text-amber-200/80"
           >
-            RESERVE YOUR SEAT
-            <ArrowRight className="ml-3 w-5 h-5" />
-          </a>
+            {BOOKING_COMING_SOON}
+          </span>
         </div>
       </section>
 
