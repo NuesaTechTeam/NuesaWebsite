@@ -3,8 +3,7 @@ import { ArrowRight, Calendar, MapPin } from "lucide-react";
 import useSEO from "../hooks/useSEO";
 import ShufflingImage from "../components/ShufflingImage";
 
-const RESERVATION_URL =
-  "https://wa.me/2348102841732?text=Hello%2C%20I%27d%20like%20to%20reserve%20a%20seat%20for%20F%C3%80%C3%81J%C3%8D%20LAWA%20on%2031st%20October%202026.";
+const BOOKING_URL = "https://dinner.nuesaabuad.ng";
 
 const POSTER_IMAGES = [
   "/images/events/faji-lawa.jpg",
@@ -85,7 +84,7 @@ const FajiLawa = () => {
               {/* CTA Buttons */}
               <div className="space-y-4">
                 <a
-                  href={RESERVATION_URL}
+                  href={BOOKING_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="group inline-flex font-neue items-center bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-black px-6 py-3 rounded-lg font-semibold text-lg transition duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-amber-500/25"
@@ -145,7 +144,7 @@ const FajiLawa = () => {
             {DESCRIPTION}
           </p>
           <a
-            href={RESERVATION_URL}
+            href={BOOKING_URL}
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex font-neue items-center bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-500 hover:to-amber-700 text-black px-6 py-3 rounded-lg font-bold text-lg transition duration-300 hover:scale-105 hover:shadow-2xl hover:shadow-amber-500/25"
