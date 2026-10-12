@@ -16,7 +16,7 @@ MAIL_FROM_NAME = "NUESATECHTEAM"
 MAIL_FROM_EMAIL = "noreply@nuesaabuad.ng"
 MAIL_REPLY_TO = "nuesa.abuad.tech@gmail.com"
 MAILER_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/1wSxOQP48n6lq01Jgdh_vyj-A72wa7T9gl99aHlj2-ME/gviz/tq?tqx=out:csv"
-TERMII_SENDER_ID = "NUESA"
+TERMII_SENDER_ID = "OE Alert"
 TERMII_CHANNEL = "generic"
 
 # Cron Trigger: run the Mass Mailer drip every minute.
