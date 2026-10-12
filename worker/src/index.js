@@ -434,20 +434,37 @@ async function sendEmail(env, to, code) {
   return { channel: "email", provider: "resend", sent: false, status: response.status, detail: detail.slice(0, 400) };
 }
 
+/**
+ * Convert a phone number to the international (E.164, no "+") format Termii
+ * requires. Accepts "08102841732", "+2348102841732", etc.
+ */
+function normalizePhone(value) {
+  let phone = String(value || "").replace(/[\s\-().]/g, "").replace(/^\+/, "");
+  if (phone.startsWith("00")) phone = phone.slice(2);
+  if (phone.startsWith("0")) phone = "234" + phone.slice(1);
+  phone = phone.replace(/[^0-9]/g, "");
+  return /^\d{7,15}$/.test(phone) ? phone : "";
+}
+
 async function sendSms(env, to, code) {
   if (!to) return { channel: "sms", sent: false, reason: "No phone number on record" };
   if (!env.TERMII_API_KEY) return { channel: "sms", sent: false, reason: "TERMII_API_KEY is not configured" };
+
+  const recipient = normalizePhone(to);
+  if (!recipient) {
+    return { channel: "sms", sent: false, reason: `Unrecognized phone format: "${to}"` };
+  }
 
   const response = await fetch("https://api.ng.termii.com/api/sms/send", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({
       api_key: env.TERMII_API_KEY,
-      to,
+      to: recipient,
       from: env.TERMII_SENDER_ID || "NUESA",
       sms: `Your NUESA Elections verification code is ${code}. It expires in 10 minutes.`,
       type: "plain",
-      channel: env.TERMII_CHANNEL || "dnd",
+      channel: env.TERMII_CHANNEL || "generic",
     }),
   });
 
