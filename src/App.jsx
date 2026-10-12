@@ -9,6 +9,7 @@ const Executives = lazy(() => import("./pages/Executives"));
 const Projects = lazy(() => import("./pages/Projects"));
 const Blog = lazy(() => import("./pages/Blog"));
 const BlogAdmin = lazy(() => import("./pages/BlogAdmin"));
+const MassMailer = lazy(() => import("./pages/MassMailer"));
 const Academics = lazy(() => import("./pages/Academics"));
 const Library = lazy(() => import("./pages/Library"));
 const ContactUs = lazy(() => import("./pages/ContactUs"));
@@ -39,6 +40,7 @@ function App() {
           <Route path='/projects' element={<Projects />} />
           <Route path='/blog' element={<Blog />} />
           <Route path='/blog/admin' element={<BlogAdmin />} />
+          <Route path='/mailer' element={<MassMailer />} />
           <Route path='/academics' element={<Academics />} />
           <Route path='/library' element={<Library />} />
           <Route path='/contactus' element={<ContactUs />} />

@@ -54,3 +54,36 @@ CREATE TABLE IF NOT EXISTS blog_images (
   data TEXT NOT NULL,
   created_at TEXT NOT NULL
 );
+
+-- Mass-mail campaigns (frontend "Mass Mailer"). Recipients come from the
+-- published Google Sheet and are stored as a JSON array. A Cron Trigger drips
+-- the emails out in paced batches (over the chosen 1-2 hour window) via Brevo.
+CREATE TABLE IF NOT EXISTS mail_campaigns (
+  id TEXT PRIMARY KEY,
+  subject TEXT NOT NULL,
+  body TEXT NOT NULL,
+  recipients TEXT NOT NULL,
+  total INTEGER NOT NULL,
+  duration_seconds INTEGER NOT NULL,
+  started_at INTEGER NOT NULL,
+  status TEXT NOT NULL DEFAULT 'running',  -- running | done | stopped
+  sent INTEGER NOT NULL DEFAULT 0,
+  failed INTEGER NOT NULL DEFAULT 0,
+  cursor INTEGER NOT NULL DEFAULT 0,
+  from_name TEXT,
+  from_email TEXT,
+  reply_to TEXT,
+  created_at INTEGER NOT NULL
+);
+
+-- Per-recipient delivery events for a campaign (used for the live log).
+CREATE TABLE IF NOT EXISTS mail_events (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  campaign_id TEXT NOT NULL,
+  email TEXT NOT NULL,
+  ok INTEGER NOT NULL,
+  error TEXT,
+  created_at INTEGER NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_mail_events_campaign ON mail_events (campaign_id, id);

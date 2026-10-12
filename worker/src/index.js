@@ -18,6 +18,13 @@
  *   GET  /blog/images/:id              cover image for a submission (public, cached)
  *   POST /admin/diagnostics           (admin) { toEmail?, toPhone? } -> provider responses
  *
+ *   POST /mailer/login                 { username, password } -> { token }
+ *   GET  /admin/mail/recipients        (mailer) recipient count + sample from the sheet
+ *   GET  /admin/mail/campaigns         (mailer) recent campaigns
+ *   POST /admin/mail/campaigns         (mailer) { subject, body, batchSize?, durationSeconds? } -> { id }
+ *   GET  /admin/mail/campaigns/:id     (mailer) campaign status + recent events
+ *   POST /admin/mail/campaigns/:id/stop (mailer) stop a running campaign
+ *
  * /results and /stats require an admin Bearer token and are edge-cached for a
  * short TTL so repeated dashboard polling does not hit D1.
  *
@@ -25,8 +32,11 @@
  *   SESSIONS (KV)   - admin sessions + voter/otp/ballot tokens
  *   DB (D1)         - votes table (see README for schema)
  *   ADMIN_USERNAME, ADMIN_PASSWORD
+ *   MAILER_USERNAME, MAILER_PASSWORD      - Mass Mailer login
+ *   MAILER_SHEET_CSV_URL                  - published Google Sheet CSV (recipients)
  *   VOTER_SHEET_CSV_URL   - published Google Sheet CSV
  *   RESEND_API_KEY, OTP_EMAIL_FROM
+ *   BREVO_API_KEY, MAIL_FROM_NAME, MAIL_FROM_EMAIL, MAIL_REPLY_TO
  *   TERMII_API_KEY, TERMII_SENDER_ID
  *   ALLOWED_ORIGIN        - e.g. "https://nuesaabuad.ng"
  */
@@ -36,6 +46,11 @@ const OTP_TTL = 60 * 10;
 const BALLOT_TTL = 60 * 30;
 const MAX_OTP_ATTEMPTS = 5;
 const MAX_LOGIN_ATTEMPTS = 10;
+
+// Mass Mailer: hard cap on emails sent per Cron tick. Keeps each invocation
+// well under the Workers subrequest limit (each email is one fetch to Brevo).
+const MAIL_MAX_PER_TICK = 30;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const ADMIN_ONLY_ROUTES = new Set([
   "GET /results",
@@ -81,6 +96,18 @@ export default {
         }
         response = await blogListSubmissions(request, env);
         handled = true;
+      } else if (url.pathname.startsWith("/admin/mail/campaigns/")) {
+        if (!(await isAdmin(request, env))) {
+          return json({ error: "Unauthorized" }, 401, cors);
+        }
+        const rest = url.pathname.slice("/admin/mail/campaigns/".length);
+        if (rest.endsWith("/stop") && request.method === "POST") {
+          response = await mailStopCampaign(env, decodeURIComponent(rest.slice(0, -"/stop".length)));
+          handled = true;
+        } else if (!rest.includes("/") && request.method === "GET") {
+          response = await mailCampaignStatus(env, decodeURIComponent(rest));
+          handled = true;
+        }
       } else {
         const statusMatch = url.pathname.match(/^\/blog\/submissions\/([^/]+)\/status$/);
         if (statusMatch && request.method === "POST") {
@@ -112,6 +139,21 @@ export default {
           break;
         case "POST /voter/otp/verify":
           response = await otpVerify(request, env);
+          break;
+        case "POST /mailer/login":
+          response = await mailerLogin(request, env);
+          break;
+        case "GET /admin/mail/recipients":
+          response = await mailRecipients(request, env);
+          break;
+        case "GET /admin/mail/campaigns":
+          response = await mailListCampaigns(request, env);
+          break;
+        case "POST /admin/mail/campaigns":
+          response = await mailCreateCampaign(request, env);
+          break;
+        case "POST /admin/mail/test":
+          response = await mailTestEmail(request, env);
           break;
         case "POST /vote":
           response = await castVote(request, env, ctx);
@@ -145,6 +187,11 @@ export default {
     } catch (error) {
       return json({ error: error.message || "Server error" }, 500, cors);
     }
+  },
+
+  // Cron Trigger (every minute): drip out any running Mass Mailer campaigns.
+  async scheduled(event, env, ctx) {
+    ctx.waitUntil(processMailCampaigns(env));
   },
 };
 
@@ -323,7 +370,48 @@ async function findVoter(env, matricNumber, invoiceNumber) {
 
 async function sendEmail(env, to, code) {
   if (!to) return { channel: "email", sent: false, reason: "No email address on record" };
-  if (!env.RESEND_API_KEY) return { channel: "email", sent: false, reason: "RESEND_API_KEY is not configured" };
+
+  const subject = "Your NUESA Elections verification code";
+  const text = `Your one-time verification code is ${code}. It expires in 10 minutes. If you did not request this, ignore this message.`;
+
+  // Preferred provider: Brevo. Falls back to Resend when Brevo is not set.
+  if (env.BREVO_API_KEY) {
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "api-key": env.BREVO_API_KEY,
+        accept: "application/json",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        sender: {
+          name: env.MAIL_FROM_NAME || "NUESATECHTEAM",
+          email: env.MAIL_FROM_EMAIL || "noreply@nuesaabuad.ng",
+        },
+        to: [{ email: to }],
+        replyTo: { email: env.MAIL_REPLY_TO || env.MAIL_FROM_EMAIL || "noreply@nuesaabuad.ng" },
+        subject,
+        textContent: text,
+      }),
+    });
+
+    if (response.ok) {
+      return { channel: "email", provider: "brevo", sent: true, status: response.status };
+    }
+
+    const detail = await response.text().catch(() => "");
+    return {
+      channel: "email",
+      provider: "brevo",
+      sent: false,
+      status: response.status,
+      detail: detail.slice(0, 400),
+    };
+  }
+
+  if (!env.RESEND_API_KEY) {
+    return { channel: "email", sent: false, reason: "No email provider configured" };
+  }
 
   const response = await fetch("https://api.resend.com/emails", {
     method: "POST",
@@ -335,15 +423,15 @@ async function sendEmail(env, to, code) {
       from: env.OTP_EMAIL_FROM || "NUESA Elections <elections@nuesaabuad.ng>",
       to: [to],
       reply_to: env.OTP_REPLY_TO || "nuesa.abuad.tech@gmail.com",
-      subject: "Your NUESA Elections verification code",
-      text: `Your one-time verification code is ${code}. It expires in 10 minutes. If you did not request this, ignore this message.`,
+      subject,
+      text,
     }),
   });
 
-  if (response.ok) return { channel: "email", sent: true, status: response.status };
+  if (response.ok) return { channel: "email", provider: "resend", sent: true, status: response.status };
 
   const detail = await response.text().catch(() => "");
-  return { channel: "email", sent: false, status: response.status, detail: detail.slice(0, 400) };
+  return { channel: "email", provider: "resend", sent: false, status: response.status, detail: detail.slice(0, 400) };
 }
 
 async function sendSms(env, to, code) {
@@ -862,4 +950,320 @@ async function blogGetImage(request, env, ctx, id) {
   });
   if (ctx) ctx.waitUntil(cache.put(key, response.clone()));
   return response;
+}
+
+/* -------------------------------------------------------- mass mailer */
+
+async function mailerLogin(request, env) {
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  const attemptKey = `mailer-attempts:${ip}`;
+  const attempts = Number(await env.SESSIONS.get(attemptKey)) || 0;
+
+  if (attempts >= MAX_LOGIN_ATTEMPTS) {
+    return json({ error: "Too many login attempts. Please try again later." }, 429);
+  }
+
+  const { username, password } = await readJson(request);
+
+  if (!env.MAILER_USERNAME || !env.MAILER_PASSWORD) {
+    return json({ error: "Mailer credentials are not configured" }, 500);
+  }
+
+  const validUser = safeEqual(String(username || "").trim(), env.MAILER_USERNAME);
+  const validPass = safeEqual(password, env.MAILER_PASSWORD);
+  if (!validUser || !validPass) {
+    await env.SESSIONS.put(attemptKey, String(attempts + 1), { expirationTtl: 600 });
+    return json({ error: "Invalid username or password" }, 401);
+  }
+
+  await env.SESSIONS.delete(attemptKey);
+
+  const token = randomToken();
+  await env.SESSIONS.put(`admin:${token}`, "1", { expirationTtl: ADMIN_SESSION_TTL });
+  return json({ token, expiresIn: ADMIN_SESSION_TTL });
+}
+
+/**
+ * Pull recipient emails from the published Google Sheet. We look for a header
+ * cell containing "email"; if none is found we scan every cell for an address.
+ * Duplicates (case-insensitive) and invalid addresses are dropped.
+ */
+async function fetchCampaignRecipients(env) {
+  if (!env.MAILER_SHEET_CSV_URL) {
+    throw new Error("Recipients sheet is not configured");
+  }
+  const response = await fetch(env.MAILER_SHEET_CSV_URL, { cf: { cacheTtl: 60 } });
+  if (!response.ok) {
+    throw new Error("Could not read the recipients sheet");
+  }
+  const rows = parseCsv(await response.text()).filter((row) =>
+    row.some((cell) => String(cell).trim() !== "")
+  );
+  if (rows.length < 2) return [];
+
+  const headers = rows[0].map(normalizeHeader);
+  const emailIndex = headers.findIndex((header) => header.includes("email"));
+
+  const emails = [];
+  const seen = new Set();
+  const add = (value) => {
+    const address = String(value || "").trim();
+    if (!EMAIL_RE.test(address)) return;
+    const key = address.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    emails.push(address);
+  };
+
+  if (emailIndex !== -1) {
+    for (let i = 1; i < rows.length; i += 1) add(rows[i][emailIndex]);
+  } else {
+    for (let i = 1; i < rows.length; i += 1) rows[i].forEach(add);
+  }
+  return emails;
+}
+
+async function mailRecipients(request, env) {
+  if (!(await isAdmin(request, env))) {
+    return json({ error: "Unauthorized" }, 401);
+  }
+  try {
+    const emails = await fetchCampaignRecipients(env);
+    return json({ total: emails.length, sample: emails.slice(0, 3) });
+  } catch (error) {
+    return json({ error: error.message || "Could not read recipients" }, 500);
+  }
+}
+
+async function mailListCampaigns(request, env) {
+  if (!(await isAdmin(request, env))) {
+    return json({ error: "Unauthorized" }, 401);
+  }
+  const { results } = await env.DB.prepare(
+    `SELECT id, subject, total, status, sent, failed, started_at, duration_seconds
+     FROM mail_campaigns ORDER BY created_at DESC LIMIT 20`
+  ).all();
+  return json({ campaigns: results || [] });
+}
+
+async function mailCreateCampaign(request, env) {
+  if (!(await isAdmin(request, env))) {
+    return json({ error: "Unauthorized" }, 401);
+  }
+
+  const body = await readJson(request);
+  const subject = String(body.subject || "").trim();
+  const text = String(body.body || "").trim();
+  const batchSize = Math.min(Math.max(Number(body.batchSize) || 100, 10), 5000);
+  const durationSeconds = Math.min(
+    Math.max(Number(body.durationSeconds) || 5400, 60),
+    6 * 60 * 60
+  );
+
+  if (!subject) return json({ error: "Subject is required" }, 400);
+  if (!text) return json({ error: "Message body is required" }, 400);
+
+  let recipients;
+  try {
+    recipients = await fetchCampaignRecipients(env);
+  } catch (error) {
+    return json({ error: error.message || "Could not read recipients" }, 500);
+  }
+  if (recipients.length === 0) {
+    return json({ error: "No recipients found in the sheet" }, 400);
+  }
+
+  const id = randomToken(8);
+  const now = Date.now();
+  await env.DB.prepare(
+    `INSERT INTO mail_campaigns
+       (id, subject, body, recipients, total, duration_seconds, started_at, status,
+        sent, failed, cursor, from_name, from_email, reply_to, created_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, 'running', 0, 0, 0, ?, ?, ?, ?)`
+  )
+    .bind(
+      id,
+      subject,
+      text,
+      JSON.stringify(recipients),
+      recipients.length,
+      durationSeconds,
+      now,
+      env.MAIL_FROM_NAME || "NUESATECHTEAM",
+      env.MAIL_FROM_EMAIL || "noreply@nuesaabuad.ng",
+      env.MAIL_REPLY_TO || env.MAIL_FROM_EMAIL || "noreply@nuesaabuad.ng",
+      now
+    )
+    .run();
+
+  return json({ id, total: recipients.length, durationSeconds, batchSize });
+}
+
+/** Send a single preview email (does not create a campaign). */
+async function mailTestEmail(request, env) {
+  if (!(await isAdmin(request, env))) {
+    return json({ error: "Unauthorized" }, 401);
+  }
+  const body = await readJson(request);
+  const to = String(body.email || "").trim();
+  const subject = String(body.subject || "").trim() || "NUESATECHTEAM test email";
+  const text =
+    String(body.body || "").trim() ||
+    "This is a test message from the NUESA Mass Mailer.";
+
+  if (!EMAIL_RE.test(to)) {
+    return json({ error: "Enter a valid email address to send the test to." }, 400);
+  }
+
+  const result = await sendCampaignEmail(env, to, subject, text);
+  if (!result.ok) {
+    return json({ error: result.error || "Could not send the test email" }, 502);
+  }
+  return json({ ok: true, status: result.status });
+}
+
+async function mailCampaignStatus(env, id) {  const campaign = await env.DB.prepare(
+    `SELECT id, subject, total, duration_seconds, started_at, status, sent, failed, cursor
+     FROM mail_campaigns WHERE id = ?`
+  )
+    .bind(id)
+    .first();
+  if (!campaign) return json({ error: "Campaign not found" }, 404);
+
+  const { results } = await env.DB.prepare(
+    `SELECT email, ok, error, created_at FROM mail_events
+     WHERE campaign_id = ? ORDER BY id DESC LIMIT 100`
+  )
+    .bind(id)
+    .all();
+
+  return json({ campaign, events: results || [] });
+}
+
+async function mailStopCampaign(env, id) {
+  const result = await env.DB.prepare(
+    "UPDATE mail_campaigns SET status = 'stopped' WHERE id = ? AND status = 'running'"
+  )
+    .bind(id)
+    .run();
+  return json({ ok: true, changed: (result.meta && result.meta.changes) || 0 });
+}
+
+/** Send one transactional email through Brevo. */
+async function sendCampaignEmail(env, to, subject, text) {
+  if (!env.BREVO_API_KEY) {
+    return { ok: false, error: "BREVO_API_KEY is not configured" };
+  }
+  const fromEmail = env.MAIL_FROM_EMAIL || "noreply@nuesaabuad.ng";
+  try {
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        "api-key": env.BREVO_API_KEY,
+        accept: "application/json",
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        sender: { name: env.MAIL_FROM_NAME || "NUESATECHTEAM", email: fromEmail },
+        to: [{ email: to }],
+        replyTo: { email: env.MAIL_REPLY_TO || fromEmail },
+        subject,
+        textContent: text,
+      }),
+    });
+    if (response.ok) return { ok: true, status: response.status };
+    const detail = await response.text().catch(() => "");
+    return { ok: false, status: response.status, error: detail.slice(0, 300) };
+  } catch (error) {
+    return { ok: false, error: error.message || "Request failed" };
+  }
+}
+
+/** Cron entry point: advance every running campaign by one tick. */
+async function processMailCampaigns(env) {
+  let rows = [];
+  try {
+    const result = await env.DB.prepare(
+      "SELECT * FROM mail_campaigns WHERE status = 'running'"
+    ).all();
+    rows = result.results || [];
+  } catch {
+    return;
+  }
+  for (const campaign of rows) {
+    try {
+      await processMailCampaign(env, campaign, Date.now());
+    } catch {
+      // Leave the campaign running; the next tick will retry.
+    }
+  }
+}
+
+async function processMailCampaign(env, campaign, now) {
+  const total = Number(campaign.total) || 0;
+  const done = (Number(campaign.sent) || 0) + (Number(campaign.failed) || 0);
+
+  if (done >= total) {
+    await env.DB.prepare("UPDATE mail_campaigns SET status = 'done' WHERE id = ?")
+      .bind(campaign.id)
+      .run();
+    return;
+  }
+
+  // Time-based pacing: by now we should have sent `desired` emails.
+  const durationMs = (Number(campaign.duration_seconds) || 0) * 1000;
+  const elapsed = Math.max(now - (Number(campaign.started_at) || now), 0);
+  const fraction = durationMs > 0 ? Math.min(elapsed / durationMs, 1) : 1;
+  const desired = fraction >= 1 ? total : Math.floor(total * fraction);
+
+  let deficit = desired - done;
+  if (deficit <= 0) return;
+  if (deficit > MAIL_MAX_PER_TICK) deficit = MAIL_MAX_PER_TICK;
+
+  let recipients;
+  try {
+    recipients = JSON.parse(campaign.recipients);
+  } catch {
+    recipients = [];
+  }
+  const cursor = Number(campaign.cursor) || 0;
+  const batch = recipients.slice(cursor, cursor + deficit);
+
+  if (batch.length === 0) {
+    await env.DB.prepare("UPDATE mail_campaigns SET status = 'done' WHERE id = ?")
+      .bind(campaign.id)
+      .run();
+    return;
+  }
+
+  const results = await Promise.all(
+    batch.map((email) => sendCampaignEmail(env, email, campaign.subject, campaign.body))
+  );
+
+  let sent = 0;
+  let failed = 0;
+  const ts = Date.now();
+  const statements = [];
+  results.forEach((result, index) => {
+    const email = batch[index];
+    if (result.ok) sent += 1;
+    else failed += 1;
+    statements.push(
+      env.DB.prepare(
+        `INSERT INTO mail_events (campaign_id, email, ok, error, created_at)
+         VALUES (?, ?, ?, ?, ?)`
+      ).bind(campaign.id, email, result.ok ? 1 : 0, result.ok ? null : result.error || "failed", ts)
+    );
+  });
+
+  const newCursor = cursor + batch.length;
+  statements.push(
+    env.DB.prepare(
+      `UPDATE mail_campaigns
+       SET sent = sent + ?, failed = failed + ?, cursor = ?, status = ?
+       WHERE id = ?`
+    ).bind(sent, failed, newCursor, newCursor >= total ? "done" : "running", campaign.id)
+  );
+
+  await env.DB.batch(statements);
 }
