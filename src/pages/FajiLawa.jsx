@@ -3,7 +3,7 @@ import { Calendar, MapPin } from "lucide-react";
 import useSEO from "../hooks/useSEO";
 import ShufflingImage from "../components/ShufflingImage";
 
-const BOOKING_COMING_SOON = "Would soon be available";
+const BOOKING_URL = "https://dinner.nuesaabuad.ng";
 
 const POSTER_IMAGES = [
   "/images/events/faji-lawa.jpg",
@@ -83,13 +83,14 @@ const FajiLawa = () => {
 
               {/* CTA Buttons */}
               <div className="space-y-4">
-                <span
-                  role="status"
-                  aria-disabled="true"
-                  className="inline-flex font-neue items-center cursor-not-allowed rounded-lg border border-amber-500/40 bg-amber-500/15 px-6 py-3 text-lg font-semibold tracking-wide text-amber-200/80"
+                <a
+                  href={BOOKING_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex font-neue items-center rounded-lg bg-amber-500 px-6 py-3 text-lg font-semibold tracking-wide text-black transition-colors duration-200 hover:bg-amber-400"
                 >
-                  {BOOKING_COMING_SOON}
-                </span>
+                  Book Now
+                </a>
 
                 <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-400">
                   <span className="flex items-center">
@@ -141,13 +142,14 @@ const FajiLawa = () => {
           <p className="whitespace-pre-line text-xl text-gray-300 mb-8 font-lora">
             {DESCRIPTION}
           </p>
-          <span
-            role="status"
-            aria-disabled="true"
-            className="inline-flex font-neue cursor-not-allowed items-center rounded-lg border border-amber-500/40 bg-amber-500/15 px-6 py-3 text-lg font-bold tracking-wide text-amber-200/80"
+          <a
+            href={BOOKING_URL}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex font-neue items-center rounded-lg bg-amber-500 px-6 py-3 text-lg font-bold tracking-wide text-black transition-colors duration-200 hover:bg-amber-400"
           >
-            {BOOKING_COMING_SOON}
-          </span>
+            Book Now
+          </a>
         </div>
       </section>
 
