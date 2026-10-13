@@ -605,6 +605,25 @@ export const currentExecutivesData = [
     },
   },
   {
+    name: "Ndukwu Nnadozie Fortune",
+    position: "Financial Secretary",
+    department: "Aeronautical and Astronautical Engineering ",
+    year: "500 Level",
+    image: "/images/executives/current/Nnadozie.jpeg",
+    bio: "Approachable with a creative and strategic mind. Healthy obsession with growth.",
+    achievements: [
+      "Former Public Relations Officer, United Nigeria Airlines SIWES Cohort.",
+      "Certified in Microsoft Office Productivity Suite.",
+      "Certified participant, AMC Mathematics Competition.",
+      "Student Leadership & Organizational Development.",
+    ],
+    social: {
+      whatsapp: "#",
+      snapchat: "#",
+      email: "Fortunendukwu25@gmail.com",
+    },
+  },
+  {
     name: "Agboyinu Setin Gabriel",
     position: "Technical Director",
     department: "Mechanical Engineering",
@@ -623,25 +642,6 @@ export const currentExecutivesData = [
       whatsapp: "#",
       snapchat: "https://www.snapchat.com/add/itssetin",
       email: "nuesa.abuad.tech@gmail.com",
-    },
-  },
-  {
-    name: "Ndukwu Nnadozie Fortune",
-    position: "Financial Secretary",
-    department: "Aeronautical and Astronautical Engineering ",
-    year: "500 Level",
-    image: "/images/executives/current/Nnadozie.jpeg",
-    bio: "Approachable with a creative and strategic mind. Healthy obsession with growth.",
-    achievements: [
-      "Former Public Relations Officer, United Nigeria Airlines SIWES Cohort.",
-      "Certified in Microsoft Office Productivity Suite.",
-      "Certified participant, AMC Mathematics Competition.",
-      "Student Leadership & Organizational Development.",
-    ],
-    social: {
-      whatsapp: "#",
-      snapchat: "#",
-      email: "Fortunendukwu25@gmail.com",
     },
   },
     {
