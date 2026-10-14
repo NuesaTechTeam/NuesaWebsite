@@ -71,5 +71,13 @@ export const sendTestEmail = (payload) =>
     token: getAdminToken(),
   });
 
+/** Upload a PDF attachment (base64, no data: prefix). Returns { id, name, size }. */
+export const uploadAttachment = (payload) =>
+  request("/admin/mail/attachments", {
+    method: "POST",
+    body: payload,
+    token: getAdminToken(),
+  });
+
 export const listCampaigns = () =>
   request("/admin/mail/campaigns", { token: getAdminToken() });

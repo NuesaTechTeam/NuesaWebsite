@@ -20,6 +20,9 @@ import {
   Lock,
   FileSpreadsheet,
   ServerCog,
+  Paperclip,
+  FileText,
+  X,
 } from "lucide-react";
 import useSEO from "../hooks/useSEO";
 import { getAdminToken } from "../lib/electionsApi";
@@ -32,10 +35,13 @@ import {
   getCampaign,
   stopCampaign,
   sendTestEmail,
+  uploadAttachment,
 } from "../lib/mailApi";
 
 const AUTH_KEY = "nuesa-mailer-auth";
 const POLL_MS = 5000;
+const MAX_ATTACHMENTS = 3;
+const MAX_ATTACHMENT_MB = 5;
 
 const pad = (n) => String(n).padStart(2, "0");
 
@@ -56,6 +62,26 @@ const formatClock = (value) => {
   const date = value ? new Date(value) : new Date();
   return `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 };
+
+const formatBytes = (bytes) => {
+  if (!bytes || bytes <= 0) return "0 KB";
+  const units = ["B", "KB", "MB", "GB"];
+  let size = bytes;
+  let unit = 0;
+  while (size >= 1024 && unit < units.length - 1) {
+    size /= 1024;
+    unit += 1;
+  }
+  return `${size.toFixed(unit === 0 ? 0 : 1)} ${units[unit]}`;
+};
+
+const readFileAsDataUrl = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(String(reader.result || ""));
+    reader.onerror = () => reject(new Error(`Could not read "${file.name}".`));
+    reader.readAsDataURL(file);
+  });
 
 const getStoredAuth = () => {
   try {
@@ -225,6 +251,11 @@ const MassMailer = () => {
   const [testState, setTestState] = React.useState("idle");
   const [testMessage, setTestMessage] = React.useState("");
 
+  const [attachments, setAttachments] = React.useState([]);
+  const [attachError, setAttachError] = React.useState("");
+  const [attachBusy, setAttachBusy] = React.useState(false);
+  const fileInputRef = React.useRef(null);
+
   const [nowTick, setNowTick] = React.useState(0);
   const terminalRef = React.useRef(false);
   const [pendingId, setPendingId] = React.useState("");
@@ -353,6 +384,7 @@ const MassMailer = () => {
         body: cleanBody,
         batchSize,
         durationSeconds: Math.round(hours * 3600),
+        attachments: attachments.map((a) => ({ id: a.id, name: a.name })),
       });
       setEvents([]);
       setPendingId(data.id);
@@ -401,13 +433,56 @@ const MassMailer = () => {
     }
     setTestState("sending");
     try {
-      await sendTestEmail({ email: to, subject, body });
+      await sendTestEmail({
+        email: to,
+        subject,
+        body,
+        attachments: attachments.map((a) => ({ id: a.id, name: a.name })),
+      });
       setTestState("ok");
       setTestMessage(`Test sent to ${to}. Check the inbox (and spam).`);
     } catch (err) {
       setTestState("error");
       setTestMessage(err.message || "Could not send the test email.");
     }
+  };
+
+  const handleFilesSelected = async (event) => {
+    const files = Array.from(event.target.files || []);
+    event.target.value = "";
+    if (files.length === 0) return;
+    setAttachError("");
+    setAttachBusy(true);
+    try {
+      const next = [...attachments];
+      for (const file of files) {
+        if (next.length >= MAX_ATTACHMENTS) {
+          throw new Error(`You can attach up to ${MAX_ATTACHMENTS} PDFs.`);
+        }
+        const isPdf =
+          file.type === "application/pdf" ||
+          file.name.toLowerCase().endsWith(".pdf");
+        if (!isPdf) {
+          throw new Error("Only PDF files can be attached.");
+        }
+        if (file.size > MAX_ATTACHMENT_MB * 1024 * 1024) {
+          throw new Error(`"${file.name}" is larger than ${MAX_ATTACHMENT_MB} MB.`);
+        }
+        const dataUrl = await readFileAsDataUrl(file);
+        const data = dataUrl.split(",")[1] || "";
+        const uploaded = await uploadAttachment({ name: file.name, data });
+        next.push({ id: uploaded.id, name: uploaded.name, size: uploaded.size });
+      }
+      setAttachments(next);
+    } catch (err) {
+      setAttachError(err.message || "Could not attach the file.");
+    } finally {
+      setAttachBusy(false);
+    }
+  };
+
+  const removeAttachment = (id) => {
+    setAttachments((prev) => prev.filter((a) => a.id !== id));
   };
 
   const handleReset = () => {
@@ -419,6 +494,8 @@ const MassMailer = () => {
     setFormError("");
     setSubject("");
     setBody("");
+    setAttachments([]);
+    setAttachError("");
   };
 
   const handleLogout = () => {
@@ -611,6 +688,79 @@ const MassMailer = () => {
                     className="w-full rounded-lg border border-gray-300 bg-white p-3 text-sm text-gray-900 placeholder-gray-400 focus:border-green focus:outline-none focus:ring-2 focus:ring-green/30 disabled:opacity-60 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
                   />
                 </div>
+              </div>
+
+              <div className="mt-5">
+                <div className="flex items-center justify-between">
+                  <label className="flex items-center gap-1.5 text-sm font-medium text-gray-700 dark:text-gray-200">
+                    <Paperclip className="h-4 w-4 text-green-600" />
+                    Attachments (PDF)
+                  </label>
+                  <span className="text-xs text-gray-400">
+                    {attachments.length}/{MAX_ATTACHMENTS}
+                  </span>
+                </div>
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  Attach up to {MAX_ATTACHMENTS} PDFs (max {MAX_ATTACHMENT_MB} MB
+                  each). They are included in every email.
+                </p>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="application/pdf,.pdf"
+                  multiple
+                  onChange={handleFilesSelected}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={
+                    isLocked ||
+                    attachBusy ||
+                    attachments.length >= MAX_ATTACHMENTS
+                  }
+                  className="mt-3 inline-flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-semibold text-gray-700 transition-colors hover:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700 dark:text-gray-200 dark:hover:bg-gray-800"
+                >
+                  {attachBusy ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Paperclip className="h-4 w-4" />
+                  )}
+                  Add PDF
+                </button>
+                {attachError && (
+                  <p className="mt-2 text-xs text-red-600 dark:text-red-400">
+                    {attachError}
+                  </p>
+                )}
+                {attachments.length > 0 && (
+                  <ul className="mt-3 space-y-2">
+                    {attachments.map((file) => (
+                      <li
+                        key={file.id}
+                        className="flex items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 dark:border-gray-800"
+                      >
+                        <FileText className="h-4 w-4 shrink-0 text-red-500" />
+                        <span className="truncate text-sm text-gray-700 dark:text-gray-200">
+                          {file.name}
+                        </span>
+                        <span className="ml-auto shrink-0 text-xs text-gray-400">
+                          {formatBytes(file.size)}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeAttachment(file.id)}
+                          disabled={isLocked}
+                          aria-label={`Remove ${file.name}`}
+                          className="shrink-0 rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-red-500 disabled:opacity-50 dark:hover:bg-gray-800"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </div>
 
               <div className="mt-5 rounded-xl border border-dashed border-gray-300 p-4 dark:border-gray-700">

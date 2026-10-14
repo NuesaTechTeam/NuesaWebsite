@@ -63,6 +63,7 @@ CREATE TABLE IF NOT EXISTS mail_campaigns (
   subject TEXT NOT NULL,
   body TEXT NOT NULL,
   recipients TEXT NOT NULL,
+  attachments TEXT,
   total INTEGER NOT NULL,
   duration_seconds INTEGER NOT NULL,
   started_at INTEGER NOT NULL,

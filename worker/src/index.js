@@ -24,6 +24,7 @@
  *   POST /admin/mail/campaigns         (mailer) { subject, body, batchSize?, durationSeconds? } -> { id }
  *   GET  /admin/mail/campaigns/:id     (mailer) campaign status + recent events
  *   POST /admin/mail/campaigns/:id/stop (mailer) stop a running campaign
+ *   POST /admin/mail/attachments       (mailer) { name, data } -> { id, name, size }
  *
  * /results and /stats require an admin Bearer token and are edge-cached for a
  * short TTL so repeated dashboard polling does not hit D1.
@@ -51,6 +52,11 @@ const MAX_LOGIN_ATTEMPTS = 10;
 // well under the Workers subrequest limit (each email is one fetch to Brevo).
 const MAIL_MAX_PER_TICK = 30;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+// Mass Mailer attachments (PDFs). Bytes live in KV, referenced by campaign rows.
+const MAX_MAIL_ATTACHMENTS = 3;
+const MAX_ATTACHMENT_CHARS = 7_000_000; // ~5 MB binary (base64 is ~4/3 of bytes)
+const MAIL_ATTACHMENT_TTL = 60 * 60 * 24 * 7; // auto-expire KV blobs after 7 days
 
 const ADMIN_ONLY_ROUTES = new Set([
   "GET /results",
@@ -154,6 +160,9 @@ export default {
           break;
         case "POST /admin/mail/test":
           response = await mailTestEmail(request, env);
+          break;
+        case "POST /admin/mail/attachments":
+          response = await mailUploadAttachment(request, env);
           break;
         case "POST /vote":
           response = await castVote(request, env, ctx);
@@ -1063,6 +1072,64 @@ async function mailListCampaigns(request, env) {
   return json({ campaigns: results || [] });
 }
 
+/**
+ * Parse a `data:application/pdf;base64,<data>` URL (or raw base64) into
+ * `{ data, size }`. Returns null if it is not a PDF or is too large.
+ */
+function parsePdfDataUrl(value) {
+  if (typeof value !== "string") return null;
+  let data = value;
+  const match = value.match(/^data:application\/pdf;[^,]*base64,(.+)$/s);
+  if (match) data = match[1];
+  data = data.replace(/\s/g, "");
+  if (!data) return null;
+  // PDF files begin with "%PDF" -> base64 "JVBER".
+  if (!data.startsWith("JVBER")) return null;
+  if (data.length > MAX_ATTACHMENT_CHARS) return null;
+  return { data, size: Math.floor((data.length * 3) / 4) };
+}
+
+/** Store an uploaded PDF in KV and return a reference the campaign can use. */
+async function mailUploadAttachment(request, env) {
+  if (!(await isAdmin(request, env))) {
+    return json({ error: "Unauthorized" }, 401);
+  }
+  const body = await readJson(request);
+  const name = cleanField(body.name, 120);
+  const pdf = parsePdfDataUrl(body.data);
+  if (!name) return json({ error: "Attachment name is required" }, 400);
+  if (!pdf) return json({ error: "Only PDF files up to 5 MB are supported." }, 413);
+
+  const id = randomToken(8);
+  await env.SESSIONS.put(`mail-att:${id}`, pdf.data, { expirationTtl: MAIL_ATTACHMENT_TTL });
+  return json({ id, name, size: pdf.size }, 201);
+}
+
+/** Normalize a client attachment list to `[{ id, name }]`, capped in length. */
+function normalizeAttachmentList(value) {
+  if (!Array.isArray(value)) return [];
+  const out = [];
+  for (const item of value) {
+    if (!item || typeof item !== "object") continue;
+    const id = String(item.id || "").trim();
+    if (!id) continue;
+    const name = String(item.name || "").trim().slice(0, 120) || "attachment.pdf";
+    out.push({ id, name });
+    if (out.length >= MAX_MAIL_ATTACHMENTS) break;
+  }
+  return out;
+}
+
+/** Read attachment bytes (base64) from KV for sending. Missing blobs are skipped. */
+async function resolveAttachments(env, list) {
+  const resolved = [];
+  for (const item of list) {
+    const content = await env.SESSIONS.get(`mail-att:${item.id}`);
+    if (content) resolved.push({ name: item.name, content });
+  }
+  return resolved;
+}
+
 async function mailCreateCampaign(request, env) {
   if (!(await isAdmin(request, env))) {
     return json({ error: "Unauthorized" }, 401);
@@ -1071,6 +1138,7 @@ async function mailCreateCampaign(request, env) {
   const body = await readJson(request);
   const subject = String(body.subject || "").trim();
   const text = String(body.body || "").trim();
+  const attachments = normalizeAttachmentList(body.attachments);
   const batchSize = Math.min(Math.max(Number(body.batchSize) || 100, 10), 5000);
   const durationSeconds = Math.min(
     Math.max(Number(body.durationSeconds) || 5400, 60),
@@ -1094,15 +1162,16 @@ async function mailCreateCampaign(request, env) {
   const now = Date.now();
   await env.DB.prepare(
     `INSERT INTO mail_campaigns
-       (id, subject, body, recipients, total, duration_seconds, started_at, status,
+       (id, subject, body, recipients, attachments, total, duration_seconds, started_at, status,
         sent, failed, cursor, from_name, from_email, reply_to, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, 'running', 0, 0, 0, ?, ?, ?, ?)`
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'running', 0, 0, 0, ?, ?, ?, ?)`
   )
     .bind(
       id,
       subject,
       text,
       JSON.stringify(recipients),
+      JSON.stringify(attachments),
       recipients.length,
       durationSeconds,
       now,
@@ -1113,7 +1182,7 @@ async function mailCreateCampaign(request, env) {
     )
     .run();
 
-  return json({ id, total: recipients.length, durationSeconds, batchSize });
+  return json({ id, total: recipients.length, durationSeconds, batchSize, attachments: attachments.length });
 }
 
 /** Send a single preview email (does not create a campaign). */
@@ -1132,7 +1201,8 @@ async function mailTestEmail(request, env) {
     return json({ error: "Enter a valid email address to send the test to." }, 400);
   }
 
-  const result = await sendCampaignEmail(env, to, subject, text);
+  const attachments = await resolveAttachments(env, normalizeAttachmentList(body.attachments));
+  const result = await sendCampaignEmail(env, to, subject, text, attachments);
   if (!result.ok) {
     return json({ error: result.error || "Could not send the test email" }, 502);
   }
@@ -1140,7 +1210,7 @@ async function mailTestEmail(request, env) {
 }
 
 async function mailCampaignStatus(env, id) {  const campaign = await env.DB.prepare(
-    `SELECT id, subject, total, duration_seconds, started_at, status, sent, failed, cursor
+    `SELECT id, subject, total, duration_seconds, started_at, status, sent, failed, cursor, attachments
      FROM mail_campaigns WHERE id = ?`
   )
     .bind(id)
@@ -1167,12 +1237,25 @@ async function mailStopCampaign(env, id) {
 }
 
 /** Send one transactional email through Brevo. */
-async function sendCampaignEmail(env, to, subject, text) {
+async function sendCampaignEmail(env, to, subject, text, attachments = []) {
   if (!env.BREVO_API_KEY) {
     return { ok: false, error: "BREVO_API_KEY is not configured" };
   }
   const fromEmail = env.MAIL_FROM_EMAIL || "noreply@nuesaabuad.ng";
   try {
+    const payload = {
+      sender: { name: env.MAIL_FROM_NAME || "NUESATECHTEAM", email: fromEmail },
+      to: [{ email: to }],
+      replyTo: { email: env.MAIL_REPLY_TO || fromEmail },
+      subject,
+      textContent: text,
+    };
+    if (attachments.length > 0) {
+      payload.attachment = attachments.map((file) => ({
+        name: file.name,
+        content: file.content,
+      }));
+    }
     const response = await fetch("https://api.brevo.com/v3/smtp/email", {
       method: "POST",
       headers: {
@@ -1180,13 +1263,7 @@ async function sendCampaignEmail(env, to, subject, text) {
         accept: "application/json",
         "content-type": "application/json",
       },
-      body: JSON.stringify({
-        sender: { name: env.MAIL_FROM_NAME || "NUESATECHTEAM", email: fromEmail },
-        to: [{ email: to }],
-        replyTo: { email: env.MAIL_REPLY_TO || fromEmail },
-        subject,
-        textContent: text,
-      }),
+      body: JSON.stringify(payload),
     });
     if (response.ok) return { ok: true, status: response.status };
     const detail = await response.text().catch(() => "");
@@ -1253,8 +1330,16 @@ async function processMailCampaign(env, campaign, now) {
     return;
   }
 
+  let attachmentList = [];
+  try {
+    attachmentList = normalizeAttachmentList(JSON.parse(campaign.attachments || "[]"));
+  } catch {
+    attachmentList = [];
+  }
+  const attachments = await resolveAttachments(env, attachmentList);
+
   const results = await Promise.all(
-    batch.map((email) => sendCampaignEmail(env, email, campaign.subject, campaign.body))
+    batch.map((email) => sendCampaignEmail(env, email, campaign.subject, campaign.body, attachments))
   );
 
   let sent = 0;
