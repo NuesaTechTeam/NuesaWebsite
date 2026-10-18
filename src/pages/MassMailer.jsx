@@ -42,7 +42,7 @@ import {
   absoluteUrl,
 } from "../lib/mailApi";
 import letterheadHeader from "../assets/letterhead/header.jpg";
-import letterheadBody from "../assets/letterhead/body.jpg";
+import letterheadBody from "../assets/letterhead/body.png";
 import letterheadFooter from "../assets/letterhead/footer.jpg";
 
 const AUTH_KEY = "nuesa-mailer-auth";
@@ -54,7 +54,7 @@ const TEST_TO_KEY = "nuesa-mailer-test-to";
 const MAX_TEST_RECIPIENTS = 5;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SENDER_LABEL = "Office of the General Secretary - NUESA";
-const LETTERHEAD_KEY = "nuesa-mailer-letterhead-v1";
+const LETTERHEAD_KEY = "nuesa-mailer-letterhead-v2";
 const LETTERHEAD_ASSETS = {
   header: letterheadHeader,
   body: letterheadBody,
@@ -101,8 +101,10 @@ const ensureLetterheadUrls = async () => {
   const urls = {};
   for (const [part, src] of Object.entries(LETTERHEAD_ASSETS)) {
     const blob = await fetch(src).then((r) => r.blob());
-    const data = await readFileAsDataUrl(new File([blob], `letterhead-${part}.jpg`, { type: "image/jpeg" }));
-    const uploaded = await uploadMailImage({ name: `letterhead-${part}.jpg`, data });
+    const ext = blob.type === "image/png" ? "png" : "jpg";
+    const name = `letterhead-${part}.${ext}`;
+    const data = await readFileAsDataUrl(new File([blob], name, { type: blob.type || "image/jpeg" }));
+    const uploaded = await uploadMailImage({ name, data });
     urls[part] = absoluteUrl(uploaded.url);
   }
   try {
@@ -123,6 +125,8 @@ const compileEmailHtml = (html, letterhead = null) => {
   if (letterhead) {
     // Header and footer are real <img> tags (they show everywhere); the
     // watermark is a cell background, which Outlook desktop simply skips.
+    // The crest PNG is transparent around the artwork so the white comes from
+    // bgcolor: Gmail's dark mode can then darken it along with the text.
     const img = (src) =>
       `<img src="${src}" width="600" alt="" style="display:block;width:100%;max-width:600px;height:auto;border:0;outline:none;text-decoration:none;">`;
     return (
