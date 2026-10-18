@@ -62,6 +62,7 @@ CREATE TABLE IF NOT EXISTS mail_campaigns (
   id TEXT PRIMARY KEY,
   subject TEXT NOT NULL,
   body TEXT NOT NULL,
+  html TEXT,
   recipients TEXT NOT NULL,
   attachments TEXT,
   total INTEGER NOT NULL,
@@ -75,6 +76,15 @@ CREATE TABLE IF NOT EXISTS mail_campaigns (
   from_email TEXT,
   reply_to TEXT,
   created_at INTEGER NOT NULL
+);
+
+-- Inline images referenced from rich (HTML) campaign emails. `data` is base64
+-- (no data: prefix); served publicly at /mail/images/:id so inbox clients load it.
+CREATE TABLE IF NOT EXISTS mail_images (
+  id TEXT PRIMARY KEY,
+  content_type TEXT NOT NULL,
+  data TEXT NOT NULL,
+  created_at TEXT NOT NULL
 );
 
 -- Per-recipient delivery events for a campaign (used for the live log).

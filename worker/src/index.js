@@ -25,6 +25,8 @@
  *   GET  /admin/mail/campaigns/:id     (mailer) campaign status + recent events
  *   POST /admin/mail/campaigns/:id/stop (mailer) stop a running campaign
  *   POST /admin/mail/attachments       (mailer) { name, data } -> { id, name, size }
+ *   POST /admin/mail/images            (mailer) { name?, data } -> { id, url } (inline email images)
+ *   GET  /mail/images/:id              public image bytes for emails (cached)
  *
  * /results and /stats require an admin Bearer token and are edge-cached for a
  * short TTL so repeated dashboard polling does not hit D1.
@@ -58,6 +60,9 @@ const MAX_MAIL_ATTACHMENTS = 3;
 const MAX_ATTACHMENT_CHARS = 7_000_000; // ~5 MB binary (base64 is ~4/3 of bytes)
 const MAIL_ATTACHMENT_TTL = 60 * 60 * 24 * 7; // auto-expire KV blobs after 7 days
 
+// Inline images for rich (HTML) emails. Bytes live in D1 so URLs keep working.
+const IMAGE_TYPES_RE = /^image\/(png|jpe?g|gif|webp)$/i;
+
 const ADMIN_ONLY_ROUTES = new Set([
   "GET /results",
   "GET /stats",
@@ -86,7 +91,11 @@ export default {
       let handled = false;
 
       /* ------------------------------------------------------------ blog */
-      if (url.pathname.startsWith("/blog/images/") && request.method === "GET") {
+      if (url.pathname.startsWith("/mail/images/") && request.method === "GET") {
+        const imageId = decodeURIComponent(url.pathname.slice("/mail/images/".length));
+        response = await mailGetImage(request, env, ctx, imageId);
+        handled = true;
+      } else if (url.pathname.startsWith("/blog/images/") && request.method === "GET") {
         const imageId = decodeURIComponent(url.pathname.slice("/blog/images/".length));
         response = await blogGetImage(request, env, ctx, imageId);
         handled = true;
@@ -163,6 +172,9 @@ export default {
           break;
         case "POST /admin/mail/attachments":
           response = await mailUploadAttachment(request, env);
+          break;
+        case "POST /admin/mail/images":
+          response = await mailImageUpload(request, env);
           break;
         case "POST /vote":
           response = await castVote(request, env, ctx);
@@ -1130,6 +1142,72 @@ async function resolveAttachments(env, list) {
   return resolved;
 }
 
+/** Store an inline image for rich emails in D1 and return a public URL. */
+async function mailImageUpload(request, env) {
+  if (!(await isAdmin(request, env))) {
+    return json({ error: "Unauthorized" }, 401);
+  }
+  const body = await readJson(request);
+  const image = parseImageDataUrl(body.data);
+  if (!image || !IMAGE_TYPES_RE.test(image.contentType)) {
+    return json(
+      { error: "Only PNG, JPG, GIF or WebP images up to 1.9 MB are supported." },
+      413
+    );
+  }
+
+  const id = randomToken(8);
+  await env.DB.prepare(
+    "INSERT INTO mail_images (id, content_type, data, created_at) VALUES (?, ?, ?, ?)"
+  )
+    .bind(id, image.contentType.toLowerCase(), image.data, new Date().toISOString())
+    .run();
+
+  return json({ id, url: `/mail/images/${encodeURIComponent(id)}` }, 201);
+}
+
+/** Serve an inline email image (public; email clients fetch it directly). */
+async function mailGetImage(request, env, ctx, id) {
+  const cache = caches.default;
+  const key = cacheKeyFor(request, `mail-image:${id}`);
+  const cached = await cache.match(key);
+  if (cached) return cached;
+
+  const row = await env.DB.prepare(
+    "SELECT content_type, data FROM mail_images WHERE id = ?"
+  )
+    .bind(id)
+    .first();
+  if (!row) return json({ error: "Image not found" }, 404);
+
+  const binary = Uint8Array.from(atob(row.data), (char) => char.charCodeAt(0));
+  const response = new Response(binary, {
+    headers: {
+      "content-type": row.content_type || "application/octet-stream",
+      "cache-control": "public, max-age=31536000, immutable",
+    },
+  });
+  if (ctx) ctx.waitUntil(cache.put(key, response.clone()));
+  return response;
+}
+
+/**
+ * Best-effort server-side hardening of pasted email HTML: drop executable or
+ * remotely-loading elements/event handlers. The frontend already sanitizes
+ * with DOMPurify; this is the second line of defence before anything sends.
+ */
+function sanitizeEmailHtml(html) {
+  if (typeof html !== "string" || html === "") return "";
+  return html
+    .replace(/<!--[\s\S]*?-->/g, "")
+    .replace(/<(script|iframe|object|embed|form|meta|base)\b[\s\S]*?<\/\1>/gi, "")
+    .replace(/<(script|iframe|object|embed|form|meta|base)\b[^>]*\/?>/gi, "")
+    .replace(/\son[a-z]+\s*=\s*"[^"]*"/gi, "")
+    .replace(/\son[a-z]+\s*=\s*'[^']*'/gi, "")
+    .replace(/\son[a-z]+\s*=\s*([^\s>]+)/gi, "")
+    .replace(/(href|src)\s*=\s*"?\s*javascript:[^"'>\s]*"?/gi, '$1="#"');
+}
+
 async function mailCreateCampaign(request, env) {
   if (!(await isAdmin(request, env))) {
     return json({ error: "Unauthorized" }, 401);
@@ -1138,6 +1216,7 @@ async function mailCreateCampaign(request, env) {
   const body = await readJson(request);
   const subject = String(body.subject || "").trim();
   const text = String(body.body || "").trim();
+  const html = typeof body.html === "string" ? sanitizeEmailHtml(body.html) : "";
   const attachments = normalizeAttachmentList(body.attachments);
   const batchSize = Math.min(Math.max(Number(body.batchSize) || 100, 10), 5000);
   const durationSeconds = Math.min(
@@ -1146,7 +1225,7 @@ async function mailCreateCampaign(request, env) {
   );
 
   if (!subject) return json({ error: "Subject is required" }, 400);
-  if (!text) return json({ error: "Message body is required" }, 400);
+  if (!text && !html) return json({ error: "Message body is required" }, 400);
 
   let recipients;
   try {
@@ -1162,14 +1241,15 @@ async function mailCreateCampaign(request, env) {
   const now = Date.now();
   await env.DB.prepare(
     `INSERT INTO mail_campaigns
-       (id, subject, body, recipients, attachments, total, duration_seconds, started_at, status,
+       (id, subject, body, html, recipients, attachments, total, duration_seconds, started_at, status,
         sent, failed, cursor, from_name, from_email, reply_to, created_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'running', 0, 0, 0, ?, ?, ?, ?)`
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'running', 0, 0, 0, ?, ?, ?, ?)`
   )
     .bind(
       id,
       subject,
       text,
+      html,
       JSON.stringify(recipients),
       JSON.stringify(attachments),
       recipients.length,
@@ -1192,17 +1272,19 @@ async function mailTestEmail(request, env) {
   }
   const body = await readJson(request);
   const to = String(body.email || "").trim();
-  const subject = String(body.subject || "").trim() || "NUESATECHTEAM test email";
-  const text =
-    String(body.body || "").trim() ||
-    "This is a test message from the NUESA Mass Mailer.";
+  const subject = String(body.subject || "").trim() || "Office of the General Secretary test email";
+  const text = String(body.body || "").trim();
+  const html = typeof body.html === "string" ? body.html : "";
 
   if (!EMAIL_RE.test(to)) {
     return json({ error: "Enter a valid email address to send the test to." }, 400);
   }
+  if (!text && !html.trim()) {
+    return json({ error: "Add a body before sending the test email." }, 400);
+  }
 
   const attachments = await resolveAttachments(env, normalizeAttachmentList(body.attachments));
-  const result = await sendCampaignEmail(env, to, subject, text, attachments);
+  const result = await sendCampaignEmail(env, to, subject, text, attachments, html);
   if (!result.ok) {
     return json({ error: result.error || "Could not send the test email" }, 502);
   }
@@ -1236,20 +1318,24 @@ async function mailStopCampaign(env, id) {
   return json({ ok: true, changed: (result.meta && result.meta.changes) || 0 });
 }
 
-/** Send one transactional email through Brevo. */
-async function sendCampaignEmail(env, to, subject, text, attachments = []) {
+/** Send one transactional email through Brevo (plain text and/or rich HTML). */
+async function sendCampaignEmail(env, to, subject, text, attachments = [], html = "") {
   if (!env.BREVO_API_KEY) {
     return { ok: false, error: "BREVO_API_KEY is not configured" };
   }
   const fromEmail = env.MAIL_FROM_EMAIL || "noreply@nuesaabuad.ng";
+  const senderName = env.MAIL_FROM_NAME || "Office of the General Secretary - NUESA";
   try {
     const payload = {
-      sender: { name: env.MAIL_FROM_NAME || "NUESATECHTEAM", email: fromEmail },
+      sender: { name: senderName, email: fromEmail },
       to: [{ email: to }],
       replyTo: { email: env.MAIL_REPLY_TO || fromEmail },
       subject,
-      textContent: text,
+      textContent: text || "",
     };
+    const safeHtml = sanitizeEmailHtml(html);
+    if (safeHtml) payload.htmlContent = safeHtml;
+    if (!payload.textContent && safeHtml) payload.textContent = "Please view this email in an HTML-capable client.";
     if (attachments.length > 0) {
       payload.attachment = attachments.map((file) => ({
         name: file.name,
@@ -1339,7 +1425,9 @@ async function processMailCampaign(env, campaign, now) {
   const attachments = await resolveAttachments(env, attachmentList);
 
   const results = await Promise.all(
-    batch.map((email) => sendCampaignEmail(env, email, campaign.subject, campaign.body, attachments))
+    batch.map((email) =>
+      sendCampaignEmail(env, email, campaign.subject, campaign.body, attachments, campaign.html || "")
+    )
   );
 
   let sent = 0;

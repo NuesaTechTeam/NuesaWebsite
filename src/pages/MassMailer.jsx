@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import DOMPurify from "dompurify";
 import {
   Mail,
   Send,
@@ -26,6 +27,7 @@ import {
 } from "lucide-react";
 import useSEO from "../hooks/useSEO";
 import { getAdminToken } from "../lib/electionsApi";
+import EmailEditor from "../components/Mailer/EmailEditor";
 import {
   mailerLogin,
   mailerLogout,
@@ -36,12 +38,91 @@ import {
   stopCampaign,
   sendTestEmail,
   uploadAttachment,
+  uploadMailImage,
+  absoluteUrl,
 } from "../lib/mailApi";
+import letterheadHeader from "../assets/letterhead/header.jpg";
+import letterheadBody from "../assets/letterhead/body.jpg";
+import letterheadFooter from "../assets/letterhead/footer.jpg";
 
 const AUTH_KEY = "nuesa-mailer-auth";
 const POLL_MS = 5000;
 const MAX_ATTACHMENTS = 3;
 const MAX_ATTACHMENT_MB = 5;
+const TEST_RECIPIENT = "tunmiseadepitan@gmail.com";
+const SENDER_LABEL = "Office of the General Secretary - NUESA";
+const LETTERHEAD_KEY = "nuesa-mailer-letterhead-v1";
+const LETTERHEAD_ASSETS = {
+  header: letterheadHeader,
+  body: letterheadBody,
+  footer: letterheadFooter,
+};
+
+/** Test emails can only ever go to your own inbox. */
+const sendTestRecipient = () => TEST_RECIPIENT;
+
+/** Plain-text version of the editor content (used as the text part of the email). */
+const stripEditorTextToPlain = (html) => {
+  const div = document.createElement("div");
+  div.innerHTML = DOMPurify.sanitize(String(html || ""));
+  return (div.innerText || div.textContent || "").replace(/\n{3,}/g, "\n\n").trim();
+};
+
+/**
+ * Upload the bundled letterhead pieces once and remember their public URLs,
+ * so every email can load them like any other inline image.
+ */
+const ensureLetterheadUrls = async () => {
+  try {
+    const cached = JSON.parse(localStorage.getItem(LETTERHEAD_KEY) || "null");
+    if (cached && cached.header && cached.body && cached.footer) return cached;
+  } catch {
+    // ignore storage access errors
+  }
+  const urls = {};
+  for (const [part, src] of Object.entries(LETTERHEAD_ASSETS)) {
+    const blob = await fetch(src).then((r) => r.blob());
+    const data = await readFileAsDataUrl(new File([blob], `letterhead-${part}.jpg`, { type: "image/jpeg" }));
+    const uploaded = await uploadMailImage({ name: `letterhead-${part}.jpg`, data });
+    urls[part] = absoluteUrl(uploaded.url);
+  }
+  try {
+    localStorage.setItem(LETTERHEAD_KEY, JSON.stringify(urls));
+  } catch {
+    // ignore storage access errors
+  }
+  return urls;
+};
+
+/** Wrap editor HTML in an inline-styled, email-client-friendly container. */
+const compileEmailHtml = (html, letterhead = null) => {
+  const clean = DOMPurify.sanitize(String(html || ""), {
+    FORBID_TAGS: ["script", "iframe", "object", "embed", "form", "meta", "base", "link"],
+    ADD_ATTR: ["target", "contenteditable"],
+  });
+  if (!clean.trim()) return "";
+  if (letterhead) {
+    // Header and footer are real <img> tags (they show everywhere); the
+    // watermark is a cell background, which Outlook desktop simply skips.
+    const img = (src) =>
+      `<img src="${src}" width="600" alt="" style="display:block;width:100%;max-width:600px;height:auto;border:0;outline:none;text-decoration:none;">`;
+    return (
+      `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0;padding:0;background-color:#f3f4f6;border:none;"><tr>` +
+      `<td align="center" style="padding:16px 0;">` +
+      `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="600" style="width:100%;max-width:600px;background-color:#ffffff;border:none;">` +
+      `<tr><td style="padding:0;line-height:0;font-size:0;">${img(letterhead.header)}</td></tr>` +
+      `<tr><td background="${letterhead.body}" bgcolor="#ffffff" height="420" valign="top" style="background-color:#ffffff;background-image:url('${letterhead.body}');background-repeat:no-repeat;background-position:center center;background-size:cover;font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1f2937;line-height:1.6;padding:24px 36px 32px;">${clean}</td></tr>` +
+      `<tr><td style="padding:0;line-height:0;font-size:0;">${img(letterhead.footer)}</td></tr>` +
+      `</table></td></tr></table>`
+    );
+  }
+  return (
+    `<table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="margin:0;padding:0;background-color:#ffffff;border:none;"><tr>` +
+    `<td style="font-family:Arial,Helvetica,sans-serif;font-size:14px;color:#1f2937;line-height:1.6;margin:0;padding:0 16px;">` +
+    `<div style="max-width:600px;margin:0 auto;padding:24px 0;">${clean}</div>` +
+    `</td></tr></table>`
+  );
+};
 
 const pad = (n) => String(n).padStart(2, "0");
 
@@ -232,7 +313,10 @@ const MassMailer = () => {
   const [authed, setAuthed] = React.useState(() => getStoredAuth());
 
   const [subject, setSubject] = React.useState("");
+  const [mode, setMode] = React.useState("rich");
   const [body, setBody] = React.useState("");
+  const [html, setHtml] = React.useState("");
+  const [useLetterhead, setUseLetterhead] = React.useState(false);
   const [batchSize, setBatchSize] = React.useState(100);
   const [hours, setHours] = React.useState(1.5);
   const [formError, setFormError] = React.useState("");
@@ -247,7 +331,6 @@ const MassMailer = () => {
   const [starting, setStarting] = React.useState(false);
   const [stopping, setStopping] = React.useState(false);
 
-  const [testEmail, setTestEmail] = React.useState("");
   const [testState, setTestState] = React.useState("idle");
   const [testMessage, setTestMessage] = React.useState("");
 
@@ -362,12 +445,23 @@ const MassMailer = () => {
     setFormError("");
     setRunError("");
     const cleanSubject = subject.trim();
-    const cleanBody = body.trim();
+    const useRich = mode === "rich";
+    let letterhead = null;
+    if (useRich && useLetterhead && html.trim()) {
+      try {
+        letterhead = await ensureLetterheadUrls();
+      } catch (err) {
+        setFormError(err.message || "Could not prepare the letterhead.");
+        return;
+      }
+    }
+    const campaignHtml = useRich ? compileEmailHtml(html, letterhead) : "";
+    const campaignBody = useRich ? (campaignHtml ? stripEditorTextToPlain(html) : "") : body.trim();
     if (!cleanSubject) {
       setFormError("Add a subject before sending.");
       return;
     }
-    if (!cleanBody) {
+    if (!campaignHtml && !campaignBody) {
       setFormError("Add a message body before sending.");
       return;
     }
@@ -381,7 +475,8 @@ const MassMailer = () => {
     try {
       const data = await createCampaign({
         subject: cleanSubject,
-        body: cleanBody,
+        body: campaignBody || "Please view this email in an HTML-capable client.",
+        html: campaignHtml,
         batchSize,
         durationSeconds: Math.round(hours * 3600),
         attachments: attachments.map((a) => ({ id: a.id, name: a.name })),
@@ -424,19 +519,24 @@ const MassMailer = () => {
   };
 
   const handleSendTest = async () => {
-    const to = testEmail.trim();
+    const to = sendTestRecipient();
     setTestMessage("");
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) {
+    const useRich = mode === "rich";
+    const testBody = useRich ? stripEditorTextToPlain(html) : body.trim();
+    if (!testBody && !(useRich && html.trim())) {
       setTestState("error");
-      setTestMessage("Enter a valid email address.");
+      setTestMessage("Add a body before sending the test.");
       return;
     }
     setTestState("sending");
     try {
+      const letterhead = useRich && useLetterhead ? await ensureLetterheadUrls() : null;
+      const testHtml = useRich ? compileEmailHtml(html, letterhead) : "";
       await sendTestEmail({
         email: to,
         subject,
-        body,
+        body: testBody || "Please view this email in an HTML-capable client.",
+        html: testHtml,
         attachments: attachments.map((a) => ({ id: a.id, name: a.name })),
       });
       setTestState("ok");
@@ -494,6 +594,7 @@ const MassMailer = () => {
     setFormError("");
     setSubject("");
     setBody("");
+    setHtml("");
     setAttachments([]);
     setAttachError("");
   };
@@ -671,22 +772,118 @@ const MassMailer = () => {
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}
                     disabled={isLocked}
-                    placeholder="NUESATECHTEAM — Important update"
+                    placeholder={`${SENDER_LABEL} — Important update`}
                     className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-green focus:outline-none focus:ring-2 focus:ring-green/30 disabled:opacity-60 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
                   />
                 </div>
                 <div>
-                  <label className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-200">
-                    Body
-                  </label>
-                  <textarea
-                    value={body}
-                    onChange={(e) => setBody(e.target.value)}
-                    disabled={isLocked}
-                    rows={6}
-                    placeholder={"Hello,\n\nThis is a message from NUESATECHTEAM.\n\nRegards,\nNUESATECHTEAM"}
-                    className="w-full rounded-lg border border-gray-300 bg-white p-3 text-sm text-gray-900 placeholder-gray-400 focus:border-green focus:outline-none focus:ring-2 focus:ring-green/30 disabled:opacity-60 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
-                  />
+                  <div className="mb-1.5 flex items-center justify-between">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                      Body
+                    </label>
+                    <div className="flex items-center overflow-hidden rounded-lg border border-gray-300 text-xs font-semibold dark:border-gray-700">
+                      <button
+                        type="button"
+                        onClick={() => setMode("rich")}
+                        disabled={isLocked}
+                        aria-pressed={mode === "rich"}
+                        className={`px-3 py-1.5 transition-colors disabled:opacity-60 ${
+                          mode === "rich"
+                            ? "bg-green text-white"
+                            : "bg-white text-gray-600 hover:bg-gray-100 dark:bg-gray-950 dark:text-gray-300 dark:hover:bg-gray-800"
+                        }`}
+                      >
+                        Rich (HTML)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setMode("plain")}
+                        disabled={isLocked}
+                        aria-pressed={mode === "plain"}
+                        className={`px-3 py-1.5 transition-colors disabled:opacity-60 ${
+                          mode === "plain"
+                            ? "bg-green text-white"
+                            : "bg-white text-gray-600 hover:bg-gray-100 dark:bg-gray-950 dark:text-gray-300 dark:hover:bg-gray-800"
+                        }`}
+                      >
+                        Plain text
+                      </button>
+                    </div>
+                  </div>
+                  {mode === "rich" ? (
+                    <>
+                      <label className="mb-2 flex cursor-pointer items-center gap-2 text-sm text-gray-700 dark:text-gray-200">
+                        <input
+                          type="checkbox"
+                          checked={useLetterhead}
+                          onChange={(e) => setUseLetterhead(e.target.checked)}
+                          disabled={isLocked}
+                          className="h-4 w-4 accent-green"
+                        />
+                        Use NUESA letterhead background
+                      </label>
+                      <EmailEditor
+                        initialHtml={html}
+                        onChange={({ html: nextHtml }) =>
+                          setHtml(nextHtml === "<br>" ? "" : nextHtml)
+                        }
+                        disabled={isLocked}
+                        onError={(message) => setFormError(message)}
+                        contentTop={
+                          useLetterhead ? (
+                            <img
+                              src={letterheadHeader}
+                              alt="Letterhead header"
+                              className="block w-full border-x border-gray-300 dark:border-gray-700"
+                            />
+                          ) : null
+                        }
+                        contentBottom={
+                          useLetterhead ? (
+                            <img
+                              src={letterheadFooter}
+                              alt="Letterhead footer"
+                              className="block w-full rounded-b-lg border border-t-0 border-gray-300 dark:border-gray-700"
+                            />
+                          ) : null
+                        }
+                        contentStyle={
+                          useLetterhead
+                            ? {
+                                backgroundColor: "#ffffff",
+                                backgroundImage: `url(${letterheadBody})`,
+                                backgroundSize: "cover",
+                                backgroundPosition: "center",
+                                color: "#1f2937",
+                                minHeight: 420,
+                                padding: "24px 36px 32px",
+                                borderTopWidth: 0,
+                                borderBottomWidth: 0,
+                                borderBottomLeftRadius: 0,
+                                borderBottomRightRadius: 0,
+                              }
+                            : undefined
+                        }
+                      />
+                    </>
+                  ) : (
+                    <textarea
+                      value={body}
+                      onChange={(e) => setBody(e.target.value)}
+                      disabled={isLocked}
+                      rows={10}
+                      placeholder={"Hello,\n\nThis is a message from the Office of the General Secretary - NUESA.\n\nRegards,\nNUESA"}
+                      className="w-full rounded-lg border border-gray-300 bg-white p-3 text-sm text-gray-900 placeholder-gray-400 focus:border-green focus:outline-none focus:ring-2 focus:ring-green/30 disabled:opacity-60 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
+                    />
+                  )}
+                  <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                    {mode === "rich" && useLetterhead
+                      ? "The letterhead header and footer sit above and below your message, with the faded crest behind the text. Outlook desktop shows the header and footer but skips the crest. "
+                      : ""}
+                    {mode === "rich"
+                      ? "Formatting and images are written as inline styles so Gmail and Outlook render them correctly. Images upload and load inside the email — click one to resize or drag it to move."
+                      : "Rich (HTML) emails are the default; this mode sends a plain, formatted-free text email."}
+                  </p>
                 </div>
               </div>
 
@@ -768,24 +965,21 @@ const MassMailer = () => {
                   Send a preview to yourself
                 </label>
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  Uses the subject and body above. No campaign is created.
+                  Uses the subject, editor content and attachments above. Tests
+                  are locked to your own inbox; no campaign is created.
                 </p>
                 <div className="mt-3 flex flex-col gap-2 sm:flex-row">
                   <input
                     type="email"
-                    value={testEmail}
-                    onChange={(e) => setTestEmail(e.target.value)}
-                    disabled={isLocked}
-                    placeholder="you@example.com"
-                    autoComplete="email"
-                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-green focus:outline-none focus:ring-2 focus:ring-green/30 disabled:opacity-60 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
+                    value={TEST_RECIPIENT}
+                    readOnly
+                    aria-readonly="true"
+                    className="w-full cursor-not-allowed rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
                   />
                   <button
                     type="button"
                     onClick={handleSendTest}
-                    disabled={
-                      isLocked || testState === "sending" || !testEmail.trim()
-                    }
+                    disabled={isLocked || testState === "sending"}
                     className="inline-flex shrink-0 items-center justify-center gap-2 rounded-lg bg-green px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-green-dark disabled:cursor-not-allowed disabled:opacity-50"
                   >
                     {testState === "sending" ? (

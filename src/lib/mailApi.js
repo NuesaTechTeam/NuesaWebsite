@@ -26,6 +26,12 @@ const request = async (path, { method = "GET", body, token } = {}) => {
   return data;
 };
 
+/** Build the absolute URL for a server-relative path (inline email images). */
+export const absoluteUrl = (path) => {
+  if (/^https?:\/\//i.test(path || "")) return path;
+  return `${API_URL}${path}`;
+};
+
 /** Verifies the stored session token against the server. */
 export const mailerCheckSession = () =>
   request("/admin/session", { token: getAdminToken() });
@@ -74,6 +80,14 @@ export const sendTestEmail = (payload) =>
 /** Upload a PDF attachment (base64, no data: prefix). Returns { id, name, size }. */
 export const uploadAttachment = (payload) =>
   request("/admin/mail/attachments", {
+    method: "POST",
+    body: payload,
+    token: getAdminToken(),
+  });
+
+/** Upload an inline email image (data URL string). Returns { id, url }. */
+export const uploadMailImage = (payload) =>
+  request("/admin/mail/images", {
     method: "POST",
     body: payload,
     token: getAdminToken(),

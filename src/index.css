@@ -462,3 +462,22 @@ body::-webkit-scrollbar {
 .z-modal-backdrop { z-index: 1999; }
 .z-toast { z-index: 3000; }
 .z-tooltip { z-index: 4000; }
+
+/* Mass Mailer rich-text editor */
+.email-editor:empty:before {
+  content: attr(data-placeholder);
+  color: #9ca3af;
+  pointer-events: none;
+}
+.email-editor img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  outline: 2px dashed transparent;
+  cursor: default;
+}
+.email-editor img:hover,
+.email-editor img:focus {
+  outline-color: #22c55e;
+  outline-offset: 2px;
+}
