@@ -481,3 +481,17 @@ body::-webkit-scrollbar {
   outline-color: #22c55e;
   outline-offset: 2px;
 }
+.email-editor img.is-selected {
+  outline: 2px solid #16a34a;
+  outline-offset: 2px;
+}
+.email-editor table td:empty,
+.email-editor table th:empty { min-width: 2rem; }
+/* Make the editor preview match how inbox clients render the email. */
+.email-editor * { font-family: inherit; }
+.email-editor p { margin: 0 0 1em; }
+.email-editor ul { list-style: disc; padding-left: 2em; margin: 0 0 1em; }
+.email-editor ol { list-style: decimal; padding-left: 2em; margin: 0 0 1em; }
+.email-editor li { margin: 0.25em 0; }
+.email-editor a { text-decoration: underline; }
+.email-editor table[role="presentation"] a { text-decoration: none; }

@@ -50,6 +50,9 @@ const POLL_MS = 5000;
 const MAX_ATTACHMENTS = 3;
 const MAX_ATTACHMENT_MB = 5;
 const TEST_RECIPIENT = "tunmiseadepitan@gmail.com";
+const TEST_TO_KEY = "nuesa-mailer-test-to";
+const MAX_TEST_RECIPIENTS = 5;
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const SENDER_LABEL = "Office of the General Secretary - NUESA";
 const LETTERHEAD_KEY = "nuesa-mailer-letterhead-v1";
 const LETTERHEAD_ASSETS = {
@@ -58,8 +61,24 @@ const LETTERHEAD_ASSETS = {
   footer: letterheadFooter,
 };
 
-/** Test emails can only ever go to your own inbox. */
-const sendTestRecipient = () => TEST_RECIPIENT;
+/** Split "a@x.com, b@y.com" into unique addresses. */
+const parseTestRecipients = (value) =>
+  Array.from(
+    new Set(
+      String(value || "")
+        .split(/[\s,;]+/)
+        .map((v) => v.trim().toLowerCase())
+        .filter(Boolean)
+    )
+  );
+
+const getStoredTestTo = () => {
+  try {
+    return localStorage.getItem(TEST_TO_KEY) || TEST_RECIPIENT;
+  } catch {
+    return TEST_RECIPIENT;
+  }
+};
 
 /** Plain-text version of the editor content (used as the text part of the email). */
 const stripEditorTextToPlain = (html) => {
@@ -333,6 +352,7 @@ const MassMailer = () => {
 
   const [testState, setTestState] = React.useState("idle");
   const [testMessage, setTestMessage] = React.useState("");
+  const [testTo, setTestTo] = React.useState(() => getStoredTestTo());
 
   const [attachments, setAttachments] = React.useState([]);
   const [attachError, setAttachError] = React.useState("");
@@ -519,8 +539,24 @@ const MassMailer = () => {
   };
 
   const handleSendTest = async () => {
-    const to = sendTestRecipient();
     setTestMessage("");
+    const recipientsList = parseTestRecipients(testTo);
+    const invalid = recipientsList.filter((email) => !EMAIL_RE.test(email));
+    if (recipientsList.length === 0) {
+      setTestState("error");
+      setTestMessage("Enter at least one email address to send the test to.");
+      return;
+    }
+    if (invalid.length) {
+      setTestState("error");
+      setTestMessage(`Not a valid email: ${invalid.join(", ")}`);
+      return;
+    }
+    if (recipientsList.length > MAX_TEST_RECIPIENTS) {
+      setTestState("error");
+      setTestMessage(`Send a test to at most ${MAX_TEST_RECIPIENTS} addresses at a time.`);
+      return;
+    }
     const useRich = mode === "rich";
     const testBody = useRich ? stripEditorTextToPlain(html) : body.trim();
     if (!testBody && !(useRich && html.trim())) {
@@ -532,15 +568,36 @@ const MassMailer = () => {
     try {
       const letterhead = useRich && useLetterhead ? await ensureLetterheadUrls() : null;
       const testHtml = useRich ? compileEmailHtml(html, letterhead) : "";
-      await sendTestEmail({
-        email: to,
-        subject,
-        body: testBody || "Please view this email in an HTML-capable client.",
-        html: testHtml,
-        attachments: attachments.map((a) => ({ id: a.id, name: a.name })),
-      });
-      setTestState("ok");
-      setTestMessage(`Test sent to ${to}. Check the inbox (and spam).`);
+      const sentTo = [];
+      const failedTo = [];
+      for (const email of recipientsList) {
+        try {
+          await sendTestEmail({
+            email,
+            subject,
+            body: testBody || "Please view this email in an HTML-capable client.",
+            html: testHtml,
+            attachments: attachments.map((a) => ({ id: a.id, name: a.name })),
+          });
+          sentTo.push(email);
+        } catch (err) {
+          failedTo.push(`${email} (${err.message || "failed"})`);
+        }
+      }
+      try {
+        localStorage.setItem(TEST_TO_KEY, recipientsList.join(", "));
+      } catch {
+        // ignore storage access errors
+      }
+      if (failedTo.length) {
+        setTestState("error");
+        setTestMessage(
+          `${sentTo.length ? `Sent to ${sentTo.join(", ")}. ` : ""}Failed: ${failedTo.join("; ")}`
+        );
+      } else {
+        setTestState("ok");
+        setTestMessage(`Test sent to ${sentTo.join(", ")}. Check the inbox (and spam).`);
+      }
     } catch (err) {
       setTestState("error");
       setTestMessage(err.message || "Could not send the test email.");
@@ -881,7 +938,7 @@ const MassMailer = () => {
                       ? "The letterhead header and footer sit above and below your message, with the faded crest behind the text. Outlook desktop shows the header and footer but skips the crest. "
                       : ""}
                     {mode === "rich"
-                      ? "Formatting and images are written as inline styles so Gmail and Outlook render them correctly. Images upload and load inside the email — click one to resize or drag it to move."
+                      ? "Formatting and images are written as inline styles so Gmail and Outlook render them correctly. Paste or drop images straight in; click one to resize, align, link or remove it. Ctrl+K adds a link, Ctrl+Z undoes."
                       : "Rich (HTML) emails are the default; this mode sends a plain, formatted-free text email."}
                   </p>
                 </div>
@@ -962,19 +1019,30 @@ const MassMailer = () => {
 
               <div className="mt-5 rounded-xl border border-dashed border-gray-300 p-4 dark:border-gray-700">
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
-                  Send a preview to yourself
+                  Send a test email
                 </label>
                 <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                  Uses the subject, editor content and attachments above. Tests
-                  are locked to your own inbox; no campaign is created.
+                  Uses the subject, editor content and attachments above. Send
+                  to any address (up to {MAX_TEST_RECIPIENTS}, separated by
+                  commas); no campaign is created.
                 </p>
                 <div className="mt-3 flex flex-col gap-2 sm:flex-row">
                   <input
-                    type="email"
-                    value={TEST_RECIPIENT}
-                    readOnly
-                    aria-readonly="true"
-                    className="w-full cursor-not-allowed rounded-lg border border-gray-300 bg-gray-50 px-3 py-2.5 text-sm text-gray-600 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300"
+                    type="text"
+                    inputMode="email"
+                    value={testTo}
+                    onChange={(e) => setTestTo(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        handleSendTest();
+                      }
+                    }}
+                    disabled={isLocked || testState === "sending"}
+                    placeholder="name@example.com, another@example.com"
+                    aria-label="Test email recipients"
+                    autoComplete="email"
+                    className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-green focus:outline-none focus:ring-2 focus:ring-green/30 disabled:opacity-60 dark:border-gray-700 dark:bg-gray-950 dark:text-white"
                   />
                   <button
                     type="button"
@@ -987,7 +1055,7 @@ const MassMailer = () => {
                     ) : (
                       <Send className="h-4 w-4" />
                     )}
-                    Send test to myself
+                    Send test
                   </button>
                 </div>
                 {testMessage && (
