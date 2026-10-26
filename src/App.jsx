@@ -19,6 +19,7 @@ const Apwen = lazy(() => import("./pages/Apwen"));
 const Feedback = lazy(() => import("./pages/Feedback"));
 const Complaints = lazy(() => import("./pages/Complaints"));
 const Suggestions = lazy(() => import("./pages/Suggestions"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const ErrorPage = lazy(() => import("./pages/Error"));
 
 const PageLoader = () => (
@@ -50,6 +51,8 @@ function App() {
           <Route path='/feedback' element={<Feedback />} />
           <Route path='/feedback/complaints' element={<Complaints />} />
           <Route path='/feedback/suggestions' element={<Suggestions />} />
+          <Route path='/privacy-policy' element={<PrivacyPolicy />} />
+          <Route path='/privacy' element={<PrivacyPolicy />} />
           <Route path='*' element={<ErrorPage />} />
         </Routes>
       </Suspense>
