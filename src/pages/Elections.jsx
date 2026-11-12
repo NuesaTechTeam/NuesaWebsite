@@ -1,60 +1,40 @@
 import { useEffect, useState } from "react";
 import useSEO from "../hooks/useSEO";
-import { AdminLogin, ElectionsDashboard } from "../components/Elections";
-import {
-  checkAdminSession,
-  getAdminToken,
-  setAdminToken,
-} from "../lib/electionsApi";
+import { AdminGate, VoterPortal } from "../components/Elections";
+import { Spinner } from "../components/Elections/AdminGate";
+import { getElectionStatus } from "../lib/electionsApi";
 
+/**
+ * /elections: the voter portal while voting is open (switched on from the admin
+ * dashboard), otherwise the restricted admin login, so nothing about the
+ * election is visible to the public before the window opens.
+ */
 const Elections = () => {
+  const [votingOpen, setVotingOpen] = useState(null);
+
   useSEO({
     title: "Elections",
-    description:
-      "NUESA ABUAD online elections portal. Restricted to authorised technical team members.",
+    description: votingOpen
+      ? "NUESA ABUAD online elections. Verify with your matric and invoice numbers, view the candidates and cast your ballot."
+      : "NUESA ABUAD online elections portal. Restricted to authorised technical team members.",
   });
 
-  // The gate is decided by the SERVER, not by a client-side flag. A stored
-  // token only counts if the worker confirms it is still valid.
-  const [status, setStatus] = useState(() => (getAdminToken() ? "checking" : "guest"));
-
   useEffect(() => {
-    if (status !== "checking") return undefined;
-
     let cancelled = false;
-    checkAdminSession()
-      .then(() => {
-        if (!cancelled) setStatus("authed");
+    getElectionStatus()
+      .then((data) => {
+        if (!cancelled) setVotingOpen(Boolean(data.votingOpen));
       })
       .catch(() => {
-        if (cancelled) return;
-        setAdminToken("");
-        setStatus("guest");
+        if (!cancelled) setVotingOpen(false);
       });
-
     return () => {
       cancelled = true;
     };
-  }, [status]);
+  }, []);
 
-  const handleLogout = () => {
-    setAdminToken("");
-    setStatus("guest");
-  };
-
-  if (status === "checking") {
-    return (
-      <div className='flex min-h-[60vh] items-center justify-center'>
-        <div className='h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-green' />
-      </div>
-    );
-  }
-
-  return status === "authed" ? (
-    <ElectionsDashboard onLogout={handleLogout} />
-  ) : (
-    <AdminLogin onSuccess={() => setStatus("authed")} />
-  );
+  if (votingOpen === null) return <Spinner />;
+  return votingOpen ? <VoterPortal /> : <AdminGate />;
 };
 
 export default Elections;

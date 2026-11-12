@@ -1,7 +1,7 @@
 import { User } from "lucide-react";
 import { motion } from "framer-motion";
 
-const CandidateCard = ({ candidate, positionTitle }) => {
+const CandidateCard = ({ candidate, positionTitle, unopposed = false }) => {
   return (
     <motion.div
       initial={{ opacity: 0, y: 18 }}
@@ -29,19 +29,15 @@ const CandidateCard = ({ candidate, positionTitle }) => {
         </span>
       </div>
 
-      <div className='p-4'>
+      <div className='flex items-center justify-between gap-2 p-4'>
         <h3 className='font-bold text-gray-900 dark:text-white'>
           {candidate.name}
         </h3>
-
-        <div className='mt-3'>
-          <h4 className='text-xs font-bold uppercase tracking-wide text-green dark:text-green-400'>
-            Manifesto
-          </h4>
-          <p className='mt-1 text-sm leading-relaxed text-gray-600 dark:text-gray-300'>
-            {candidate.manifesto}
-          </p>
-        </div>
+        {unopposed && (
+          <span className='shrink-0 rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'>
+            Unopposed
+          </span>
+        )}
       </div>
     </motion.div>
   );

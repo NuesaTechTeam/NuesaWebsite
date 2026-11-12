@@ -30,6 +30,30 @@ FROM votes
 GROUP BY position_id, candidate_id
 ON CONFLICT (position_id, candidate_id) DO UPDATE SET votes = excluded.votes;
 
+-- One row per submitted ballot. The primary key is what stops a voter who left
+-- positions blank from signing in again to fill them in.
+CREATE TABLE IF NOT EXISTS ballots (
+  matric TEXT PRIMARY KEY,
+  voter_key TEXT NOT NULL,
+  submitted_at TEXT NOT NULL
+);
+
+-- Verification-code sends per matric number (capped to save email/SMS credits).
+CREATE TABLE IF NOT EXISTS otp_sends (
+  matric TEXT PRIMARY KEY,
+  sends INTEGER NOT NULL DEFAULT 0,
+  last_sent_at INTEGER NOT NULL
+);
+
+-- Small key/value settings. voting_open = '1' opens the voter portal.
+CREATE TABLE IF NOT EXISTS election_settings (
+  key TEXT PRIMARY KEY,
+  value TEXT NOT NULL
+);
+
+INSERT INTO election_settings (key, value) VALUES ('voting_open', '0')
+ON CONFLICT (key) DO NOTHING;
+
 -- Blog submissions awaiting editorial review. `content` holds the rich-text
 -- HTML from the submit form (sanitized before rendering on the site).
 CREATE TABLE IF NOT EXISTS blog_submissions (

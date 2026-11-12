@@ -1,9 +1,20 @@
 import { motion } from "framer-motion";
-import { getCandidatesByPosition } from "../../lib/electionData";
+import { NO_VOTE_ID, getCandidatesByPosition, isUnopposed } from "../../lib/electionData";
 import VoteBar from "./VoteBar";
 
 const PositionResult = ({ position, index = 0, votesByCandidate }) => {
-  const candidates = getCandidatesByPosition(position.id)
+  const unopposed = isUnopposed(position.id);
+  // Unopposed positions are a Yes/No vote on the single candidate.
+  const options = unopposed
+    ? [
+        ...getCandidatesByPosition(position.id).map((candidate) => ({
+          id: candidate.id,
+          name: `Yes: ${candidate.name}`,
+        })),
+        { id: NO_VOTE_ID, name: "No" },
+      ]
+    : getCandidatesByPosition(position.id);
+  const candidates = options
     .map((candidate) => ({
       ...candidate,
       votes: votesByCandidate?.[candidate.id] ?? 0,
@@ -26,6 +37,11 @@ const PositionResult = ({ position, index = 0, votesByCandidate }) => {
             {position.order}
           </span>
           {position.title}
+          {unopposed && (
+            <span className='rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-amber-700 dark:bg-amber-900/30 dark:text-amber-400'>
+              Yes / No
+            </span>
+          )}
         </h3>
         <span className='shrink-0 text-xs font-medium text-gray-500 dark:text-gray-400'>
           {total} votes

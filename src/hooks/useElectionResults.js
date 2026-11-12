@@ -3,7 +3,11 @@ import { getResults, getStats, isElectionsApiConfigured } from "../lib/elections
 
 const REFRESH_MS = 30000;
 
-export const useElectionResults = () => {
+/**
+ * Polls live results + stats. `getToken` picks the session (admin by default;
+ * the agents' page passes its own token getter).
+ */
+export const useElectionResults = ({ getToken, refreshMs = REFRESH_MS } = {}) => {
   const configured = isElectionsApiConfigured();
   const [results, setResults] = useState(null);
   const [stats, setStats] = useState(null);
@@ -15,7 +19,8 @@ export const useElectionResults = () => {
   const load = useCallback(async () => {
     if (!configured) return;
     try {
-      const [resultsData, statsData] = await Promise.all([getResults(), getStats()]);
+      const token = getToken ? getToken() : undefined;
+      const [resultsData, statsData] = await Promise.all([getResults(token), getStats(token)]);
       if (cancelledRef.current) return;
       setResults(resultsData);
       setStats(statsData);
@@ -27,7 +32,7 @@ export const useElectionResults = () => {
     } finally {
       if (!cancelledRef.current) setLoading(false);
     }
-  }, [configured]);
+  }, [configured, getToken]);
 
   useEffect(() => {
     cancelledRef.current = false;
@@ -42,7 +47,7 @@ export const useElectionResults = () => {
     const start = () => {
       if (timer) return;
       load();
-      timer = setInterval(load, REFRESH_MS);
+      timer = setInterval(load, refreshMs);
     };
 
     const stop = () => {
@@ -65,7 +70,7 @@ export const useElectionResults = () => {
       stop();
       document.removeEventListener("visibilitychange", handleVisibility);
     };
-  }, [configured, load]);
+  }, [configured, load, refreshMs]);
 
   const votesByPosition = {};
   for (const position of results?.positions || []) {
@@ -80,6 +85,7 @@ export const useElectionResults = () => {
     results,
     votesByPosition,
     registeredVoters: stats?.registeredVoters ?? null,
+    ballotsCast: stats?.ballotsCast ?? null,
     loading,
     error,
     lastUpdated,

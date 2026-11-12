@@ -5,26 +5,15 @@
 // Admin credentials live ONLY as Worker secrets — never in this bundle.
 // Remaining wiring: live results + candidates + the voter OTP flow on the UI.
 // ---------------------------------------------------------------------------
+import BALLOT from "./electionCandidates.json";
+
 export const ELECTION_META = {
   title: "NUESA ABUAD Elections",
   session: "2026/2027",
   status: "pending",
 };
 
-export const ELECTED_POSITIONS = [
-  { id: "president", title: "President", order: 1 },
-  { id: "vice-president", title: "Vice President", order: 2 },
-  { id: "general-secretary", title: "General Secretary", order: 3 },
-  { id: "assistant-general-secretary", title: "Assistant General Secretary", order: 4 },
-  { id: "financial-secretary", title: "Financial Secretary", order: 5 },
-  { id: "treasurer", title: "Treasurer", order: 6 },
-  { id: "public-relations-officer", title: "Public Relations Officer", order: 7 },
-  { id: "social-director-male", title: "Social Director (Male)", order: 8 },
-  { id: "social-director-female", title: "Social Director (Female)", order: 9 },
-  { id: "sports-director-male", title: "Sports Director (Male)", order: 10 },
-  { id: "sports-director-female", title: "Sports Director (Female)", order: 11 },
-  { id: "welfare-officer", title: "Welfare Officer", order: 12 },
-];
+export const ELECTED_POSITIONS = [...BALLOT.positions].sort((a, b) => a.order - b.order);
 
 export const APPOINTED_POSITIONS = [
   { id: "chief-of-staff", title: "Chief of Staff", order: 13 },
@@ -75,32 +64,25 @@ export const OTP_STEPS = [
   "Details are checked against the verified paid-dues record.",
   "A one-time password is sent to the email address and phone number on record.",
   "Voter enters the OTP to unlock the ballot.",
-  "One vote is recorded per position; duplicate or unverified attempts are blocked.",
+  "Pick a candidate for any position you want to vote on; you may leave positions blank. Unopposed candidates get a Yes or No vote.",
+  "Submit once. Each voter has a single ballot, and it cannot be changed after submission.",
 ];
 
 // ---------------------------------------------------------------------------
-// PLACEHOLDER CANDIDATES
-// Names, photos and manifestos are placeholders until the verified Google Form
-// responses are ready. No vote counts are stored here — live tallies come only
-// from the API, so the results page stays empty until real votes are cast.
+// CANDIDATES
+// Loaded from electionCandidates.json, which the elections worker also reads to
+// validate ballots. No vote counts live here: tallies come only from the API.
 // ---------------------------------------------------------------------------
-const PLACEHOLDER_MANIFESTO =
-  "Manifesto placeholder. This is where the candidate's manifesto will appear once submitted — it also serves as their speech.";
+export const CANDIDATES = BALLOT.candidates;
 
-export const CANDIDATES = ELECTED_POSITIONS.flatMap((position, pIndex) => {
-  const candidateCount = 2 + (pIndex % 2);
-
-  return Array.from({ length: candidateCount }, (_, cIndex) => ({
-    id: `${position.id}-${cIndex + 1}`,
-    positionId: position.id,
-    name: `Candidate ${String.fromCharCode(65 + cIndex)}`,
-    photo: "",
-    manifesto: PLACEHOLDER_MANIFESTO,
-  }));
-});
+// Ballot value recorded when a voter rejects an unopposed candidate.
+export const NO_VOTE_ID = "no";
 
 export const getPositionById = (positionId) =>
   ALL_POSITIONS.find((position) => position.id === positionId);
 
 export const getCandidatesByPosition = (positionId) =>
   CANDIDATES.filter((candidate) => candidate.positionId === positionId);
+
+/** A position with exactly one candidate is unopposed: voters answer Yes or No. */
+export const isUnopposed = (positionId) => getCandidatesByPosition(positionId).length === 1;

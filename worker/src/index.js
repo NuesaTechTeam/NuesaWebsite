@@ -7,8 +7,13 @@
  *   POST /voter/otp/send     { voterToken } -> { sent, channels }
  *   POST /voter/otp/verify   { voterToken, code } -> { ballotToken }
  *   POST /vote               { ballotToken, votes:[{ positionId, candidateId }] } -> { recorded }
- *   GET  /results            -> { positions:[{ positionId, total, candidates:[{ candidateId, votes }] }] }   (admin)
- *   GET  /stats              -> { registeredVoters }                                                          (admin)
+ *                            (1+ positions; unopposed positions take the candidate id for Yes or "no")
+ *   GET  /results            -> { positions:[{ positionId, total, candidates:[{ candidateId, votes }] }] }   (admin, agent)
+ *   GET  /stats              -> { registeredVoters, ballotsCast }                                             (admin, agent)
+ *   POST /agent/login        { username, password } -> { token }   (live-results-only role)
+ *   GET  /election/status    -> { votingOpen }   (public)
+ *   POST /admin/election/status { open } -> { votingOpen }   (admin)
+ *   GET  /admin/brevo        (admin) remaining Brevo email credits
  *   GET  /candidates         -> candidates with photos/manifestos (from CANDIDATES_JSON var)
  *
  *   POST /blog/submissions             { title, author, email, category, content, image? } -> { id }
@@ -35,6 +40,7 @@
  *   SESSIONS (KV)   - admin sessions + voter/otp/ballot tokens
  *   DB (D1)         - votes table (see README for schema)
  *   ADMIN_USERNAME, ADMIN_PASSWORD
+ *   AGENT_USERNAME, AGENT_PASSWORD        - candidates' agents (live results only)
  *   MAILER_USERNAME, MAILER_PASSWORD      - Mass Mailer login
  *   MAILER_SHEET_CSV_URL                  - published Google Sheet CSV (recipients)
  *   VOTER_SHEET_CSV_URL   - published Google Sheet CSV
@@ -44,11 +50,33 @@
  *   ALLOWED_ORIGIN        - e.g. "https://nuesaabuad.ng"
  */
 
+import BALLOT from "../../src/lib/electionCandidates.json";
+
 const ADMIN_SESSION_TTL = 60 * 60 * 8;
 const OTP_TTL = 60 * 10;
 const BALLOT_TTL = 60 * 30;
 const MAX_OTP_ATTEMPTS = 5;
 const MAX_LOGIN_ATTEMPTS = 10;
+
+// Each matric number gets at most this many verification-code sends before
+// voting, at least OTP_SEND_COOLDOWN_MS apart (saves Brevo/Termii credits).
+const MAX_OTP_SENDS = 3;
+const OTP_SEND_COOLDOWN_MS = 60 * 1000;
+
+// Session roles. A token's KV value is its role; each route lists the roles it accepts.
+const ROLE_ADMIN = "admin";
+const ROLE_MAILER = "mailer";
+const ROLE_AGENT = "agent";
+const MAIL_ROLES = [ROLE_ADMIN, ROLE_MAILER];
+
+// The ballot the worker accepts, shared with the website.
+const POSITION_IDS = new Set(BALLOT.positions.map((position) => position.id));
+const CANDIDATES_BY_POSITION = BALLOT.candidates.reduce((map, candidate) => {
+  if (!map.has(candidate.positionId)) map.set(candidate.positionId, new Set());
+  map.get(candidate.positionId).add(candidate.id);
+  return map;
+}, new Map());
+const NO_VOTE_ID = "no";
 
 // Mass Mailer: hard cap on emails sent per Cron tick. Keeps each invocation
 // well under the Workers subrequest limit (each email is one fetch to Brevo).
@@ -63,11 +91,14 @@ const MAIL_ATTACHMENT_TTL = 60 * 60 * 24 * 7; // auto-expire KV blobs after 7 da
 // Inline images for rich (HTML) emails. Bytes live in D1 so URLs keep working.
 const IMAGE_TYPES_RE = /^image\/(png|jpe?g|gif|webp)$/i;
 
-const ADMIN_ONLY_ROUTES = new Set([
-  "GET /results",
-  "GET /stats",
-  "GET /admin/session",
-  "GET /admin/ballots",
+// Routes guarded up front, by the roles allowed to call them.
+const ROUTE_ROLES = new Map([
+  ["GET /results", [ROLE_ADMIN, ROLE_AGENT]],
+  ["GET /stats", [ROLE_ADMIN, ROLE_AGENT]],
+  ["GET /admin/session", [ROLE_ADMIN, ROLE_MAILER, ROLE_AGENT]],
+  ["GET /admin/ballots", [ROLE_ADMIN]],
+  ["GET /admin/brevo", [ROLE_ADMIN]],
+  ["POST /admin/election/status", [ROLE_ADMIN]],
 ]);
 
 export default {
@@ -83,7 +114,8 @@ export default {
     const route = `${request.method} ${url.pathname}`;
 
     try {
-      if (ADMIN_ONLY_ROUTES.has(route) && !(await isAdmin(request, env))) {
+      const routeRoles = ROUTE_ROLES.get(route);
+      if (routeRoles && !(await hasRole(request, env, routeRoles))) {
         return json({ error: "Unauthorized" }, 401, cors);
       }
 
@@ -112,7 +144,7 @@ export default {
         response = await blogListSubmissions(request, env);
         handled = true;
       } else if (url.pathname.startsWith("/admin/mail/campaigns/")) {
-        if (!(await isAdmin(request, env))) {
+        if (!(await hasRole(request, env, MAIL_ROLES))) {
           return json({ error: "Unauthorized" }, 401, cors);
         }
         const rest = url.pathname.slice("/admin/mail/campaigns/".length);
@@ -145,6 +177,18 @@ export default {
       } else switch (route) {
         case "POST /admin/login":
           response = await adminLogin(request, env);
+          break;
+        case "POST /agent/login":
+          response = await agentLogin(request, env);
+          break;
+        case "GET /election/status":
+          response = json({ votingOpen: await isVotingOpen(env) });
+          break;
+        case "POST /admin/election/status":
+          response = await setVotingOpen(request, env);
+          break;
+        case "GET /admin/brevo":
+          response = await brevoCredits(env);
           break;
         case "POST /voter/verify":
           response = await voterVerify(request, env);
@@ -180,7 +224,7 @@ export default {
           response = await castVote(request, env, ctx);
           break;
         case "GET /admin/session":
-          response = json({ ok: true });
+          response = json({ ok: true, role: await sessionRole(request, env) });
           break;
         case "GET /admin/ballots":
           response = await getBallots(env);
@@ -521,7 +565,7 @@ async function adminDiagnostics(request, env) {
   return json({
     sentCode: code,
     config: {
-      email: Boolean(env.RESEND_API_KEY),
+      email: Boolean(env.BREVO_API_KEY || env.RESEND_API_KEY),
       emailFrom: env.OTP_EMAIL_FROM || null,
       sms: Boolean(env.TERMII_API_KEY),
       smsSenderId: env.TERMII_SENDER_ID || null,
@@ -533,12 +577,23 @@ async function adminDiagnostics(request, env) {
 
 /* --------------------------------------------------------------- handlers */
 
-/** True when the request carries a valid admin Bearer token. */
-async function isAdmin(request, env) {
+/** The role stored for the request's Bearer token ("admin", "mailer", "agent"), or "". */
+async function sessionRole(request, env) {
   const header = request.headers.get("Authorization") || "";
   const token = header.startsWith("Bearer ") ? header.slice(7).trim() : "";
-  if (!token) return false;
-  return Boolean(await env.SESSIONS.get(`admin:${token}`));
+  if (!token) return "";
+  const role = await env.SESSIONS.get(`admin:${token}`);
+  // Tokens issued before roles existed stored "1"; they no longer grant access.
+  return [ROLE_ADMIN, ROLE_MAILER, ROLE_AGENT].includes(role) ? role : "";
+}
+
+async function hasRole(request, env, roles) {
+  return roles.includes(await sessionRole(request, env));
+}
+
+/** True when the request carries a valid elections-admin Bearer token. */
+async function isAdmin(request, env) {
+  return hasRole(request, env, [ROLE_ADMIN]);
 }
 
 /**
@@ -561,9 +616,13 @@ function safeEqual(a, b) {
   return diff === 0;
 }
 
-async function adminLogin(request, env) {
+/**
+ * Shared username/password login. Failed attempts are rate-limited per IP and
+ * role; a success stores a session token whose KV value is the role.
+ */
+async function roleLogin(request, env, { role, username: expectedUser, password: expectedPass }) {
   const ip = request.headers.get("CF-Connecting-IP") || "unknown";
-  const attemptKey = `login-attempts:${ip}`;
+  const attemptKey = role === ROLE_ADMIN ? `login-attempts:${ip}` : `login-attempts:${role}:${ip}`;
   const attempts = Number(await env.SESSIONS.get(attemptKey)) || 0;
 
   if (attempts >= MAX_LOGIN_ATTEMPTS) {
@@ -572,12 +631,12 @@ async function adminLogin(request, env) {
 
   const { username, password } = await readJson(request);
 
-  if (!env.ADMIN_USERNAME || !env.ADMIN_PASSWORD) {
-    return json({ error: "Admin credentials are not configured" }, 500);
+  if (!expectedUser || !expectedPass) {
+    return json({ error: "Login is not configured" }, 500);
   }
 
-  const validUser = safeEqual(String(username || "").trim(), env.ADMIN_USERNAME);
-  const validPass = safeEqual(password, env.ADMIN_PASSWORD);
+  const validUser = safeEqual(String(username || "").trim(), expectedUser);
+  const validPass = safeEqual(password, expectedPass);
   if (!validUser || !validPass) {
     await env.SESSIONS.put(attemptKey, String(attempts + 1), { expirationTtl: 600 });
     return json({ error: "Invalid username or password" }, 401);
@@ -587,8 +646,81 @@ async function adminLogin(request, env) {
   await env.SESSIONS.delete(attemptKey);
 
   const token = randomToken();
-  await env.SESSIONS.put(`admin:${token}`, "1", { expirationTtl: ADMIN_SESSION_TTL });
-  return json({ token, expiresIn: ADMIN_SESSION_TTL });
+  await env.SESSIONS.put(`admin:${token}`, role, { expirationTtl: ADMIN_SESSION_TTL });
+  return json({ token, role, expiresIn: ADMIN_SESSION_TTL });
+}
+
+function adminLogin(request, env) {
+  return roleLogin(request, env, {
+    role: ROLE_ADMIN,
+    username: env.ADMIN_USERNAME,
+    password: env.ADMIN_PASSWORD,
+  });
+}
+
+function agentLogin(request, env) {
+  return roleLogin(request, env, {
+    role: ROLE_AGENT,
+    username: env.AGENT_USERNAME,
+    password: env.AGENT_PASSWORD,
+  });
+}
+
+/* ------------------------------------------------------------ voting window */
+
+async function isVotingOpen(env) {
+  const row = await env.DB.prepare(
+    "SELECT value FROM election_settings WHERE key = 'voting_open'"
+  ).first();
+  return row?.value === "1";
+}
+
+async function setVotingOpen(request, env) {
+  const { open } = await readJson(request);
+  if (typeof open !== "boolean") return json({ error: "Send { open: true | false }" }, 400);
+  await env.DB.prepare(
+    `INSERT INTO election_settings (key, value) VALUES ('voting_open', ?)
+     ON CONFLICT (key) DO UPDATE SET value = excluded.value`
+  )
+    .bind(open ? "1" : "0")
+    .run();
+  return json({ votingOpen: open });
+}
+
+const votingClosed = () =>
+  json({ error: "Voting is not open right now. Please check back during the election window." }, 403);
+
+/** True once this matric number has submitted a ballot. */
+async function hasVoted(env, matric) {
+  const row = await env.DB.prepare("SELECT 1 AS voted FROM ballots WHERE matric = ?")
+    .bind(matric)
+    .first();
+  return Boolean(row);
+}
+
+const alreadyVoted = () =>
+  json({ error: "This matric number has already voted. Each voter can only submit one ballot." }, 409);
+
+/** Admin: remaining Brevo email credits (the account's send limit). */
+async function brevoCredits(env) {
+  if (!env.BREVO_API_KEY) return json({ error: "BREVO_API_KEY is not configured" }, 500);
+  const response = await fetch("https://api.brevo.com/v3/account", {
+    headers: { "api-key": env.BREVO_API_KEY, accept: "application/json" },
+  });
+  if (!response.ok) return json({ error: `Brevo returned ${response.status}` }, 502);
+
+  const data = await response.json().catch(() => ({}));
+  const plans = (Array.isArray(data.plan) ? data.plan : []).map((plan) => ({
+    type: plan.type,
+    credits: plan.credits,
+    creditsType: plan.creditsType,
+  }));
+  const emailPlan = plans.find((plan) => plan.creditsType === "sendLimit") || plans[0] || null;
+  return json({
+    credits: emailPlan ? emailPlan.credits : null,
+    planType: emailPlan ? emailPlan.type : null,
+    plans,
+  });
 }
 
 async function voterVerify(request, env) {
@@ -597,10 +729,14 @@ async function voterVerify(request, env) {
     return json({ error: "Matric number and invoice number are required" }, 400);
   }
 
+  if (!(await isVotingOpen(env))) return votingClosed();
+
   const voter = await findVoter(env, matricNumber, invoiceNumber);
   if (!voter) {
     return json({ error: "We could not find a verified dues payment for those details" }, 401);
   }
+  voter.matric = normalizeValue(voter.matricNumber);
+  if (await hasVoted(env, voter.matric)) return alreadyVoted();
 
   const voterToken = randomToken();
   await env.SESSIONS.put(`voter:${voterToken}`, JSON.stringify(voter), {
@@ -621,7 +757,37 @@ async function otpSend(request, env) {
   const stored = await env.SESSIONS.get(`voter:${voterToken}`);
   if (!stored) return json({ error: "Verification session expired. Please sign in again." }, 401);
 
+  if (!(await isVotingOpen(env))) return votingClosed();
+
   const voter = JSON.parse(stored);
+  const matric = voter.matric || normalizeValue(voter.matricNumber);
+  if (await hasVoted(env, matric)) return alreadyVoted();
+
+  const now = Date.now();
+  const sendRow = await env.DB.prepare("SELECT sends, last_sent_at FROM otp_sends WHERE matric = ?")
+    .bind(matric)
+    .first();
+  if (sendRow && sendRow.sends >= MAX_OTP_SENDS) {
+    return json(
+      {
+        error: `This matric number has already been sent ${MAX_OTP_SENDS} verification codes. Please see the electoral committee for help.`,
+      },
+      429
+    );
+  }
+  if (sendRow && now - sendRow.last_sent_at < OTP_SEND_COOLDOWN_MS) {
+    const wait = Math.ceil((OTP_SEND_COOLDOWN_MS - (now - sendRow.last_sent_at)) / 1000);
+    return json({ error: `Please wait ${wait}s before requesting another code.`, retryAfter: wait }, 429);
+  }
+  // Count the send before contacting the providers so retries can't bypass the cap.
+  await env.DB.prepare(
+    `INSERT INTO otp_sends (matric, sends, last_sent_at) VALUES (?, 1, ?)
+     ON CONFLICT (matric) DO UPDATE SET sends = sends + 1, last_sent_at = excluded.last_sent_at`
+  )
+    .bind(matric, now)
+    .run();
+  const sendsUsed = (sendRow?.sends || 0) + 1;
+
   const code = randomOtp();
 
   await env.SESSIONS.put(
@@ -656,10 +822,12 @@ async function otpSend(request, env) {
     channels: channels.map((result) => result.channel),
     maskedEmail: maskEmail(voter.email),
     maskedPhone: maskPhone(voter.phone),
+    sendsRemaining: Math.max(MAX_OTP_SENDS - sendsUsed, 0),
   });
 }
 
 async function otpVerify(request, env) {
+  if (!(await isVotingOpen(env))) return votingClosed();
   const { voterToken, code } = await readJson(request);
   const stored = await env.SESSIONS.get(`otp:${voterToken}`);
   if (!stored) return json({ error: "Code expired. Please request a new one." }, 401);
@@ -679,8 +847,12 @@ async function otpVerify(request, env) {
   }
 
   const voter = JSON.parse((await env.SESSIONS.get(`voter:${voterToken}`)) || "{}");
+  if (!voter.key) return json({ error: "Verification session expired. Please sign in again." }, 401);
+  const matric = voter.matric || normalizeValue(voter.matricNumber);
+  if (await hasVoted(env, matric)) return alreadyVoted();
+
   const ballotToken = randomToken();
-  await env.SESSIONS.put(`ballot:${ballotToken}`, JSON.stringify({ voterKey: voter.key }), {
+  await env.SESSIONS.put(`ballot:${ballotToken}`, JSON.stringify({ voterKey: voter.key, matric }), {
     expirationTtl: BALLOT_TTL,
   });
   await env.SESSIONS.delete(`otp:${voterToken}`);
@@ -688,35 +860,83 @@ async function otpVerify(request, env) {
   return json({ ballotToken });
 }
 
+/**
+ * Check a submitted ballot against the shared candidate list. Voters may leave
+ * positions blank but must choose at least one; unopposed positions take the
+ * candidate's id (Yes) or NO_VOTE_ID (No). Returns an error message or "".
+ */
+function validateBallot(votes) {
+  if (!Array.isArray(votes) || votes.length === 0) {
+    return "Choose at least one candidate before submitting.";
+  }
+  if (votes.length > POSITION_IDS.size) return "Too many votes on this ballot.";
+
+  const seen = new Set();
+  for (const vote of votes) {
+    const positionId = String(vote?.positionId || "");
+    const candidateId = String(vote?.candidateId || "");
+    if (!POSITION_IDS.has(positionId)) return "Your ballot contains an unknown position.";
+    if (seen.has(positionId)) return "Your ballot has more than one vote for a position.";
+    seen.add(positionId);
+
+    const candidates = CANDIDATES_BY_POSITION.get(positionId) || new Set();
+    const unopposed = candidates.size === 1;
+    const valid = candidates.has(candidateId) || (unopposed && candidateId === NO_VOTE_ID);
+    if (!valid) return "Your ballot contains an unknown candidate.";
+  }
+  return "";
+}
+
 async function castVote(request, env, ctx) {
+  if (!(await isVotingOpen(env))) return votingClosed();
+
   const { ballotToken, votes } = await readJson(request);
   const stored = await env.SESSIONS.get(`ballot:${ballotToken}`);
   if (!stored) return json({ error: "Your ballot session expired. Please sign in again." }, 401);
-  if (!Array.isArray(votes) || votes.length === 0) {
-    return json({ error: "No votes submitted" }, 400);
-  }
 
-  const { voterKey } = JSON.parse(stored);
+  const problem = validateBallot(votes);
+  if (problem) return json({ error: problem }, 400);
+
+  const { voterKey, matric: storedMatric } = JSON.parse(stored);
+  const matric = storedMatric || String(voterKey).split(":")[0];
   const createdAt = new Date().toISOString();
-  const statements = votes.flatMap((vote) => [
-    env.DB.prepare(
-      "INSERT INTO votes (voter_key, position_id, candidate_id, created_at) VALUES (?, ?, ?, ?)"
-    ).bind(voterKey, vote.positionId, vote.candidateId, createdAt),
-    env.DB.prepare(
-      `INSERT INTO tallies (position_id, candidate_id, votes) VALUES (?, ?, 1)
-       ON CONFLICT (position_id, candidate_id) DO UPDATE SET votes = votes + 1`
-    ).bind(vote.positionId, vote.candidateId),
-  ]);
+
+  // The ballots row goes first: its primary key makes a second ballot from the
+  // same matric fail, and D1 rolls the whole batch back with it.
+  const statements = [
+    env.DB.prepare("INSERT INTO ballots (matric, voter_key, submitted_at) VALUES (?, ?, ?)").bind(
+      matric,
+      voterKey,
+      createdAt
+    ),
+    ...votes.flatMap((vote) => [
+      env.DB.prepare(
+        "INSERT INTO votes (voter_key, position_id, candidate_id, created_at) VALUES (?, ?, ?, ?)"
+      ).bind(voterKey, vote.positionId, vote.candidateId, createdAt),
+      env.DB.prepare(
+        `INSERT INTO tallies (position_id, candidate_id, votes) VALUES (?, ?, 1)
+         ON CONFLICT (position_id, candidate_id) DO UPDATE SET votes = votes + 1`
+      ).bind(vote.positionId, vote.candidateId),
+    ]),
+  ];
 
   try {
     await env.DB.batch(statements);
   } catch {
-    return json({ error: "A vote has already been recorded for this voter" }, 409);
+    await env.SESSIONS.delete(`ballot:${ballotToken}`);
+    return alreadyVoted();
   }
 
   await env.SESSIONS.delete(`ballot:${ballotToken}`);
-  // Drop the cached results so the next dashboard poll reflects this vote.
-  if (ctx) ctx.waitUntil(caches.default.delete(cacheKeyFor(request, "results")));
+  // Drop the cached results/stats so the next dashboard poll reflects this ballot.
+  if (ctx) {
+    ctx.waitUntil(
+      Promise.all([
+        caches.default.delete(cacheKeyFor(request, "results")),
+        caches.default.delete(cacheKeyFor(request, "stats")),
+      ])
+    );
+  }
   return json({ recorded: true });
 }
 
@@ -726,9 +946,12 @@ async function getStats(request, env, ctx) {
   const cached = await cache.match(key);
   if (cached) return cached;
 
-  const registeredVoters = await countVoters(env);
-  const response = json({ registeredVoters });
-  response.headers.set("Cache-Control", "public, max-age=300");
+  const [registeredVoters, ballotsRow] = await Promise.all([
+    countVoters(env),
+    env.DB.prepare("SELECT COUNT(*) AS n FROM ballots").first(),
+  ]);
+  const response = json({ registeredVoters, ballotsCast: ballotsRow?.n || 0 });
+  response.headers.set("Cache-Control", "public, max-age=15");
   if (ctx) ctx.waitUntil(cache.put(key, response.clone()));
   return response;
 }
@@ -1017,7 +1240,7 @@ async function mailerLogin(request, env) {
   await env.SESSIONS.delete(attemptKey);
 
   const token = randomToken();
-  await env.SESSIONS.put(`admin:${token}`, "1", { expirationTtl: ADMIN_SESSION_TTL });
+  await env.SESSIONS.put(`admin:${token}`, ROLE_MAILER, { expirationTtl: ADMIN_SESSION_TTL });
   return json({ token, expiresIn: ADMIN_SESSION_TTL });
 }
 
@@ -1062,7 +1285,7 @@ async function fetchCampaignRecipients(env) {
 }
 
 async function mailRecipients(request, env) {
-  if (!(await isAdmin(request, env))) {
+  if (!(await hasRole(request, env, MAIL_ROLES))) {
     return json({ error: "Unauthorized" }, 401);
   }
   try {
@@ -1074,7 +1297,7 @@ async function mailRecipients(request, env) {
 }
 
 async function mailListCampaigns(request, env) {
-  if (!(await isAdmin(request, env))) {
+  if (!(await hasRole(request, env, MAIL_ROLES))) {
     return json({ error: "Unauthorized" }, 401);
   }
   const { results } = await env.DB.prepare(
@@ -1103,7 +1326,7 @@ function parsePdfDataUrl(value) {
 
 /** Store an uploaded PDF in KV and return a reference the campaign can use. */
 async function mailUploadAttachment(request, env) {
-  if (!(await isAdmin(request, env))) {
+  if (!(await hasRole(request, env, MAIL_ROLES))) {
     return json({ error: "Unauthorized" }, 401);
   }
   const body = await readJson(request);
@@ -1144,7 +1367,7 @@ async function resolveAttachments(env, list) {
 
 /** Store an inline image for rich emails in D1 and return a public URL. */
 async function mailImageUpload(request, env) {
-  if (!(await isAdmin(request, env))) {
+  if (!(await hasRole(request, env, MAIL_ROLES))) {
     return json({ error: "Unauthorized" }, 401);
   }
   const body = await readJson(request);
@@ -1209,7 +1432,7 @@ function sanitizeEmailHtml(html) {
 }
 
 async function mailCreateCampaign(request, env) {
-  if (!(await isAdmin(request, env))) {
+  if (!(await hasRole(request, env, MAIL_ROLES))) {
     return json({ error: "Unauthorized" }, 401);
   }
 
@@ -1267,7 +1490,7 @@ async function mailCreateCampaign(request, env) {
 
 /** Send a single preview email (does not create a campaign). */
 async function mailTestEmail(request, env) {
-  if (!(await isAdmin(request, env))) {
+  if (!(await hasRole(request, env, MAIL_ROLES))) {
     return json({ error: "Unauthorized" }, 401);
   }
   const body = await readJson(request);

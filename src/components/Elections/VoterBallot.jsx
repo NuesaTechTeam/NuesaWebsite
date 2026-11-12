@@ -5,6 +5,8 @@ import {
   ArrowRight,
   CheckCircle2,
   KeyRound,
+  ThumbsDown,
+  ThumbsUp,
   Loader2,
   Mail,
   Phone,
@@ -18,7 +20,12 @@ import {
   otpVerify,
   voterVerify,
 } from "../../lib/electionsApi";
-import { ELECTED_POSITIONS, getCandidatesByPosition } from "../../lib/electionData";
+import {
+  ELECTED_POSITIONS,
+  NO_VOTE_ID,
+  getCandidatesByPosition,
+  isUnopposed,
+} from "../../lib/electionData";
 
 const STEPS = ["Sign in", "Verify code", "Vote"];
 
@@ -50,6 +57,64 @@ const Field = ({ id, label, hint, icon, ...props }) => {
   );
 };
 
+const ChoiceButton = ({ selected, onClick, icon, label, tone = "green" }) => {
+  const Icon = icon;
+  const selectedClass =
+    tone === "red"
+      ? "border-red-500 bg-red-50 dark:bg-red-900/30"
+      : "border-green bg-green-50 dark:bg-green-900/30";
+  const iconClass = tone === "red" ? "bg-red-500 text-white" : "bg-green text-white";
+
+  return (
+    <button
+      type='button'
+      onClick={onClick}
+      aria-pressed={selected}
+      className={`flex items-center gap-3 rounded-xl border p-3 text-left transition-colors ${
+        selected
+          ? selectedClass
+          : "border-gray-200 dark:border-gray-800 hover:border-green-300 dark:hover:border-green-700"
+      }`}
+    >
+      <span
+        className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
+          selected ? iconClass : "bg-gray-100 dark:bg-gray-800 text-gray-400"
+        }`}
+      >
+        <Icon className='h-4 w-4' />
+      </span>
+      <span className='min-w-0 truncate text-sm font-semibold text-gray-900 dark:text-white'>
+        {label}
+      </span>
+    </button>
+  );
+};
+
+/** Unopposed position: a Yes or No vote on the single candidate. */
+const UnopposedChoice = ({ candidate, value, onChoose }) => (
+  <div>
+    <p className='mb-3 text-sm text-gray-600 dark:text-gray-300'>
+      <span className='font-semibold text-gray-900 dark:text-white'>{candidate.name}</span> is
+      unopposed. Do you want them in this position?
+    </p>
+    <div className='grid grid-cols-2 gap-3'>
+      <ChoiceButton
+        selected={value === candidate.id}
+        onClick={() => onChoose(candidate.id)}
+        icon={ThumbsUp}
+        label='Yes'
+      />
+      <ChoiceButton
+        selected={value === NO_VOTE_ID}
+        onClick={() => onChoose(NO_VOTE_ID)}
+        icon={ThumbsDown}
+        label='No'
+        tone='red'
+      />
+    </div>
+  </div>
+);
+
 const VoterBallot = () => {
   const configured = isElectionsApiConfigured();
   const [step, setStep] = useState(0);
@@ -63,6 +128,7 @@ const VoterBallot = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [confirming, setConfirming] = useState(false);
 
   const run = async (fn) => {
     setLoading(true);
@@ -102,6 +168,17 @@ const VoterBallot = () => {
     });
   };
 
+  // Tapping the current choice again clears it, so a position can be left blank.
+  const choose = (positionId, value) => {
+    setConfirming(false);
+    setSelections((prev) => {
+      const next = { ...prev };
+      if (next[positionId] === value) delete next[positionId];
+      else next[positionId] = value;
+      return next;
+    });
+  };
+
   const handleSubmit = () => {
     const votes = ELECTED_POSITIONS.filter((position) => selections[position.id]).map(
       (position) => ({ positionId: position.id, candidateId: selections[position.id] })
@@ -109,12 +186,13 @@ const VoterBallot = () => {
     run(async () => {
       await castVote(ballotToken, votes);
       setSubmitted(true);
+      setConfirming(false);
       setStep(3);
     });
   };
 
   const selectedCount = ELECTED_POSITIONS.filter((position) => selections[position.id]).length;
-  const allSelected = selectedCount === ELECTED_POSITIONS.length;
+  const blankPositions = ELECTED_POSITIONS.filter((position) => !selections[position.id]);
 
   if (!configured) {
     return (
@@ -237,6 +315,12 @@ const VoterBallot = () => {
                       <Phone className='h-3.5 w-3.5' /> {contacts.maskedPhone}
                     </span>
                   )}
+                  {typeof contacts.sendsRemaining === "number" && (
+                    <span>
+                      {contacts.sendsRemaining} more code
+                      {contacts.sendsRemaining === 1 ? "" : "s"} can be sent to this matric number.
+                    </span>
+                  )}
                 </div>
               )}
               <input
@@ -268,7 +352,7 @@ const VoterBallot = () => {
               <button
                 type='button'
                 onClick={handleResend}
-                disabled={loading}
+                disabled={loading || contacts?.sendsRemaining === 0}
                 className='w-full text-center text-sm font-medium text-green dark:text-green-400 hover:underline'
               >
                 Resend code
@@ -284,6 +368,10 @@ const VoterBallot = () => {
                   {selectedCount}/{ELECTED_POSITIONS.length} selected
                 </span>
               </div>
+              <p className='-mt-3 text-sm text-gray-600 dark:text-gray-300'>
+                Vote for as many positions as you like. Leave a position blank to
+                skip it, or tap your choice again to clear it.
+              </p>
 
               <div className='space-y-6'>
                 {ELECTED_POSITIONS.map((position) => (
@@ -294,56 +382,74 @@ const VoterBallot = () => {
                       </span>
                       {position.title}
                     </h3>
-                    <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
-                      {getCandidatesByPosition(position.id).map((candidate) => {
-                        const selected = selections[position.id] === candidate.id;
-                        return (
-                          <button
+                    {isUnopposed(position.id) ? (
+                      <UnopposedChoice
+                        candidate={getCandidatesByPosition(position.id)[0]}
+                        value={selections[position.id]}
+                        onChoose={(value) => choose(position.id, value)}
+                      />
+                    ) : (
+                      <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
+                        {getCandidatesByPosition(position.id).map((candidate) => (
+                          <ChoiceButton
                             key={candidate.id}
-                            type='button'
-                            onClick={() =>
-                              setSelections((prev) => ({ ...prev, [position.id]: candidate.id }))
-                            }
-                            className={`flex items-center gap-3 rounded-xl border p-3 text-left transition-colors ${
-                              selected
-                                ? "border-green bg-green-50 dark:bg-green-900/30"
-                                : "border-gray-200 dark:border-gray-800 hover:border-green-300 dark:hover:border-green-700"
-                            }`}
-                          >
-                            <span
-                              className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full ${
-                                selected
-                                  ? "bg-green text-white"
-                                  : "bg-gray-100 dark:bg-gray-800 text-gray-400"
-                              }`}
-                            >
-                              <User className='h-4 w-4' />
-                            </span>
-                            <span className='min-w-0'>
-                              <span className='block truncate text-sm font-semibold text-gray-900 dark:text-white'>
-                                {candidate.name}
-                              </span>
-                              <span className='block truncate text-xs text-gray-500 dark:text-gray-400'>
-                                {candidate.manifesto}
-                              </span>
-                            </span>
-                          </button>
-                        );
-                      })}
-                    </div>
+                            selected={selections[position.id] === candidate.id}
+                            onClick={() => choose(position.id, candidate.id)}
+                            icon={User}
+                            label={candidate.name}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
 
-              <button
-                type='button'
-                onClick={handleSubmit}
-                disabled={loading || !allSelected}
-                className='inline-flex w-full items-center justify-center gap-2 rounded-lg bg-green px-6 py-3 font-semibold text-white transition-colors hover:bg-green-dark disabled:cursor-not-allowed disabled:opacity-70'
-              >
-                {loading ? <Loader2 className='h-4 w-4 animate-spin' /> : <CheckCircle2 className='h-4 w-4' />}
-                Submit vote{allSelected ? "" : ` (${selectedCount}/${ELECTED_POSITIONS.length})`}
-              </button>
+              {confirming ? (
+                <div className='rounded-xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-900/40 dark:bg-amber-900/20'>
+                  <p className='text-sm font-semibold text-amber-900 dark:text-amber-200'>
+                    Submit your ballot? It cannot be changed afterwards.
+                  </p>
+                  {blankPositions.length > 0 && (
+                    <p className='mt-1 text-sm text-amber-800 dark:text-amber-300'>
+                      You are leaving {blankPositions.length} position
+                      {blankPositions.length === 1 ? "" : "s"} blank:{" "}
+                      {blankPositions.map((position) => position.title).join(", ")}.
+                    </p>
+                  )}
+                  <div className='mt-4 flex flex-col gap-3 sm:flex-row'>
+                    <button
+                      type='button'
+                      onClick={() => setConfirming(false)}
+                      disabled={loading}
+                      className='inline-flex flex-1 items-center justify-center gap-2 rounded-lg border border-gray-300 bg-white px-6 py-3 font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200 dark:hover:bg-gray-800'
+                    >
+                      <ArrowLeft className='h-4 w-4' /> Go back
+                    </button>
+                    <button
+                      type='button'
+                      onClick={handleSubmit}
+                      disabled={loading}
+                      className='inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-green px-6 py-3 font-semibold text-white transition-colors hover:bg-green-dark disabled:cursor-not-allowed disabled:opacity-70'
+                    >
+                      {loading ? <Loader2 className='h-4 w-4 animate-spin' /> : <CheckCircle2 className='h-4 w-4' />}
+                      Yes, submit my vote
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  type='button'
+                  onClick={() => setConfirming(true)}
+                  disabled={loading || selectedCount === 0}
+                  className='inline-flex w-full items-center justify-center gap-2 rounded-lg bg-green px-6 py-3 font-semibold text-white transition-colors hover:bg-green-dark disabled:cursor-not-allowed disabled:opacity-70'
+                >
+                  <CheckCircle2 className='h-4 w-4' />
+                  {selectedCount === 0
+                    ? "Choose at least one candidate"
+                    : `Review and submit (${selectedCount}/${ELECTED_POSITIONS.length})`}
+                </button>
+              )}
             </div>
           )}
 

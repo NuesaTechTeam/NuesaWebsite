@@ -3,7 +3,13 @@ import { motion } from "framer-motion";
 import { Eye, EyeOff, Lock, ShieldCheck, User } from "lucide-react";
 import { adminLogin, isElectionsApiConfigured } from "../../lib/electionsApi";
 
-const AdminLogin = ({ onSuccess }) => {
+const AdminLogin = ({
+  onSuccess,
+  title = "Elections Admin",
+  subtitle = "Restricted access. For authorised NUESA technical team members only.",
+  login = adminLogin,
+  idPrefix = "admin",
+}) => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -21,7 +27,7 @@ const AdminLogin = ({ onSuccess }) => {
           "The elections API is not configured. Admin sign-in is unavailable."
         );
       }
-      await adminLogin(username, password);
+      await login(username, password);
       onSuccess();
     } catch (err) {
       setError(err.message || "Invalid username or password. Access denied.");
@@ -44,17 +50,17 @@ const AdminLogin = ({ onSuccess }) => {
             <ShieldCheck className='h-7 w-7' />
           </div>
           <h1 className='text-2xl font-bold text-gray-900 dark:text-white'>
-            Elections Admin
+            {title}
           </h1>
           <p className='mt-2 text-sm text-gray-600 dark:text-gray-400'>
-            Restricted access. For authorised NUESA technical team members only.
+            {subtitle}
           </p>
         </div>
 
         <div className='space-y-5'>
           <div>
             <label
-              htmlFor='admin-username'
+              htmlFor={`${idPrefix}-username`}
               className='mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-200'
             >
               Username
@@ -62,7 +68,7 @@ const AdminLogin = ({ onSuccess }) => {
             <div className='relative'>
               <User className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
               <input
-                id='admin-username'
+                id={`${idPrefix}-username`}
                 type='text'
                 autoComplete='username'
                 value={username}
@@ -75,7 +81,7 @@ const AdminLogin = ({ onSuccess }) => {
 
           <div>
             <label
-              htmlFor='admin-password'
+              htmlFor={`${idPrefix}-password`}
               className='mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-200'
             >
               Password
@@ -83,7 +89,7 @@ const AdminLogin = ({ onSuccess }) => {
             <div className='relative'>
               <Lock className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
               <input
-                id='admin-password'
+                id={`${idPrefix}-password`}
                 type={showPassword ? "text" : "password"}
                 autoComplete='current-password'
                 value={password}

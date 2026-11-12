@@ -7,6 +7,7 @@ const API_URL = (
   import.meta.env.VITE_ELECTIONS_API_URL || "https://elections-api.nuesaabuad.ng"
 ).replace(/\/+$/, "");
 const TOKEN_KEY = "nuesa-elections-token";
+const AGENT_TOKEN_KEY = "nuesa-elections-agent-token";
 
 export const isElectionsApiConfigured = () => Boolean(API_URL);
 
@@ -46,9 +47,36 @@ export const setAdminToken = (token) => {
   }
 };
 
-/** Confirms the stored admin token is still valid on the server. */
-export const checkAdminSession = () =>
-  request("/admin/session", { token: getAdminToken() });
+export const getAgentToken = () => {
+  try {
+    return sessionStorage.getItem(AGENT_TOKEN_KEY) || "";
+  } catch {
+    return "";
+  }
+};
+
+export const setAgentToken = (token) => {
+  try {
+    if (token) sessionStorage.setItem(AGENT_TOKEN_KEY, token);
+    else sessionStorage.removeItem(AGENT_TOKEN_KEY);
+  } catch {
+    // ignore storage access errors
+  }
+};
+
+/** Confirms the stored token is valid and belongs to an elections admin. */
+export const checkAdminSession = async () => {
+  const data = await request("/admin/session", { token: getAdminToken() });
+  if (data.role !== "admin") throw new Error("Not an elections admin session");
+  return data;
+};
+
+/** Confirms the stored agent token is still valid. */
+export const checkAgentSession = async () => {
+  const data = await request("/admin/session", { token: getAgentToken() });
+  if (data.role !== "agent") throw new Error("Not an agent session");
+  return data;
+};
 
 export const adminLogin = async (username, password) => {
   const data = await request("/admin/login", {
@@ -56,6 +84,16 @@ export const adminLogin = async (username, password) => {
     body: { username, password },
   });
   setAdminToken(data.token);
+  return data;
+};
+
+/** Candidates' agents: live results only. */
+export const agentLogin = async (username, password) => {
+  const data = await request("/agent/login", {
+    method: "POST",
+    body: { username, password },
+  });
+  setAgentToken(data.token);
   return data;
 };
 
@@ -74,9 +112,19 @@ export const otpVerify = (voterToken, code) =>
 export const castVote = (ballotToken, votes) =>
   request("/vote", { method: "POST", body: { ballotToken, votes } });
 
-export const getResults = () => request("/results", { token: getAdminToken() });
+export const getResults = (token = getAdminToken()) => request("/results", { token });
 
-export const getStats = () => request("/stats", { token: getAdminToken() });
+export const getStats = (token = getAdminToken()) => request("/stats", { token });
+
+/** Public: whether the voter portal is open. */
+export const getElectionStatus = () => request("/election/status");
+
+/** Admin: open or close voting. */
+export const setElectionStatus = (open) =>
+  request("/admin/election/status", { method: "POST", body: { open }, token: getAdminToken() });
+
+/** Admin: remaining Brevo email credits. */
+export const getBrevoCredits = () => request("/admin/brevo", { token: getAdminToken() });
 
 export const getCandidates = () => request("/candidates");
 
