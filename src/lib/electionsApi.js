@@ -78,29 +78,29 @@ export const checkAgentSession = async () => {
   return data;
 };
 
-export const adminLogin = async (username, password) => {
+export const adminLogin = async (username, password, turnstile = {}) => {
   const data = await request("/admin/login", {
     method: "POST",
-    body: { username, password },
+    body: { username, password, ...turnstile },
   });
   setAdminToken(data.token);
   return data;
 };
 
 /** Candidates' agents: live results only. */
-export const agentLogin = async (username, password) => {
+export const agentLogin = async (username, password, turnstile = {}) => {
   const data = await request("/agent/login", {
     method: "POST",
-    body: { username, password },
+    body: { username, password, ...turnstile },
   });
   setAgentToken(data.token);
   return data;
 };
 
-export const voterVerify = (matricNumber, invoiceNumber) =>
+export const voterVerify = (matricNumber, invoiceNumber, turnstile = {}) =>
   request("/voter/verify", {
     method: "POST",
-    body: { matricNumber, invoiceNumber },
+    body: { matricNumber, invoiceNumber, ...turnstile },
   });
 
 export const otpSend = (voterToken) =>

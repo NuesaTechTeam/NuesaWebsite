@@ -455,6 +455,7 @@ const ElectionsDashboard = ({ onLogout }) => {
     results,
     registeredVoters,
     ballotsCast,
+    stormUntil,
     loading: resultsLoading,
     error: resultsError,
     lastUpdated,
@@ -547,6 +548,21 @@ const ElectionsDashboard = ({ onLogout }) => {
             "Showing placeholder candidates and sample tallies. Connect the elections API to show live results."
           )}
         </motion.div>
+
+        {/* site-wide failed-code alarm (set by the server's guard layer) */}
+        {stormUntil > Date.now() && (
+          <div
+            role='alert'
+            className='mt-4 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900/50 dark:bg-red-900/30 dark:text-red-300'
+          >
+            <p className='font-bold'>Possible attack: unusually many wrong verification codes</p>
+            <p className='mt-1'>
+              The server has cut each code to 3 guesses until{" "}
+              {new Date(stormUntil).toLocaleTimeString()}. Check the Workers Logs for
+              &quot;code_fail&quot; and &quot;storm&quot; events. Close voting if it looks targeted.
+            </p>
+          </div>
+        )}
 
         {/* stats */}
         <div className='mt-6'>

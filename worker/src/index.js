@@ -41,6 +41,7 @@
  *   DB (D1)         - votes table (see README for schema)
  *   ADMIN_USERNAME, ADMIN_PASSWORD
  *   AGENT_USERNAME, AGENT_PASSWORD        - candidates' agents (live results only)
+ *   TURNSTILE_SECRET      - Cloudflare Turnstile secret; unset = check switched off
  *   MAILER_USERNAME, MAILER_PASSWORD      - Mass Mailer login
  *   MAILER_SHEET_CSV_URL                  - published Google Sheet CSV (recipients)
  *   VOTER_SHEET_CSV_URL   - published Google Sheet CSV
@@ -78,6 +79,14 @@ const CANDIDATES_BY_POSITION = BALLOT.candidates.reduce((map, candidate) => {
 }, new Map());
 const NO_VOTE_ID = "no";
 
+// Site-wide failed-code alarm: more than STORM_THRESHOLD wrong codes across all
+// matrics in one 10-minute bucket puts the API in "storm" mode for STORM_MS,
+// during which each code allows only STORM_OTP_ATTEMPTS guesses.
+const STORM_BUCKET_MS = 10 * 60 * 1000;
+const STORM_THRESHOLD = 50;
+const STORM_MS = 30 * 60 * 1000;
+const STORM_OTP_ATTEMPTS = 3;
+
 // Mass Mailer: hard cap on emails sent per Cron tick. Keeps each invocation
 // well under the Workers subrequest limit (each email is one fetch to Brevo).
 const MAIL_MAX_PER_TICK = 30;
@@ -112,6 +121,19 @@ export default {
 
     const url = new URL(request.url);
     const route = `${request.method} ${url.pathname}`;
+
+    // Guard layer first. Fail-open: if the guard itself errors, the request
+    // carries on and the error is logged.
+    try {
+      const blocked = await runGuard(request, env, url);
+      if (blocked) {
+        for (const [key, value] of Object.entries(cors)) blocked.headers.set(key, value);
+        return blocked;
+      }
+    } catch (guardError) {
+      logEvent(request, "guard_error", { action: "allowed", detail: String(guardError).slice(0, 200) });
+    }
+    maybeCleanup(env, ctx);
 
     try {
       const routeRoles = ROUTE_ROLES.get(route);
@@ -575,6 +597,294 @@ async function adminDiagnostics(request, env) {
   });
 }
 
+/* ------------------------------------------------------------- security log */
+
+/**
+ * One structured line per security-relevant event. With Workers Logs enabled
+ * (wrangler.toml [observability]) these are kept and searchable in the
+ * Cloudflare dashboard; nothing here touches D1 or KV, so logging can't be used
+ * to burn the free daily write allowance.
+ */
+function logEvent(request, kind, fields = {}) {
+  const cf = request?.cf || {};
+  const url = request ? new URL(request.url) : null;
+  console.log(
+    JSON.stringify({
+      evt: "security",
+      kind,
+      time: new Date().toISOString(),
+      ip: request?.headers.get("CF-Connecting-IP") || "",
+      country: cf.country || "",
+      asn: cf.asn || "",
+      network: String(cf.asOrganization || "").slice(0, 80),
+      ua: String(request?.headers.get("User-Agent") || "").slice(0, 200),
+      method: request?.method || "",
+      path: url ? `${url.pathname}${url.search}`.slice(0, 300) : "",
+      ...fields,
+    })
+  );
+}
+
+/* ------------------------------------------------------- tokens in D1 (hashed) */
+
+async function sha256Hex(value) {
+  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(String(value)));
+  return [...new Uint8Array(digest)].map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+/**
+ * Voter and ballot tokens live in D1 (strongly consistent, 100k writes/day on
+ * the free plan) instead of KV (1,000 writes/day). Only a hash of each token is
+ * stored, so someone reading the database can't reuse a live token.
+ */
+async function putToken(env, kind, token, payload, ttlSeconds) {
+  await env.DB.prepare(
+    "INSERT INTO auth_tokens (token_hash, kind, payload, expires_at) VALUES (?, ?, ?, ?)"
+  )
+    .bind(await sha256Hex(token), kind, JSON.stringify(payload), Date.now() + ttlSeconds * 1000)
+    .run();
+}
+
+async function getToken(env, kind, token) {
+  if (!token || typeof token !== "string") return null;
+  const row = await env.DB.prepare(
+    "SELECT payload FROM auth_tokens WHERE token_hash = ? AND kind = ? AND expires_at > ?"
+  )
+    .bind(await sha256Hex(token), kind, Date.now())
+    .first();
+  return row ? JSON.parse(row.payload) : null;
+}
+
+/** Occasionally sweep expired rows so the security tables stay small. */
+function maybeCleanup(env, ctx) {
+  if (!ctx || Math.random() > 0.02) return;
+  const now = Date.now();
+  ctx.waitUntil(
+    env.DB.batch([
+      env.DB.prepare("DELETE FROM auth_tokens WHERE expires_at < ?").bind(now),
+      env.DB.prepare("DELETE FROM otp_codes WHERE expires_at < ?").bind(now),
+      env.DB.prepare("DELETE FROM login_attempts WHERE expires_at < ?").bind(now),
+      env.DB.prepare("DELETE FROM guard_strikes WHERE expires_at < ?").bind(now),
+      env.DB.prepare("DELETE FROM guard_bans WHERE until < ?").bind(now),
+    ]).catch(() => {})
+  );
+}
+
+/* ---------------------------------------------------------------- turnstile */
+
+const TURNSTILE_VERIFY_URL = "https://challenges.cloudflare.com/turnstile/v0/siteverify";
+
+/**
+ * Checks a Turnstile pass with Cloudflare. Fail-open by design: if Cloudflare's
+ * checker can't be reached (network error, timeout, 5xx, internal-error) the
+ * request continues and an event is logged; a pass Cloudflare rejects is
+ * refused. With no TURNSTILE_SECRET configured the check is switched off.
+ * A client that couldn't load the widget sends turnstileUnavailable; that is
+ * only honoured when the server also can't reach Cloudflare.
+ */
+async function checkTurnstile(request, env, body) {
+  if (!env.TURNSTILE_SECRET) return { ok: true };
+
+  const token = typeof body?.turnstileToken === "string" ? body.turnstileToken : "";
+  const verify = async (response) => {
+    const form = new FormData();
+    form.append("secret", env.TURNSTILE_SECRET);
+    form.append("response", response);
+    const ip = request.headers.get("CF-Connecting-IP");
+    if (ip) form.append("remoteip", ip);
+    // TURNSTILE_VERIFY_URL can be overridden only to test the fail-open path locally.
+    const res = await fetch(env.TURNSTILE_VERIFY_URL || TURNSTILE_VERIFY_URL, {
+      method: "POST",
+      body: form,
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) return { unavailable: true, status: res.status };
+    const data = await res.json().catch(() => null);
+    if (!data) return { unavailable: true };
+    const codes = data["error-codes"] || [];
+    if (!data.success && codes.includes("internal-error")) return { unavailable: true };
+    return { success: Boolean(data.success), codes };
+  };
+
+  let result;
+  try {
+    result = await verify(token || "missing-token");
+  } catch {
+    result = { unavailable: true };
+  }
+
+  if (result.unavailable) {
+    logEvent(request, "turnstile_unavailable", { action: "allowed" });
+    return { ok: true };
+  }
+  if (result.success) return { ok: true };
+
+  logEvent(request, "turnstile_fail", {
+    action: "refused",
+    reason: token ? (result.codes || []).join(",") : body?.turnstileUnavailable ? "widget_unavailable" : "missing",
+  });
+  return {
+    ok: false,
+    response: json(
+      {
+        error: token
+          ? "The security check expired or failed. Please try again."
+          : "The security check didn't load. Please refresh the page and try again.",
+      },
+      403
+    ),
+  };
+}
+
+/* -------------------------------------------------------------- guard layer */
+
+// Scoring adapted from Con Security. Checked against the URL decoded twice,
+// because attackers double-encode to slip past filters.
+const GUARD_SIGNALS = [
+  {
+    kind: "scan",
+    points: 100,
+    attack: true,
+    test: (u) =>
+      /(\/\.env|\/\.git|\/\.svn|\/\.aws|\/\.ssh|id_rsa|wp-login|wp-admin|wp-content|xmlrpc\.php|phpmyadmin|adminer|cgi-bin|vendor\/phpunit|shell\.php|\.php(\?|$)|backup\.(zip|tar|gz)|\.sql(\?|$)|\.bak(\?|$)|\.old(\?|$)|config\.(bak|old|php))/i.test(
+        u.path
+      ),
+  },
+  {
+    kind: "tool_ua",
+    points: 100,
+    attack: true,
+    test: (u) =>
+      /(sqlmap|nikto|nmap|masscan|nuclei|wpscan|gobuster|ffuf|hydra|acunetix|dirbuster|feroxbuster|zgrab|nessus|openvas|w3af|arachni|skipfish|burpcollaborator)/i.test(
+        u.ua
+      ),
+  },
+  {
+    kind: "sqli",
+    points: 60,
+    attack: true,
+    test: (u) =>
+      /(union[\s+]+(all[\s+]+)?select|information_schema|sleep\(\s*\d|benchmark\(|'\s*or\s*'?1'?\s*=\s*'?1|\bor\s+1\s*=\s*1\b|load_file\(|into\s+outfile)/i.test(
+        u.target
+      ),
+  },
+  {
+    kind: "xss",
+    points: 60,
+    attack: true,
+    test: (u) => /(<script|javascript:|onerror\s*=|onload\s*=|<iframe|document\.cookie|alert\()/i.test(u.target),
+  },
+  {
+    kind: "traversal",
+    points: 60,
+    attack: true,
+    test: (u) => /(\.\.\/|\.\.\\|\/etc\/passwd|\/proc\/self|php:\/\/|data:\/\/|file:\/\/)/i.test(u.target),
+  },
+  {
+    kind: "cmdi",
+    points: 60,
+    attack: true,
+    test: (u) => /(\$\{jndi:|;\s*(cat|ls|id|wget|curl)\s|\|\s*(bash|sh)\b|`[^`]+`)/i.test(u.target),
+  },
+  { kind: "no_ua", points: 60, attack: false, test: (u) => !u.ua },
+  {
+    kind: "scripted",
+    points: 40,
+    attack: false,
+    test: (u) =>
+      /(curl\/|wget\/|python-requests|python-urllib|go-http-client|scrapy|axios\/|headlesschrome|okhttp|libwww|httpclient|node-fetch)/i.test(
+        u.ua
+      ),
+  },
+];
+
+function safeDecode(value) {
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+}
+
+/**
+ * Runs before every route. Bans are keyed by IP + user agent, so a ban on one
+ * attacking device never locks out other students sharing the same campus
+ * Wi-Fi address. Failed codes and wrong passwords never lead to a ban.
+ * Returns a Response to send instead of the route, or null to continue.
+ */
+async function runGuard(request, env, url) {
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  const ua = request.headers.get("User-Agent") || "";
+  const banKey = `${ip}|${(await sha256Hex(ua)).slice(0, 16)}`;
+  const now = Date.now();
+  const reference = randomToken(4);
+
+  const ban = await env.DB.prepare("SELECT until, reason FROM guard_bans WHERE ip_ua = ? AND until > ?")
+    .bind(banKey, now)
+    .first();
+  if (ban) {
+    logEvent(request, "ban", { action: "blocked", reason: ban.reason, reference });
+    return json(
+      { error: "Access from this device is temporarily blocked.", reference },
+      403,
+      { "Retry-After": String(Math.ceil((ban.until - now) / 1000)) }
+    );
+  }
+
+  const raw = `${url.pathname}${url.search}`;
+  const target = safeDecode(safeDecode(raw));
+  const probe = { path: url.pathname, target, ua };
+  const hits = GUARD_SIGNALS.filter((signal) => signal.test(probe));
+  if (hits.length === 0) return null;
+
+  const score = hits.reduce((sum, signal) => sum + signal.points, 0);
+  const attack = hits.some((signal) => signal.attack);
+  const kinds = hits.map((signal) => signal.kind).join(",");
+
+  if (!attack) {
+    logEvent(request, kinds, { action: "log", score, reference });
+    return null;
+  }
+
+  // Strikes turn into timed bans (never shortened if a longer one exists).
+  const day = Math.floor(now / 86400000);
+  const bucket = Math.floor(now / 600000);
+  const isScan = hits.some((signal) => signal.kind === "scan");
+  const isTool = hits.some((signal) => signal.kind === "tool_ua");
+  const bump = (key, ttlMs) =>
+    env.DB.prepare(
+      `INSERT INTO guard_strikes (key, count, expires_at) VALUES (?, 1, ?)
+       ON CONFLICT (key) DO UPDATE SET count = count + 1 RETURNING count`
+    )
+      .bind(key, now + ttlMs)
+      .first();
+
+  const attackRow = await bump(`attack:${banKey}:${day}`, 86400000);
+  const scanRow = isScan ? await bump(`scan:${banKey}:${bucket}`, 600000) : null;
+  const attacks = attackRow?.count || 1;
+
+  let banMs = 0;
+  let reason = "";
+  if (isTool) [banMs, reason] = [86400000, "attack tool"];
+  if (scanRow && scanRow.count >= 3) [banMs, reason] = [86400000, "scanner"];
+  if (attacks >= 6) [banMs, reason] = [86400000, "repeated attacks"];
+  else if (attacks >= 3 && banMs === 0) [banMs, reason] = [3600000, "attacks"];
+
+  if (banMs) {
+    await env.DB.prepare(
+      `INSERT INTO guard_bans (ip_ua, until, reason, created_at) VALUES (?, ?, ?, ?)
+       ON CONFLICT (ip_ua) DO UPDATE SET until = MAX(until, excluded.until), reason = excluded.reason`
+    )
+      .bind(banKey, now + banMs, reason, now)
+      .run();
+    logEvent(request, kinds, { action: "ban", score, reason, banHours: banMs / 3600000, reference });
+  } else {
+    logEvent(request, kinds, { action: "blocked", score, strikes: attacks, reference });
+  }
+
+  return json({ error: "Request blocked.", reference }, 403);
+}
+
 /* --------------------------------------------------------------- handlers */
 
 /** The role stored for the request's Bearer token ("admin", "mailer", "agent"), or "". */
@@ -620,16 +930,47 @@ function safeEqual(a, b) {
  * Shared username/password login. Failed attempts are rate-limited per IP and
  * role; a success stores a session token whose KV value is the role.
  */
+/**
+ * Failed-login counters live in D1 (not KV), so a flood of wrong passwords
+ * can't use up KV's 1,000 writes/day on the free plan.
+ */
+async function loginAttempts(env, key) {
+  const row = await env.DB.prepare("SELECT count FROM login_attempts WHERE key = ? AND expires_at > ?")
+    .bind(key, Date.now())
+    .first();
+  return row?.count || 0;
+}
+
+async function bumpLoginAttempts(env, key) {
+  const now = Date.now();
+  await env.DB.prepare(
+    `INSERT INTO login_attempts (key, count, expires_at) VALUES (?, 1, ?)
+     ON CONFLICT (key) DO UPDATE SET
+       count = CASE WHEN expires_at > ? THEN count + 1 ELSE 1 END,
+       expires_at = CASE WHEN expires_at > ? THEN expires_at ELSE excluded.expires_at END`
+  )
+    .bind(key, now + 600000, now, now)
+    .run();
+}
+
+async function clearLoginAttempts(env, key) {
+  await env.DB.prepare("DELETE FROM login_attempts WHERE key = ?").bind(key).run();
+}
+
 async function roleLogin(request, env, { role, username: expectedUser, password: expectedPass }) {
   const ip = request.headers.get("CF-Connecting-IP") || "unknown";
-  const attemptKey = role === ROLE_ADMIN ? `login-attempts:${ip}` : `login-attempts:${role}:${ip}`;
-  const attempts = Number(await env.SESSIONS.get(attemptKey)) || 0;
+  const attemptKey = `${role}:${ip}`;
 
-  if (attempts >= MAX_LOGIN_ATTEMPTS) {
+  if ((await loginAttempts(env, attemptKey)) >= MAX_LOGIN_ATTEMPTS) {
+    logEvent(request, "login_locked", { role, action: "refused" });
     return json({ error: "Too many login attempts. Please try again later." }, 429);
   }
 
-  const { username, password } = await readJson(request);
+  const body = await readJson(request);
+  const turnstile = await checkTurnstile(request, env, body);
+  if (!turnstile.ok) return turnstile.response;
+
+  const { username, password } = body;
 
   if (!expectedUser || !expectedPass) {
     return json({ error: "Login is not configured" }, 500);
@@ -638,15 +979,17 @@ async function roleLogin(request, env, { role, username: expectedUser, password:
   const validUser = safeEqual(String(username || "").trim(), expectedUser);
   const validPass = safeEqual(password, expectedPass);
   if (!validUser || !validPass) {
-    await env.SESSIONS.put(attemptKey, String(attempts + 1), { expirationTtl: 600 });
+    await bumpLoginAttempts(env, attemptKey);
+    logEvent(request, "login_fail", { role, action: "refused" });
     return json({ error: "Invalid username or password" }, 401);
   }
 
   // Successful login clears the attempt counter.
-  await env.SESSIONS.delete(attemptKey);
+  await clearLoginAttempts(env, attemptKey);
 
   const token = randomToken();
   await env.SESSIONS.put(`admin:${token}`, role, { expirationTtl: ADMIN_SESSION_TTL });
+  logEvent(request, "login_ok", { role, action: "allowed" });
   return json({ token, role, expiresIn: ADMIN_SESSION_TTL });
 }
 
@@ -684,7 +1027,47 @@ async function setVotingOpen(request, env) {
   )
     .bind(open ? "1" : "0")
     .run();
+  logEvent(request, open ? "voting_opened" : "voting_closed", { action: "admin" });
   return json({ votingOpen: open });
+}
+
+/** Milliseconds-since-epoch until which "storm" mode lasts (0 when off). */
+async function stormUntil(env) {
+  const row = await env.DB.prepare("SELECT value FROM election_settings WHERE key = 'storm_until'").first();
+  return Number(row?.value) || 0;
+}
+
+async function stormActive(env) {
+  return (await stormUntil(env)) > Date.now();
+}
+
+/**
+ * Counts wrong codes across ALL matrics in 10-minute buckets. Crossing the
+ * threshold switches on storm mode (fewer guesses per code) and logs it.
+ */
+async function recordCodeFailure(request, env) {
+  const now = Date.now();
+  const bucket = Math.floor(now / STORM_BUCKET_MS);
+  const row = await env.DB.prepare(
+    `INSERT INTO code_fail_buckets (bucket, count) VALUES (?, 1)
+     ON CONFLICT (bucket) DO UPDATE SET count = count + 1 RETURNING count`
+  )
+    .bind(bucket)
+    .first();
+  if ((row?.count || 0) > STORM_THRESHOLD && !(await stormActive(env))) {
+    await env.DB.prepare(
+      `INSERT INTO election_settings (key, value) VALUES ('storm_until', ?)
+       ON CONFLICT (key) DO UPDATE SET value = excluded.value`
+    )
+      .bind(String(now + STORM_MS))
+      .run();
+    logEvent(request, "storm", {
+      action: "storm_on",
+      failedCodes: row.count,
+      minutes: STORM_MS / 60000,
+      guessesPerCode: STORM_OTP_ATTEMPTS,
+    });
+  }
 }
 
 const votingClosed = () =>
@@ -724,24 +1107,30 @@ async function brevoCredits(env) {
 }
 
 async function voterVerify(request, env) {
-  const { matricNumber, invoiceNumber } = await readJson(request);
+  const body = await readJson(request);
+  const { matricNumber, invoiceNumber } = body;
   if (!matricNumber || !invoiceNumber) {
     return json({ error: "Matric number and invoice number are required" }, 400);
   }
 
   if (!(await isVotingOpen(env))) return votingClosed();
 
+  const turnstile = await checkTurnstile(request, env, body);
+  if (!turnstile.ok) return turnstile.response;
+
   const voter = await findVoter(env, matricNumber, invoiceNumber);
   if (!voter) {
+    logEvent(request, "voter_not_found", {
+      action: "refused",
+      matric: String(matricNumber).trim().slice(0, 40),
+    });
     return json({ error: "We could not find a verified dues payment for those details" }, 401);
   }
   voter.matric = normalizeValue(voter.matricNumber);
   if (await hasVoted(env, voter.matric)) return alreadyVoted();
 
   const voterToken = randomToken();
-  await env.SESSIONS.put(`voter:${voterToken}`, JSON.stringify(voter), {
-    expirationTtl: OTP_TTL,
-  });
+  await putToken(env, "voter", voterToken, voter, OTP_TTL);
 
   return json({
     voterToken,
@@ -754,12 +1143,11 @@ async function voterVerify(request, env) {
 
 async function otpSend(request, env) {
   const { voterToken } = await readJson(request);
-  const stored = await env.SESSIONS.get(`voter:${voterToken}`);
-  if (!stored) return json({ error: "Verification session expired. Please sign in again." }, 401);
+  const voter = await getToken(env, "voter", voterToken);
+  if (!voter) return json({ error: "Verification session expired. Please sign in again." }, 401);
 
   if (!(await isVotingOpen(env))) return votingClosed();
 
-  const voter = JSON.parse(stored);
   const matric = voter.matric || normalizeValue(voter.matricNumber);
   if (await hasVoted(env, matric)) return alreadyVoted();
 
@@ -790,11 +1178,15 @@ async function otpSend(request, env) {
 
   const code = randomOtp();
 
-  await env.SESSIONS.put(
-    `otp:${voterToken}`,
-    JSON.stringify({ code, attempts: 0 }),
-    { expirationTtl: OTP_TTL }
-  );
+  // Stored as a hash of (voter token + code): someone reading the database has
+  // neither the voter token nor the code, so they can't recover or replay it.
+  await env.DB.prepare(
+    `INSERT INTO otp_codes (voter_token_hash, code_hash, attempts, expires_at) VALUES (?, ?, 0, ?)
+     ON CONFLICT (voter_token_hash) DO UPDATE SET
+       code_hash = excluded.code_hash, attempts = 0, expires_at = excluded.expires_at`
+  )
+    .bind(await sha256Hex(voterToken), await sha256Hex(`${voterToken}:${code}`), Date.now() + OTP_TTL * 1000)
+    .run();
 
   const [emailResult, smsResult] = await Promise.all([
     sendEmail(env, voter.email, code),
@@ -829,33 +1221,49 @@ async function otpSend(request, env) {
 async function otpVerify(request, env) {
   if (!(await isVotingOpen(env))) return votingClosed();
   const { voterToken, code } = await readJson(request);
-  const stored = await env.SESSIONS.get(`otp:${voterToken}`);
-  if (!stored) return json({ error: "Code expired. Please request a new one." }, 401);
+  if (typeof voterToken !== "string" || !voterToken) {
+    return json({ error: "Verification session expired. Please sign in again." }, 401);
+  }
+  const tokenHash = await sha256Hex(voterToken);
+  const now = Date.now();
+  const limit = (await stormActive(env)) ? STORM_OTP_ATTEMPTS : MAX_OTP_ATTEMPTS;
 
-  const record = JSON.parse(stored);
-  if (record.attempts >= MAX_OTP_ATTEMPTS) {
-    await env.SESSIONS.delete(`otp:${voterToken}`);
+  // Each guess must first claim one of the allowed attempts in a single atomic
+  // step. A burst of simultaneous guesses can't get more than `limit` checks.
+  const claim = await env.DB.prepare(
+    `UPDATE otp_codes SET attempts = attempts + 1
+     WHERE voter_token_hash = ? AND attempts < ? AND expires_at > ?
+     RETURNING code_hash, attempts`
+  )
+    .bind(tokenHash, limit, now)
+    .first();
+
+  if (!claim) {
+    const existing = await env.DB.prepare(
+      "SELECT attempts FROM otp_codes WHERE voter_token_hash = ? AND expires_at > ?"
+    )
+      .bind(tokenHash, now)
+      .first();
+    if (!existing) return json({ error: "Code expired. Please request a new one." }, 401);
     return json({ error: "Too many attempts. Please request a new code." }, 429);
   }
 
-  if (String(code).trim() !== record.code) {
-    record.attempts += 1;
-    await env.SESSIONS.put(`otp:${voterToken}`, JSON.stringify(record), {
-      expirationTtl: OTP_TTL,
-    });
+  const voter = await getToken(env, "voter", voterToken);
+  if (!voter?.key) return json({ error: "Verification session expired. Please sign in again." }, 401);
+  const matric = voter.matric || normalizeValue(voter.matricNumber);
+
+  const guessHash = await sha256Hex(`${voterToken}:${String(code ?? "").trim()}`);
+  if (!safeEqual(guessHash, claim.code_hash)) {
+    logEvent(request, "code_fail", { action: "refused", matric, attempt: claim.attempts, limit });
+    await recordCodeFailure(request, env);
     return json({ error: "Incorrect code" }, 401);
   }
 
-  const voter = JSON.parse((await env.SESSIONS.get(`voter:${voterToken}`)) || "{}");
-  if (!voter.key) return json({ error: "Verification session expired. Please sign in again." }, 401);
-  const matric = voter.matric || normalizeValue(voter.matricNumber);
   if (await hasVoted(env, matric)) return alreadyVoted();
 
   const ballotToken = randomToken();
-  await env.SESSIONS.put(`ballot:${ballotToken}`, JSON.stringify({ voterKey: voter.key, matric }), {
-    expirationTtl: BALLOT_TTL,
-  });
-  await env.SESSIONS.delete(`otp:${voterToken}`);
+  await putToken(env, "ballot", ballotToken, { voterKey: voter.key, matric }, BALLOT_TTL);
+  await env.DB.prepare("DELETE FROM otp_codes WHERE voter_token_hash = ?").bind(tokenHash).run();
 
   return json({ ballotToken });
 }
@@ -891,13 +1299,14 @@ async function castVote(request, env, ctx) {
   if (!(await isVotingOpen(env))) return votingClosed();
 
   const { ballotToken, votes } = await readJson(request);
-  const stored = await env.SESSIONS.get(`ballot:${ballotToken}`);
+  const stored = await getToken(env, "ballot", ballotToken);
   if (!stored) return json({ error: "Your ballot session expired. Please sign in again." }, 401);
 
   const problem = validateBallot(votes);
   if (problem) return json({ error: problem }, 400);
 
-  const { voterKey, matric: storedMatric } = JSON.parse(stored);
+  const ballotTokenHash = await sha256Hex(ballotToken);
+  const { voterKey, matric: storedMatric } = stored;
   const matric = storedMatric || String(voterKey).split(":")[0];
   const createdAt = new Date().toISOString();
 
@@ -918,16 +1327,21 @@ async function castVote(request, env, ctx) {
          ON CONFLICT (position_id, candidate_id) DO UPDATE SET votes = votes + 1`
       ).bind(vote.positionId, vote.candidateId),
     ]),
+    env.DB.prepare(
+      `INSERT INTO election_settings (key, value) VALUES ('ballots_cast', '1')
+       ON CONFLICT (key) DO UPDATE SET value = CAST(CAST(value AS INTEGER) + 1 AS TEXT)`
+    ),
+    env.DB.prepare("DELETE FROM auth_tokens WHERE token_hash = ?").bind(ballotTokenHash),
   ];
 
   try {
     await env.DB.batch(statements);
   } catch {
-    await env.SESSIONS.delete(`ballot:${ballotToken}`);
+    await env.DB.prepare("DELETE FROM auth_tokens WHERE token_hash = ?").bind(ballotTokenHash).run();
     return alreadyVoted();
   }
 
-  await env.SESSIONS.delete(`ballot:${ballotToken}`);
+  logEvent(request, "vote_recorded", { action: "recorded", matric, positions: votes.length });
   // Drop the cached results/stats so the next dashboard poll reflects this ballot.
   if (ctx) {
     ctx.waitUntil(
@@ -946,11 +1360,18 @@ async function getStats(request, env, ctx) {
   const cached = await cache.match(key);
   if (cached) return cached;
 
-  const [registeredVoters, ballotsRow] = await Promise.all([
+  // Ballots cast comes from a running counter kept in the vote's own batch, so
+  // dashboards refreshing every 15 s don't recount every ballot (free D1 reads).
+  const [registeredVoters, countRow, storm] = await Promise.all([
     countVoters(env),
-    env.DB.prepare("SELECT COUNT(*) AS n FROM ballots").first(),
+    env.DB.prepare("SELECT value FROM election_settings WHERE key = 'ballots_cast'").first(),
+    stormUntil(env),
   ]);
-  const response = json({ registeredVoters, ballotsCast: ballotsRow?.n || 0 });
+  const response = json({
+    registeredVoters,
+    ballotsCast: Number(countRow?.value) || 0,
+    stormUntil: storm > Date.now() ? storm : 0,
+  });
   response.headers.set("Cache-Control", "public, max-age=15");
   if (ctx) ctx.waitUntil(cache.put(key, response.clone()));
   return response;
@@ -1217,10 +1638,10 @@ async function blogGetImage(request, env, ctx, id) {
 
 async function mailerLogin(request, env) {
   const ip = request.headers.get("CF-Connecting-IP") || "unknown";
-  const attemptKey = `mailer-attempts:${ip}`;
-  const attempts = Number(await env.SESSIONS.get(attemptKey)) || 0;
+  const attemptKey = `${ROLE_MAILER}:${ip}`;
 
-  if (attempts >= MAX_LOGIN_ATTEMPTS) {
+  if ((await loginAttempts(env, attemptKey)) >= MAX_LOGIN_ATTEMPTS) {
+    logEvent(request, "login_locked", { role: ROLE_MAILER, action: "refused" });
     return json({ error: "Too many login attempts. Please try again later." }, 429);
   }
 
@@ -1233,11 +1654,13 @@ async function mailerLogin(request, env) {
   const validUser = safeEqual(String(username || "").trim(), env.MAILER_USERNAME);
   const validPass = safeEqual(password, env.MAILER_PASSWORD);
   if (!validUser || !validPass) {
-    await env.SESSIONS.put(attemptKey, String(attempts + 1), { expirationTtl: 600 });
+    await bumpLoginAttempts(env, attemptKey);
+    logEvent(request, "login_fail", { role: ROLE_MAILER, action: "refused" });
     return json({ error: "Invalid username or password" }, 401);
   }
 
-  await env.SESSIONS.delete(attemptKey);
+  await clearLoginAttempts(env, attemptKey);
+  logEvent(request, "login_ok", { role: ROLE_MAILER, action: "allowed" });
 
   const token = randomToken();
   await env.SESSIONS.put(`admin:${token}`, ROLE_MAILER, { expirationTtl: ADMIN_SESSION_TTL });

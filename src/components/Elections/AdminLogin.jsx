@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion } from "framer-motion";
 import { Eye, EyeOff, Lock, ShieldCheck, User } from "lucide-react";
 import { adminLogin, isElectionsApiConfigured } from "../../lib/electionsApi";
+import TurnstileWidget, { turnstileFields, turnstileReady } from "./TurnstileWidget";
 
 const AdminLogin = ({
   onSuccess,
@@ -15,6 +16,8 @@ const AdminLogin = ({
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [turnstile, setTurnstile] = useState(null);
+  const turnstileRef = useRef(null);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -27,10 +30,11 @@ const AdminLogin = ({
           "The elections API is not configured. Admin sign-in is unavailable."
         );
       }
-      await login(username, password);
+      await login(username, password, turnstileFields(turnstile));
       onSuccess();
     } catch (err) {
       setError(err.message || "Invalid username or password. Access denied.");
+      turnstileRef.current?.reset();
     } finally {
       setIsSubmitting(false);
     }
@@ -112,6 +116,8 @@ const AdminLogin = ({
             </div>
           </div>
 
+          <TurnstileWidget ref={turnstileRef} onChange={setTurnstile} />
+
           {error && (
             <p
               role='alert'
@@ -123,7 +129,7 @@ const AdminLogin = ({
 
           <button
             type='submit'
-            disabled={isSubmitting}
+            disabled={isSubmitting || !turnstileReady(turnstile)}
             className='w-full rounded-lg bg-green px-6 py-3 font-semibold text-white transition-colors duration-200 hover:bg-green-dark active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-70'
           >
             {isSubmitting ? "Signing in…" : "Sign in"}

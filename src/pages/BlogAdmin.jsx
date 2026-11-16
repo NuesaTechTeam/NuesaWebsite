@@ -14,6 +14,7 @@ import {
   Lock,
 } from "lucide-react";
 import useSEO from "../hooks/useSEO";
+import TurnstileWidget, { turnstileFields, turnstileReady } from "../components/Elections/TurnstileWidget";
 import { sanitizeHtml } from "../lib/sanitizeHtml";
 import {
   adminLogin,
@@ -46,6 +47,8 @@ const formatDate = (iso) => {
 };
 
 const LoginPanel = ({ onSuccess }) => {
+  const [turnstile, setTurnstile] = React.useState(null);
+  const turnstileRef = React.useRef(null);
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [error, setError] = React.useState("");
@@ -59,10 +62,11 @@ const LoginPanel = ({ onSuccess }) => {
       if (!isElectionsApiConfigured()) {
         throw new Error("The API is not configured. Sign-in is unavailable.");
       }
-      await adminLogin(username, password);
+      await adminLogin(username, password, turnstileFields(turnstile));
       onSuccess();
     } catch (err) {
       setError(err.message || "Invalid username or password.");
+      turnstileRef.current?.reset();
     } finally {
       setBusy(false);
     }
@@ -123,6 +127,8 @@ const LoginPanel = ({ onSuccess }) => {
             </div>
           </div>
 
+          <TurnstileWidget ref={turnstileRef} onChange={setTurnstile} />
+
           {error && (
             <p
               role='alert'
@@ -134,7 +140,7 @@ const LoginPanel = ({ onSuccess }) => {
 
           <button
             type='submit'
-            disabled={busy}
+            disabled={busy || !turnstileReady(turnstile)}
             className='w-full rounded-lg bg-green px-6 py-3 font-semibold text-white transition-colors hover:bg-green-dark disabled:cursor-not-allowed disabled:opacity-70'
           >
             {busy ? "Signing in…" : "Sign in"}

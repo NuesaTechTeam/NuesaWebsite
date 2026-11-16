@@ -31,3 +31,10 @@ id = "3e9b8dbda2814efdb09c7c3641c97dd9"
 binding = "DB"
 database_name = "nuesa-elections"
 database_id = "d235931f-634b-4203-92d2-0f0fe743638b"
+
+# Workers Logs: keeps every request and the structured "security" events
+# (see logEvent in src/index.js) for 3 days on the free plan, searchable in the
+# Cloudflare dashboard under Workers > nuesa-elections > Logs.
+[observability]
+enabled = true
+head_sampling_rate = 1

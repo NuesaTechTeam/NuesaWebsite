@@ -86,6 +86,7 @@ export const useElectionResults = ({ getToken, refreshMs = REFRESH_MS } = {}) =>
     votesByPosition,
     registeredVoters: stats?.registeredVoters ?? null,
     ballotsCast: stats?.ballotsCast ?? null,
+    stormUntil: stats?.stormUntil || 0,
     loading,
     error,
     lastUpdated,

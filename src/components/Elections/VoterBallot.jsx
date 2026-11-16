@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -26,6 +26,7 @@ import {
   getCandidatesByPosition,
   isUnopposed,
 } from "../../lib/electionData";
+import TurnstileWidget, { turnstileFields, turnstileReady } from "./TurnstileWidget";
 
 const STEPS = ["Sign in", "Verify code", "Vote"];
 
@@ -129,6 +130,8 @@ const VoterBallot = () => {
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [confirming, setConfirming] = useState(false);
+  const [turnstile, setTurnstile] = useState(null);
+  const turnstileRef = useRef(null);
 
   const run = async (fn) => {
     setLoading(true);
@@ -145,12 +148,17 @@ const VoterBallot = () => {
   const handleVerify = (event) => {
     event.preventDefault();
     run(async () => {
-      const data = await voterVerify(matricNumber, invoiceNumber);
-      setVoterToken(data.voterToken);
-      setContacts(data);
-      const sent = await otpSend(data.voterToken);
-      setContacts((prev) => ({ ...prev, ...sent }));
-      setStep(1);
+      try {
+        const data = await voterVerify(matricNumber, invoiceNumber, turnstileFields(turnstile));
+        setVoterToken(data.voterToken);
+        setContacts(data);
+        const sent = await otpSend(data.voterToken);
+        setContacts((prev) => ({ ...prev, ...sent }));
+        setStep(1);
+      } finally {
+        // Each Turnstile pass works once; fetch a fresh one for the next try.
+        turnstileRef.current?.reset();
+      }
     });
   };
 
@@ -283,9 +291,10 @@ const VoterBallot = () => {
                 placeholder='Your dues invoice number'
                 required
               />
+              <TurnstileWidget ref={turnstileRef} onChange={setTurnstile} />
               <button
                 type='submit'
-                disabled={loading}
+                disabled={loading || !turnstileReady(turnstile)}
                 className='inline-flex w-full items-center justify-center gap-2 rounded-lg bg-green px-6 py-3 font-semibold text-white transition-colors hover:bg-green-dark disabled:cursor-not-allowed disabled:opacity-70'
               >
                 {loading ? <Loader2 className='h-4 w-4 animate-spin' /> : <ArrowRight className='h-4 w-4' />}
