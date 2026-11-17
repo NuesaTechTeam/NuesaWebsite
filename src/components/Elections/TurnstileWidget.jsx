@@ -4,7 +4,7 @@ import { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
 // Site keys are public by design (they ship in every page that uses them).
 // Leave TURNSTILE_SITE_KEY empty to hide the widget (the server check is off
 // until its TURNSTILE_SECRET is set too).
-const TURNSTILE_SITE_KEY = "";
+const TURNSTILE_SITE_KEY = "0x4AAAAAAGFzKFXwIWtxWkpl";
 const TEST_SITE_KEY = "1x00000000000000000000AA";
 const SCRIPT_SRC = "https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit";
 const LOAD_TIMEOUT_MS = 8000;
