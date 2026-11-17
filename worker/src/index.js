@@ -86,6 +86,14 @@ const STORM_BUCKET_MS = 10 * 60 * 1000;
 const STORM_THRESHOLD = 50;
 const STORM_MS = 30 * 60 * 1000;
 const STORM_OTP_ATTEMPTS = 3;
+// …or more than STORM_HOURLY_THRESHOLD in the last hour (slow, steady guessing).
+const STORM_HOUR_BUCKETS = 6;
+const STORM_HOURLY_THRESHOLD = 150;
+// Invoice guessing: alert when one matric gets this many wrong invoices in 10
+// minutes; switch storm mode on when wrong sign-ins site-wide pass the threshold.
+const SIGNIN_GUESS_ALERT = 10;
+const SIGNIN_STORM_THRESHOLD = 150; // approximate (edge-cache counts can undercount bursts)
+const BLOG_SUBMISSIONS_PER_HOUR = 3;
 
 // Mass Mailer: hard cap on emails sent per Cron tick. Keeps each invocation
 // well under the Workers subrequest limit (each email is one fetch to Brevo).
@@ -115,23 +123,24 @@ export default {
     const origin = request.headers.get("Origin") || "";
     const cors = corsHeaders(origin, env);
 
-    if (request.method === "OPTIONS") {
-      return new Response(null, { status: 204, headers: cors });
-    }
-
     const url = new URL(request.url);
     const route = `${request.method} ${url.pathname}`;
 
-    // Guard layer first. Fail-open: if the guard itself errors, the request
+    // Guard layer first (CORS preflights included, so probes sent as OPTIONS
+    // are seen too). Fail-open: if the guard itself errors, the request
     // carries on and the error is logged.
     try {
-      const blocked = await runGuard(request, env, url);
+      const blocked = await runGuard(request, env, url, ctx);
       if (blocked) {
         for (const [key, value] of Object.entries(cors)) blocked.headers.set(key, value);
         return blocked;
       }
     } catch (guardError) {
       logEvent(request, "guard_error", { action: "allowed", detail: String(guardError).slice(0, 200) });
+    }
+
+    if (request.method === "OPTIONS") {
+      return new Response(null, { status: 204, headers: cors });
     }
     maybeCleanup(env, ctx);
 
@@ -272,7 +281,10 @@ export default {
       }
       return finalResponse;
     } catch (error) {
-      return json({ error: error.message || "Server error" }, 500, cors);
+      if (error instanceof ClientError) return json({ error: error.message }, error.status, cors);
+      // Internal details go to the log only, never to the client.
+      logEvent(request, "server_error", { action: "error", detail: String(error?.message || error).slice(0, 300) });
+      return json({ error: "Something went wrong. Please try again." }, 500, cors);
     }
   },
 
@@ -310,12 +322,25 @@ function corsHeaders(origin, env) {
   };
 }
 
-async function readJson(request) {
-  try {
-    return await request.json();
-  } catch {
-    throw new Error("Invalid JSON body");
+/** An error whose message is safe to show the client, with its HTTP status. */
+class ClientError extends Error {
+  constructor(message, status = 400) {
+    super(message);
+    this.status = status;
   }
+}
+
+async function readJson(request) {
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    throw new ClientError("Invalid request body");
+  }
+  if (!body || typeof body !== "object" || Array.isArray(body)) {
+    throw new ClientError("Invalid request body");
+  }
+  return body;
 }
 
 function randomToken(bytes = 32) {
@@ -397,18 +422,36 @@ function parseCsv(text) {
   return rows;
 }
 
+/**
+ * The voter sheet CSV. Read live (cached 60 s by Cloudflare) as before; each
+ * good read is also kept as a "last good copy" in the edge cache, and if
+ * Google can't be reached the copy is used so sign-ins keep working. The copy
+ * is never served to anyone (its internal path is not a route).
+ */
+async function fetchVoterSheet(env, request) {
+  if (!env.VOTER_SHEET_CSV_URL) throw new Error("VOTER_SHEET_CSV_URL is not configured");
+  try {
+    const response = await fetch(env.VOTER_SHEET_CSV_URL, { cf: { cacheTtl: 60 } });
+    if (response.ok) {
+      const text = await response.text();
+      if (request && text.length > 0) await edgePut(request, "voter-sheet-copy", text, 43200);
+      return text;
+    }
+    logEvent(request, "voter_sheet_error", { action: "fallback", status: response.status });
+  } catch (error) {
+    logEvent(request, "voter_sheet_error", { action: "fallback", detail: String(error).slice(0, 120) });
+  }
+  const copy = request ? await edgeGet(request, "voter-sheet-copy") : null;
+  if (copy) {
+    logEvent(request, "voter_sheet_stale", { action: "used_last_good_copy" });
+    return copy;
+  }
+  throw new ClientError("We couldn't check the voter list right now. Please try again in a minute.", 503);
+}
+
 /** Look up a voter in the Google Sheet CSV by matric number + invoice number. */
-async function findVoter(env, matricNumber, invoiceNumber) {
-  if (!env.VOTER_SHEET_CSV_URL) {
-    throw new Error("VOTER_SHEET_CSV_URL is not configured");
-  }
-
-  const response = await fetch(env.VOTER_SHEET_CSV_URL, { cf: { cacheTtl: 60 } });
-  if (!response.ok) {
-    throw new Error("Could not read the voters sheet");
-  }
-
-  const rows = parseCsv(await response.text()).filter((row) =>
+async function findVoter(env, matricNumber, invoiceNumber, request) {
+  const rows = parseCsv(await fetchVoterSheet(env, request)).filter((row) =>
     row.some((cell) => String(cell).trim() !== "")
   );
   if (rows.length < 2) return null;
@@ -738,150 +781,301 @@ async function checkTurnstile(request, env, body) {
 
 /* -------------------------------------------------------------- guard layer */
 
-// Scoring adapted from Con Security. Checked against the URL decoded twice,
-// because attackers double-encode to slip past filters.
-const GUARD_SIGNALS = [
-  {
-    kind: "scan",
-    points: 100,
-    attack: true,
-    test: (u) =>
-      /(\/\.env|\/\.git|\/\.svn|\/\.aws|\/\.ssh|id_rsa|wp-login|wp-admin|wp-content|xmlrpc\.php|phpmyadmin|adminer|cgi-bin|vendor\/phpunit|shell\.php|\.php(\?|$)|backup\.(zip|tar|gz)|\.sql(\?|$)|\.bak(\?|$)|\.old(\?|$)|config\.(bak|old|php))/i.test(
-        u.path
-      ),
-  },
-  {
-    kind: "tool_ua",
-    points: 100,
-    attack: true,
-    test: (u) =>
-      /(sqlmap|nikto|nmap|masscan|nuclei|wpscan|gobuster|ffuf|hydra|acunetix|dirbuster|feroxbuster|zgrab|nessus|openvas|w3af|arachni|skipfish|burpcollaborator)/i.test(
-        u.ua
-      ),
-  },
-  {
-    kind: "sqli",
-    points: 60,
-    attack: true,
-    test: (u) =>
-      /(union[\s+]+(all[\s+]+)?select|information_schema|sleep\(\s*\d|benchmark\(|'\s*or\s*'?1'?\s*=\s*'?1|\bor\s+1\s*=\s*1\b|load_file\(|into\s+outfile)/i.test(
-        u.target
-      ),
-  },
-  {
-    kind: "xss",
-    points: 60,
-    attack: true,
-    test: (u) => /(<script|javascript:|onerror\s*=|onload\s*=|<iframe|document\.cookie|alert\()/i.test(u.target),
-  },
-  {
-    kind: "traversal",
-    points: 60,
-    attack: true,
-    test: (u) => /(\.\.\/|\.\.\\|\/etc\/passwd|\/proc\/self|php:\/\/|data:\/\/|file:\/\/)/i.test(u.target),
-  },
-  {
-    kind: "cmdi",
-    points: 60,
-    attack: true,
-    test: (u) => /(\$\{jndi:|;\s*(cat|ls|id|wget|curl)\s|\|\s*(bash|sh)\b|`[^`]+`)/i.test(u.target),
-  },
-  { kind: "no_ua", points: 60, attack: false, test: (u) => !u.ua },
-  {
-    kind: "scripted",
-    points: 40,
-    attack: false,
-    test: (u) =>
-      /(curl\/|wget\/|python-requests|python-urllib|go-http-client|scrapy|axios\/|headlesschrome|okhttp|libwww|httpclient|node-fetch)/i.test(
-        u.ua
-      ),
-  },
+// Every path this API serves. Anything else is a probe (a scanner looking for
+// files like .env, laravel.log or /server-status), so the list of probe names
+// below is only used to label events, not to decide.
+const KNOWN_ROUTES = [
+  /^\/election\/status$/,
+  /^\/voter\/(verify|otp\/send|otp\/verify)$/,
+  /^\/vote$/,
+  /^\/(results|stats|candidates)$/,
+  /^\/(admin|agent|mailer)\/login$/,
+  /^\/admin\/(session|ballots|brevo|diagnostics|election\/status)$/,
+  /^\/admin\/mail\/(recipients|campaigns|test|attachments|images)$/,
+  /^\/admin\/mail\/campaigns\/[^/]+(\/stop)?$/,
+  /^\/blog\/(posts|submissions)$/,
+  /^\/blog\/submissions\/[^/]+\/status$/,
+  /^\/(blog|mail)\/images\/[^/]+$/,
 ];
 
-function safeDecode(value) {
+const isKnownRoute = (path) => KNOWN_ROUTES.some((re) => re.test(path));
+
+// Named in events so a probe is easy to recognise in the logs.
+const PROBE_NAMES_RE =
+  /(\.env|\.git|\.svn|\.aws|\.ssh|\.DS_Store|\.htaccess|\.htpasswd|id_rsa|wp-|xmlrpc|phpmyadmin|adminer|phpinfo|cgi-bin|phpunit|\.php|\.asp|\.jsp|\.sql|\.bak|\.old|\.orig|\.swp|\.log|\.zip|\.tar|\.gz|composer\.(json|lock)|package(-lock)?\.json|web\.config|server-status|actuator|debug|console|backup|config)/i;
+
+// Built from code points so no invisible character ever sits in this file.
+const charClass = (codes) => new RegExp(`[${codes.map((c) => String.fromCharCode(c)).join("")}]`, "g");
+// Zero-width and soft-hyphen characters vanish inside words ("SEL<zw>ECT" -> "SELECT").
+const INVISIBLE_RE = charClass([0x00, 0xad, 0x200b, 0x200c, 0x200d, 0x2060, 0xfeff]);
+// Every other kind of space becomes a plain space.
+const ODD_SPACE_RE = charClass([0x09, 0x0b, 0x0c, 0xa0, 0x1680, 0x2000, 0x2001, 0x2002, 0x2003, 0x2004, 0x2005, 0x2006, 0x2007, 0x2008, 0x2009, 0x200a, 0x2028, 0x2029, 0x202f, 0x205f, 0x3000]);
+
+const NAMED_ENTITIES = {
+  colon: ":", lt: "<", gt: ">", quot: '"', apos: "'", amp: "&", lpar: "(", rpar: ")", sol: "/",
+  bsol: "\\", semi: ";", grave: "`", tab: " ", newline: "\n", nbsp: " ", period: ".", comma: ",",
+  equals: "=", plus: "+", num: "#", excl: "!", quest: "?", lsqb: "[", rsqb: "]", lcub: "{", rcub: "}",
+};
+
+const safeCodePoint = (n) => {
   try {
-    return decodeURIComponent(value);
+    return String.fromCodePoint(n);
   } catch {
-    return value;
+    return " ";
   }
+};
+
+/** One decoding pass over every layer an attacker can stack. */
+function decodeOnce(text) {
+  let out = text
+    // overlong UTF-8 and IIS-style %u escapes for the characters that matter
+    .replace(/%c0%ae/gi, ".")
+    .replace(/%c0%af/gi, "/")
+    .replace(/%c1%9c/gi, "\\")
+    .replace(/%u([0-9a-f]{4})/gi, (_, hex) => safeCodePoint(parseInt(hex, 16)));
+  try {
+    out = decodeURIComponent(out.replace(/\+/g, " "));
+  } catch {
+    // malformed sequences elsewhere: decode the plain-ASCII ones individually
+    out = out.replace(/%([0-7][0-9a-f])/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
+  }
+  return out
+    .replace(/&#x([0-9a-f]{1,6});?/gi, (_, hex) => safeCodePoint(parseInt(hex, 16)))
+    .replace(/&#(\d{1,7});?/g, (_, dec) => safeCodePoint(Number(dec)))
+    .replace(/&([a-z]+);?/gi, (m, name) => NAMED_ENTITIES[name.toLowerCase()] ?? m)
+    .replace(/\\u\{?([0-9a-f]{4,6})\}?/gi, (_, hex) => safeCodePoint(parseInt(hex, 16)))
+    .replace(/\\x([0-9a-f]{2})/gi, (_, hex) => String.fromCharCode(parseInt(hex, 16)));
 }
 
 /**
- * Runs before every route. Bans are keyed by IP + user agent, so a ban on one
- * attacking device never locks out other students sharing the same campus
- * Wi-Fi address. Failed codes and wrong passwords never lead to a ban.
- * Returns a Response to send instead of the route, or null to continue.
+ * Turn disguised text back into what a parser would actually see (lessons
+ * from attacking Con Security, plus our own fuzzing): fold full-width letters
+ * (NFKC), drop invisible characters, then decode every layer (percent,
+ * entities, escapes, overlong, %u) repeatedly until nothing changes, folding
+ * and dropping again after each pass. Line breaks are kept (as "\n") so
+ * command and header injection can still be recognised.
+ */
+function normalizeForGuard(value) {
+  let text = String(value || "");
+  for (let i = 0; i < 6; i += 1) {
+    let next;
+    try {
+      next = text.normalize("NFKC");
+    } catch {
+      next = text;
+    }
+    next = decodeOnce(next.replace(INVISIBLE_RE, "")).replace(INVISIBLE_RE, "");
+    if (next === text) break;
+    text = next;
+  }
+  return text.replace(ODD_SPACE_RE, " ").replace(/\r\n?/g, "\n");
+}
+
+/** SQL view of the text: MySQL executable comments keep their content, other comments vanish. */
+const sqlView = (text) => text.replace(/\/\*!\d*/g, " ").replace(/\/\*[\s\S]*?\*\//g, "").replace(/\*\//g, " ");
+
+const SQLI_RE = new RegExp(
+  [
+    String.raw`\bunion[\s(]*(all[\s(]+|distinct[\s(]+)?select\b`,
+    String.raw`information_schema`,
+    String.raw`\bsleep\s*\(\s*\d`,
+    String.raw`benchmark\s*\(`,
+    String.raw`'\s*(or|and)\s*'?\w+'?\s*(=|like)\s*'?\w+`,
+    String.raw`\b(and|or)\s+\d+\s*(=|<>|!=|<=|>=|<|>)\s*\d+`,
+    String.raw`load_file\s*\(`,
+    String.raw`into\s+(out|dump)file`,
+    String.raw`;\s*(drop|delete|update|insert|alter|create|truncate)\s`,
+    String.raw`sqlite_(master|schema|version)`,
+    String.raw`randomblob\s*\(`,
+    String.raw`\bpragma\s+\w`,
+    String.raw`@@\w+`,
+    String.raw`\b(version|database|user|current_user)\s*\(\s*\)`,
+    String.raw`waitfor\s+delay`,
+    String.raw`pg_sleep\s*\(`,
+    String.raw`\border\s+by\s+\d+\s*(--|#|$)`,
+    String.raw`'\s*(--|#|;)`,
+    String.raw`\bchar\s*\(\s*\d+\s*(,\s*\d+\s*)+\)`,
+    String.raw`\b0x[0-9a-f]{8,}\b`,
+    String.raw`group_concat\s*\(`,
+    String.raw`(extractvalue|updatexml)\s*\(`,
+    String.raw`\bhaving\s+\d+\s*=`,
+  ].join("|"),
+  "i"
+);
+const XSS_RE = new RegExp(
+  [
+    String.raw`<\s*script`,
+    String.raw`j\s*a\s*v\s*a\s*s\s*c\s*r\s*i\s*p\s*t\s*:`,
+    String.raw`vbscript\s*:`,
+    String.raw`<\s*[a-z][a-z0-9-]*\b[^>]*[\s/]on[a-z]+\s*=`,
+    String.raw`\bon(error|load|mouseover|focus|click|toggle|pointer\w*|animation\w*)\s*=`,
+    String.raw`<\s*(iframe|object|embed|base|meta|link)\b`,
+    String.raw`document\.(cookie|domain|location)`,
+    String.raw`\b(alert|prompt|confirm|eval)\s*\(`,
+    String.raw`\{\{[^}]*\}\}`,
+    String.raw`\bconstructor\s*\.\s*constructor`,
+  ].join("|"),
+  "i"
+);
+const TRAVERSAL_RE = /(\.\.[/\\]|\/etc\/(passwd|shadow|hosts)|\/proc\/self|\b[a-z]:\\(windows|boot|inetpub)|win\.ini|(php|data|file|expect|zip|phar|gopher|dict):\/\/)/i;
+const CMDI_RE = new RegExp(
+  [
+    String.raw`\$\{\s*(jndi|env|sys|lower|upper|java)\s*:`,
+    String.raw`\$\{[^}]*[*+][^}]*\}`,
+    // A command only counts after a real separator; "&" needs a following
+    // space so links like ?a=1&id=2 (e.g. in a Referer) don't match.
+    String.raw`([;\n|]|&&|&\s)\s*(whoami|id|cat|ls|uname|wget|curl|ping|nc|ncat|sleep|bash|sh|zsh|powershell|cmd|python|perl|nslookup)\b`,
+    "`[^`]+`", // command in backticks
+    String.raw`\$\([^)]*\)`,
+    String.raw`\$IFS`,
+    String.raw`\{\s*(cat|ls|id|wget|curl)\s*,`,
+  ].join("|"),
+  "i"
+);
+const OTHER_RE = new RegExp(
+  [
+    String.raw`__proto__`,
+    String.raw`constructor\s*\[\s*prototype`,
+    String.raw`\bprototype\s*\[`,
+    String.raw`169\.254\.169\.254`,
+    String.raw`metadata\.google\.internal`,
+    String.raw`100\.100\.100\.200`,
+    String.raw`\n\s*(set-cookie|location|content-type|content-length|x-[a-z-]+)\s*:`,
+  ].join("|"),
+  "i"
+);
+const TOOL_UA_RE =
+  /(sqlmap|nikto|nmap|masscan|nuclei|wpscan|gobuster|ffuf|hydra|acunetix|dirbuster|feroxbuster|zgrab|nessus|openvas|w3af|arachni|skipfish|burpcollaborator|commix|xsstrike|wfuzz|jaeles|dalfox|zaproxy|netsparker|qualys)/i;
+const SCRIPTED_UA_RE =
+  /(curl\/|wget\/|python-requests|python-urllib|aiohttp|go-http-client|scrapy|axios\/|headlesschrome|phantomjs|okhttp|libwww|httpclient|node-fetch|undici|postmanruntime|insomnia)/i;
+
+/** Which injection kinds appear in a piece of (already normalised) text. */
+function injectionKinds(text) {
+  const flat = text.replace(/\n/g, " ");
+  const kinds = [];
+  if (SQLI_RE.test(sqlView(flat))) kinds.push("sqli");
+  if (XSS_RE.test(flat)) kinds.push("xss");
+  if (TRAVERSAL_RE.test(flat)) kinds.push("traversal");
+  if (CMDI_RE.test(text)) kinds.push("cmdi");
+  if (OTHER_RE.test(text)) kinds.push("other");
+  return kinds;
+}
+
+// Headers never inspected for injection: set by Cloudflare or the browser in
+// fixed formats, or carrying our own random tokens.
+const SKIP_HEADERS = new Set([
+  "authorization", "content-length", "content-type", "host", "user-agent", "accept",
+  "accept-encoding", "accept-language", "connection", "origin", "priority",
+]);
+
+/**
+ * Score one request. Returns [{kind, points, attack, where}]. Checks the path,
+ * the query (each name and value, and all values joined, so an attack split
+ * across parameters is still seen), every header value, and each cookie
+ * (whole pair, name and value).
+ */
+function scoreRequest(request, url) {
+  const hits = [];
+  const add = (kind, points, attack, where) => hits.push({ kind, points, attack, where });
+  const ua = request.headers.get("User-Agent") || "";
+
+  if (!isKnownRoute(url.pathname)) {
+    add(PROBE_NAMES_RE.test(url.pathname) ? "scan" : "unknown_path", 100, true, "path");
+  }
+  if (TOOL_UA_RE.test(normalizeForGuard(ua))) add("tool_ua", 100, true, "user-agent");
+
+  const entries = [...url.searchParams.entries()];
+  const urlTexts = [
+    url.pathname,
+    url.search,
+    ...entries.flatMap(([k, v]) => [k, v]),
+    entries.map(([, v]) => v).join(" "), // attack split across parameters...
+    entries.map(([, v]) => v).join(""), // ...or split mid-word
+  ].map(normalizeForGuard);
+  for (const kind of new Set(urlTexts.flatMap(injectionKinds))) add(kind, 60, true, "url");
+
+  for (const [name, value] of request.headers) {
+    const key = name.toLowerCase();
+    if (SKIP_HEADERS.has(key) || key.startsWith("cf-") || key.startsWith("sec-")) continue;
+    const parts =
+      key === "cookie"
+        ? value.split(";").flatMap((pair) => {
+            const i = pair.indexOf("=");
+            return i === -1 ? [pair] : [pair, pair.slice(0, i), pair.slice(i + 1)];
+          })
+        : [value];
+    const kinds = new Set(parts.map(normalizeForGuard).flatMap(injectionKinds));
+    for (const kind of kinds) add(kind, 60, true, key);
+  }
+
+  if (!ua) add("no_ua", 60, false, "user-agent");
+  else if (SCRIPTED_UA_RE.test(ua)) add("scripted", 40, false, "user-agent");
+  return hits;
+}
+
+/* Edge-cache counters: free and outside D1's daily write allowance, so an
+   attacker can't use the guard (or failed sign-ins) to exhaust it. Counts are
+   per Cloudflare location and approximate, which is fine for alarms. */
+const edgeKey = (request, name) =>
+  new Request(new URL(`/__guard__/${encodeURIComponent(name)}`, request.url), { method: "GET" });
+
+async function edgeGet(request, name) {
+  const hit = await caches.default.match(edgeKey(request, name));
+  return hit ? hit.text() : null;
+}
+
+async function edgePut(request, name, value, ttlSeconds) {
+  await caches.default.put(
+    edgeKey(request, name),
+    new Response(String(value), { headers: { "Cache-Control": `public, max-age=${ttlSeconds}` } })
+  );
+}
+
+async function edgeIncr(request, name, ttlSeconds) {
+  const next = (Number(await edgeGet(request, name)) || 0) + 1;
+  await edgePut(request, name, next, ttlSeconds);
+  return next;
+}
+
+/**
+ * Runs before every route. Attack requests are always blocked and logged.
+ * Only clear attack tools (sqlmap, nikto...) are banned, keyed by IP + that
+ * tool's user agent: an attacker can copy a common phone browser's user agent,
+ * so banning browser-looking requests would lock out innocent students on the
+ * same campus Wi-Fi. Failed codes and wrong passwords never lead to a ban.
+ * Uses no D1 writes. Returns a Response to send instead, or null to continue.
  */
 async function runGuard(request, env, url) {
   const ip = request.headers.get("CF-Connecting-IP") || "unknown";
   const ua = request.headers.get("User-Agent") || "";
-  const banKey = `${ip}|${(await sha256Hex(ua)).slice(0, 16)}`;
-  const now = Date.now();
+  const banName = `ban:${ip}|${(await sha256Hex(ua)).slice(0, 16)}`;
   const reference = randomToken(4);
 
-  const ban = await env.DB.prepare("SELECT until, reason FROM guard_bans WHERE ip_ua = ? AND until > ?")
-    .bind(banKey, now)
-    .first();
+  const ban = await edgeGet(request, banName);
   if (ban) {
-    logEvent(request, "ban", { action: "blocked", reason: ban.reason, reference });
-    return json(
-      { error: "Access from this device is temporarily blocked.", reference },
-      403,
-      { "Retry-After": String(Math.ceil((ban.until - now) / 1000)) }
-    );
+    logEvent(request, "ban", { action: "blocked", reason: ban, reference });
+    return json({ error: "Access from this device is temporarily blocked.", reference }, 403, {
+      "Retry-After": "3600",
+    });
   }
 
-  const raw = `${url.pathname}${url.search}`;
-  const target = safeDecode(safeDecode(raw));
-  const probe = { path: url.pathname, target, ua };
-  const hits = GUARD_SIGNALS.filter((signal) => signal.test(probe));
+  const hits = scoreRequest(request, url);
   if (hits.length === 0) return null;
 
-  const score = hits.reduce((sum, signal) => sum + signal.points, 0);
-  const attack = hits.some((signal) => signal.attack);
-  const kinds = hits.map((signal) => signal.kind).join(",");
+  const score = hits.reduce((sum, hit) => sum + hit.points, 0);
+  const kinds = [...new Set(hits.map((hit) => `${hit.kind}@${hit.where}`))].join(",");
 
-  if (!attack) {
+  if (!hits.some((hit) => hit.attack)) {
     logEvent(request, kinds, { action: "log", score, reference });
     return null;
   }
 
-  // Strikes turn into timed bans (never shortened if a longer one exists).
-  const day = Math.floor(now / 86400000);
-  const bucket = Math.floor(now / 600000);
-  const isScan = hits.some((signal) => signal.kind === "scan");
-  const isTool = hits.some((signal) => signal.kind === "tool_ua");
-  const bump = (key, ttlMs) =>
-    env.DB.prepare(
-      `INSERT INTO guard_strikes (key, count, expires_at) VALUES (?, 1, ?)
-       ON CONFLICT (key) DO UPDATE SET count = count + 1 RETURNING count`
-    )
-      .bind(key, now + ttlMs)
-      .first();
-
-  const attackRow = await bump(`attack:${banKey}:${day}`, 86400000);
-  const scanRow = isScan ? await bump(`scan:${banKey}:${bucket}`, 600000) : null;
-  const attacks = attackRow?.count || 1;
-
-  let banMs = 0;
-  let reason = "";
-  if (isTool) [banMs, reason] = [86400000, "attack tool"];
-  if (scanRow && scanRow.count >= 3) [banMs, reason] = [86400000, "scanner"];
-  if (attacks >= 6) [banMs, reason] = [86400000, "repeated attacks"];
-  else if (attacks >= 3 && banMs === 0) [banMs, reason] = [3600000, "attacks"];
-
-  if (banMs) {
-    await env.DB.prepare(
-      `INSERT INTO guard_bans (ip_ua, until, reason, created_at) VALUES (?, ?, ?, ?)
-       ON CONFLICT (ip_ua) DO UPDATE SET until = MAX(until, excluded.until), reason = excluded.reason`
-    )
-      .bind(banKey, now + banMs, reason, now)
-      .run();
-    logEvent(request, kinds, { action: "ban", score, reason, banHours: banMs / 3600000, reference });
+  if (hits.some((hit) => hit.kind === "tool_ua")) {
+    await edgePut(request, banName, "attack tool", 86400);
+    logEvent(request, kinds, { action: "ban", score, reason: "attack tool", banHours: 24, reference });
   } else {
-    logEvent(request, kinds, { action: "blocked", score, strikes: attacks, reference });
+    logEvent(request, kinds, { action: "blocked", score, reference });
   }
-
   return json({ error: "Request blocked.", reference }, 403);
 }
 
@@ -1048,25 +1242,63 @@ async function stormActive(env) {
 async function recordCodeFailure(request, env) {
   const now = Date.now();
   const bucket = Math.floor(now / STORM_BUCKET_MS);
-  const row = await env.DB.prepare(
+  await env.DB.prepare(
     `INSERT INTO code_fail_buckets (bucket, count) VALUES (?, 1)
-     ON CONFLICT (bucket) DO UPDATE SET count = count + 1 RETURNING count`
+     ON CONFLICT (bucket) DO UPDATE SET count = count + 1`
   )
     .bind(bucket)
-    .first();
-  if ((row?.count || 0) > STORM_THRESHOLD && !(await stormActive(env))) {
-    await env.DB.prepare(
-      `INSERT INTO election_settings (key, value) VALUES ('storm_until', ?)
-       ON CONFLICT (key) DO UPDATE SET value = excluded.value`
-    )
-      .bind(String(now + STORM_MS))
-      .run();
-    logEvent(request, "storm", {
-      action: "storm_on",
-      failedCodes: row.count,
-      minutes: STORM_MS / 60000,
-      guessesPerCode: STORM_OTP_ATTEMPTS,
+    .run();
+
+  // Sliding 10-minute window (this bucket + the unexpired share of the last
+  // one), so a burst split across a boundary still counts, plus a 1-hour
+  // window for a slow, steady drip that stays under the 10-minute line.
+  const { results: recent = [] } = await env.DB.prepare(
+    "SELECT bucket, count FROM code_fail_buckets WHERE bucket > ?"
+  )
+    .bind(bucket - STORM_HOUR_BUCKETS)
+    .all();
+  const countIn = (b) => recent.find((r) => r.bucket === b)?.count || 0;
+  const elapsed = (now % STORM_BUCKET_MS) / STORM_BUCKET_MS;
+  const sliding = countIn(bucket) + countIn(bucket - 1) * (1 - elapsed);
+  const hourly = recent.reduce((sum, r) => sum + r.count, 0);
+  const triggered = sliding > STORM_THRESHOLD || hourly > STORM_HOURLY_THRESHOLD;
+
+  if (triggered) {
+    await triggerStorm(request, env, {
+      reason: "wrong codes",
+      failedCodes10min: Math.round(sliding),
+      failedCodesHour: hourly,
     });
+  }
+}
+
+/** Switch storm mode on (if not already) and log why. One D1 write at most. */
+async function triggerStorm(request, env, why) {
+  if (await stormActive(env)) return;
+  await env.DB.prepare(
+    `INSERT INTO election_settings (key, value) VALUES ('storm_until', ?)
+     ON CONFLICT (key) DO UPDATE SET value = excluded.value`
+  )
+    .bind(String(Date.now() + STORM_MS))
+    .run();
+  logEvent(request, "storm", { action: "storm_on", minutes: STORM_MS / 60000, guessesPerCode: STORM_OTP_ATTEMPTS, ...why });
+}
+
+/**
+ * Wrong matric/invoice sign-ins (invoice guessing). Counted in the edge cache,
+ * not D1, because anyone can send these. Never locks a student out (an
+ * attacker could use a lock to stop someone voting): a matric hammered with
+ * wrong invoices is logged, and a site-wide flood switches on storm mode.
+ */
+async function recordSignInFailure(request, env, matric) {
+  const bucket = Math.floor(Date.now() / STORM_BUCKET_MS);
+  const perMatric = await edgeIncr(request, `signin-fail:${matric}:${bucket}`, 1200);
+  if (perMatric === SIGNIN_GUESS_ALERT) {
+    logEvent(request, "invoice_guessing", { action: "alert", matric, wrongInvoices: perMatric, minutes: 10 });
+  }
+  const siteWide = await edgeIncr(request, `signin-fail:all:${bucket}`, 1200);
+  if (siteWide > SIGNIN_STORM_THRESHOLD) {
+    await triggerStorm(request, env, { reason: "sign-in flood", wrongSignIns10min: siteWide });
   }
 }
 
@@ -1112,18 +1344,20 @@ async function voterVerify(request, env) {
   if (!matricNumber || !invoiceNumber) {
     return json({ error: "Matric number and invoice number are required" }, 400);
   }
+  if (typeof matricNumber !== "string" || typeof invoiceNumber !== "string" || matricNumber.length > 60 || invoiceNumber.length > 60) {
+    return json({ error: "Enter your matric number and invoice number as text." }, 400);
+  }
 
   if (!(await isVotingOpen(env))) return votingClosed();
 
   const turnstile = await checkTurnstile(request, env, body);
   if (!turnstile.ok) return turnstile.response;
 
-  const voter = await findVoter(env, matricNumber, invoiceNumber);
+  const voter = await findVoter(env, matricNumber, invoiceNumber, request);
   if (!voter) {
-    logEvent(request, "voter_not_found", {
-      action: "refused",
-      matric: String(matricNumber).trim().slice(0, 40),
-    });
+    const matric = normalizeValue(matricNumber).slice(0, 40);
+    logEvent(request, "voter_not_found", { action: "refused", matric });
+    await recordSignInFailure(request, env, matric);
     return json({ error: "We could not find a verified dues payment for those details" }, 401);
   }
   voter.matric = normalizeValue(voter.matricNumber);
@@ -1281,8 +1515,12 @@ function validateBallot(votes) {
 
   const seen = new Set();
   for (const vote of votes) {
-    const positionId = String(vote?.positionId || "");
-    const candidateId = String(vote?.candidateId || "");
+    // Exact types only: an array or object that happens to stringify to a
+    // valid id is refused here instead of failing later in the database.
+    if (!vote || typeof vote.positionId !== "string" || typeof vote.candidateId !== "string") {
+      return "Your ballot is not in the expected format.";
+    }
+    const { positionId, candidateId } = vote;
     if (!POSITION_IDS.has(positionId)) return "Your ballot contains an unknown position.";
     if (seen.has(positionId)) return "Your ballot has more than one vote for a position.";
     seen.add(positionId);
@@ -1363,7 +1601,7 @@ async function getStats(request, env, ctx) {
   // Ballots cast comes from a running counter kept in the vote's own batch, so
   // dashboards refreshing every 15 s don't recount every ballot (free D1 reads).
   const [registeredVoters, countRow, storm] = await Promise.all([
-    countVoters(env),
+    countVoters(env, request),
     env.DB.prepare("SELECT value FROM election_settings WHERE key = 'ballots_cast'").first(),
     stormUntil(env),
   ]);
@@ -1377,13 +1615,10 @@ async function getStats(request, env, ctx) {
   return response;
 }
 
-async function countVoters(env) {
+async function countVoters(env, request) {
   if (!env.VOTER_SHEET_CSV_URL) return 0;
 
-  const response = await fetch(env.VOTER_SHEET_CSV_URL, { cf: { cacheTtl: 60 } });
-  if (!response.ok) throw new Error("Could not read the voters sheet");
-
-  const rows = parseCsv(await response.text()).filter((row) =>
+  const rows = parseCsv(await fetchVoterSheet(env, request)).filter((row) =>
     row.some((cell) => String(cell).trim() !== "")
   );
 
@@ -1471,10 +1706,50 @@ function parseImageDataUrl(value) {
   if (typeof value !== "string") return null;
   const match = value.match(/^data:(image\/[a-zA-Z0-9.+-]+);base64,(.+)$/s);
   if (!match) return null;
-  const contentType = match[1].toLowerCase();
+  const contentType = match[1].toLowerCase().replace("image/jpg", "image/jpeg");
   const data = match[2].replace(/\s/g, "");
   if (!data || data.length > MAX_IMAGE_CHARS) return null;
+  // Only real raster images: the declared type must be allowed AND the bytes
+  // must start with that format's signature (no SVG, which can carry scripts).
+  if (!SAFE_IMAGE_TYPES.has(contentType) || imageSignature(data) !== contentType) return null;
   return { contentType, data };
+}
+
+const SAFE_IMAGE_TYPES = new Set(["image/png", "image/jpeg", "image/gif", "image/webp"]);
+
+/** The image type the first bytes of a base64 payload actually are, or "". */
+function imageSignature(base64) {
+  let head;
+  try {
+    head = atob(base64.slice(0, 24));
+  } catch {
+    return "";
+  }
+  const bytes = [...head].map((c) => c.charCodeAt(0));
+  if (bytes[0] === 0x89 && head.slice(1, 4) === "PNG") return "image/png";
+  if (bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff) return "image/jpeg";
+  if (head.startsWith("GIF87a") || head.startsWith("GIF89a")) return "image/gif";
+  if (head.startsWith("RIFF") && head.slice(8, 12) === "WEBP") return "image/webp";
+  return "";
+}
+
+/**
+ * Serve a stored image safely: only allowed raster types (older rows of any
+ * other type are refused), never sniffed, and sandboxed so nothing in it runs.
+ */
+function safeImageResponse(row) {
+  if (!row || !SAFE_IMAGE_TYPES.has(String(row.content_type || "").toLowerCase())) {
+    return json({ error: "Image not found" }, 404);
+  }
+  const binary = Uint8Array.from(atob(row.data), (char) => char.charCodeAt(0));
+  return new Response(binary, {
+    headers: {
+      "content-type": row.content_type,
+      "cache-control": "public, max-age=31536000, immutable",
+      "x-content-type-options": "nosniff",
+      "content-security-policy": "default-src 'none'; sandbox",
+    },
+  });
 }
 
 function imageUrlFor(request, id, hasImage) {
@@ -1482,6 +1757,18 @@ function imageUrlFor(request, id, hasImage) {
 }
 
 async function blogSubmit(request, env) {
+  // Public form: paused while voting is open so it can't eat the free daily
+  // D1 write allowance the election needs, and limited per address.
+  if (await isVotingOpen(env)) {
+    return json({ error: "Blog submissions are paused during the election. Please try again later." }, 503);
+  }
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  const hour = Math.floor(Date.now() / 3600000);
+  if ((await edgeIncr(request, `blog-submit:${ip}:${hour}`, 3600)) > BLOG_SUBMISSIONS_PER_HOUR) {
+    logEvent(request, "blog_flood", { action: "refused" });
+    return json({ error: "Too many submissions from this connection. Please try again later." }, 429);
+  }
+
   const body = await readJson(request);
   const title = cleanField(body.title, 200);
   const author = cleanField(body.author, 120);
@@ -1611,7 +1898,7 @@ async function blogPublicPosts(request, env, ctx) {
 
 async function blogGetImage(request, env, ctx, id) {
   const cache = caches.default;
-  const key = cacheKeyFor(request, `blog-image:${id}`);
+  const key = cacheKeyFor(request, `blog-image-v2:${id}`);
   const cached = await cache.match(key);
   if (cached) return cached;
 
@@ -1621,16 +1908,8 @@ async function blogGetImage(request, env, ctx, id) {
     .bind(id)
     .first();
 
-  if (!row) return json({ error: "Image not found" }, 404);
-
-  const binary = Uint8Array.from(atob(row.data), (char) => char.charCodeAt(0));
-  const response = new Response(binary, {
-    headers: {
-      "content-type": row.content_type || "application/octet-stream",
-      "cache-control": "public, max-age=31536000, immutable",
-    },
-  });
-  if (ctx) ctx.waitUntil(cache.put(key, response.clone()));
+  const response = safeImageResponse(row);
+  if (ctx && response.ok) ctx.waitUntil(cache.put(key, response.clone()));
   return response;
 }
 
@@ -1815,7 +2094,7 @@ async function mailImageUpload(request, env) {
 /** Serve an inline email image (public; email clients fetch it directly). */
 async function mailGetImage(request, env, ctx, id) {
   const cache = caches.default;
-  const key = cacheKeyFor(request, `mail-image:${id}`);
+  const key = cacheKeyFor(request, `mail-image-v2:${id}`);
   const cached = await cache.match(key);
   if (cached) return cached;
 
@@ -1824,16 +2103,8 @@ async function mailGetImage(request, env, ctx, id) {
   )
     .bind(id)
     .first();
-  if (!row) return json({ error: "Image not found" }, 404);
-
-  const binary = Uint8Array.from(atob(row.data), (char) => char.charCodeAt(0));
-  const response = new Response(binary, {
-    headers: {
-      "content-type": row.content_type || "application/octet-stream",
-      "cache-control": "public, max-age=31536000, immutable",
-    },
-  });
-  if (ctx) ctx.waitUntil(cache.put(key, response.clone()));
+  const response = safeImageResponse(row);
+  if (ctx && response.ok) ctx.waitUntil(cache.put(key, response.clone()));
   return response;
 }
 

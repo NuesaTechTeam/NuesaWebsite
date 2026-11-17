@@ -7,7 +7,8 @@
     "dev": "wrangler dev",
     "deploy": "wrangler deploy",
     "db:init": "wrangler d1 execute nuesa-elections --remote --file=./schema.sql",
-    "db:init:local": "wrangler d1 execute nuesa-elections --local --file=./schema.sql"
+    "db:init:local": "wrangler d1 execute nuesa-elections --local --file=./schema.sql",
+    "test:guard": "node tests/guard-selftest.mjs http://127.0.0.1:8787"
   },
   "devDependencies": {
     "wrangler": "^3.90.0"

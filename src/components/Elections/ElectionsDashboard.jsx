@@ -581,11 +581,11 @@ const ElectionsDashboard = ({ onLogout }) => {
             role='alert'
             className='mt-4 rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900/50 dark:bg-red-900/30 dark:text-red-300'
           >
-            <p className='font-bold'>Possible attack: unusually many wrong verification codes</p>
+            <p className='font-bold'>Possible attack: unusually many wrong sign-ins or verification codes</p>
             <p className='mt-1'>
               The server has cut each code to 3 guesses until{" "}
               {new Date(stormUntil).toLocaleTimeString()}. Check the Workers Logs for
-              &quot;code_fail&quot; and &quot;storm&quot; events. Close voting if it looks targeted.
+              &quot;storm&quot;, &quot;code_fail&quot; and &quot;invoice_guessing&quot; events. Close voting if it looks targeted.
             </p>
           </div>
         )}
