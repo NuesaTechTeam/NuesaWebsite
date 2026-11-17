@@ -14,10 +14,10 @@ const Navbar = () => {
 
   // Split links into primary and secondary (for "More" dropdown)
   const primaryLinks = navbarLinks.filter((link) =>
-    ["Home", "About", "Events", "Executives", "Projects", "Academics", "Blog", "Library", "Contact Us"].includes(link.title)
+    ["Home", "About", "Events", "Executives", "Elections", "Projects", "Academics", "Blog", "Library", "Contact Us"].includes(link.title)
   );
   const secondaryLinks = navbarLinks.filter(
-    (link) => !["Home", "About", "Events", "Executives", "Projects", "Academics", "Blog", "Library", "Contact Us"].includes(link.title)
+    (link) => !["Home", "About", "Events", "Executives", "Elections", "Projects", "Academics", "Blog", "Library", "Contact Us"].includes(link.title)
   );
 
   const overlayVariants = {

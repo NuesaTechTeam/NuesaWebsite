@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Fingerprint, ShieldCheck, Users } from "lucide-react";
+import { Clock, Fingerprint, ShieldCheck, Users } from "lucide-react";
 import logo from "../../assets/logo.png";
 import { ELECTION_META } from "../../lib/electionData";
 import VoterBallot from "./VoterBallot";
@@ -13,7 +13,7 @@ const TABS = [
   { id: "ballot", label: "Voter Ballot", icon: Fingerprint },
 ];
 
-const VoterPortal = () => {
+const VoterPortal = ({ votingOpen = true }) => {
   const [activeTab, setActiveTab] = useState("verification");
 
   const goTo = (tab) => {
@@ -29,10 +29,17 @@ const VoterPortal = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: "easeOut" }}
         >
-          <span className='inline-flex items-center gap-1.5 rounded-full bg-green-100 dark:bg-green-900/40 px-3 py-1 text-xs font-bold uppercase tracking-wide text-green-700 dark:text-green-400'>
-            <span className='h-2 w-2 animate-pulse rounded-full bg-green-500' />
-            Voting is open
-          </span>
+          {votingOpen ? (
+            <span className='inline-flex items-center gap-1.5 rounded-full bg-green-100 dark:bg-green-900/40 px-3 py-1 text-xs font-bold uppercase tracking-wide text-green-700 dark:text-green-400'>
+              <span className='h-2 w-2 animate-pulse rounded-full bg-green-500' />
+              Voting is open
+            </span>
+          ) : (
+            <span className='inline-flex items-center gap-1.5 rounded-full bg-amber-100 dark:bg-amber-900/40 px-3 py-1 text-xs font-bold uppercase tracking-wide text-amber-700 dark:text-amber-400'>
+              <Clock className='h-3.5 w-3.5' />
+              Voting has not started
+            </span>
+          )}
           <div className='mt-3 flex items-center gap-3'>
             <img src={logo} alt='NUESA ABUAD' className='h-11 w-11 shrink-0 object-contain' />
             <h1 className='text-3xl font-bold text-gray-900 dark:text-white'>{ELECTION_META.title}</h1>
@@ -86,7 +93,19 @@ const VoterPortal = () => {
                 />
               )}
               {activeTab === "candidates" && <CandidatesTab onVoteNow={() => goTo("ballot")} />}
-              {activeTab === "ballot" && <VoterBallot />}
+              {activeTab === "ballot" &&
+                (votingOpen ? (
+                  <VoterBallot />
+                ) : (
+                  <div className='mx-auto max-w-xl rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900 dark:bg-amber-950/40'>
+                    <Clock className='mx-auto h-10 w-10 text-amber-600 dark:text-amber-400' />
+                    <h2 className='mt-3 text-xl font-bold text-gray-900 dark:text-white'>Voting has not started yet</h2>
+                    <p className='mt-2 text-sm text-gray-600 dark:text-gray-400'>
+                      The ballot opens when the electoral committee starts voting. Keep this page open: it updates on
+                      its own. Meanwhile you can read how verification works and view the candidates.
+                    </p>
+                  </div>
+                ))}
             </motion.div>
           </AnimatePresence>
         </div>

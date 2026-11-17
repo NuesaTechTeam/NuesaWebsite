@@ -506,3 +506,8 @@ body::-webkit-scrollbar {
   .print-sheet * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   @page { size: A4; margin: 14mm; }
 }
+
+/* One-page results: small margins so the whole sheet fits one A4 page. */
+@media print {
+  @page { margin: 10mm; }
+}

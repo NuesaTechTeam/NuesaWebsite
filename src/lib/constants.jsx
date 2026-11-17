@@ -25,6 +25,10 @@ export const navbarLinks = [
     url: "/executives",
   },
   {
+    title: "Elections",
+    url: "/elections",
+  },
+  {
     title: "Projects",
     url: "/projects",
   },

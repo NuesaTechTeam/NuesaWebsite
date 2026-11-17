@@ -45,10 +45,20 @@ const TABS = [
   { id: "diagnostics", label: "Diagnostics", icon: Activity },
 ];
 
-export const ResultsTab = ({ votesByPosition, onPrint }) => (
+export const ResultsTab = ({ votesByPosition, onPrint, onPrintOnePage }) => (
   <div>
     {onPrint && (
-      <div className='mb-4 flex justify-end'>
+      <div className='mb-4 flex flex-wrap justify-end gap-2'>
+        {onPrintOnePage && (
+          <button
+            type='button'
+            onClick={onPrintOnePage}
+            className='inline-flex items-center gap-2 rounded-lg border border-green px-4 py-2 text-sm font-semibold text-green transition-colors hover:bg-green/10 dark:text-green-400'
+          >
+            <Printer className='h-4 w-4' />
+            Print on one page
+          </button>
+        )}
         <button
           type='button'
           onClick={onPrint}
@@ -493,6 +503,7 @@ const ElectionsDashboard = ({ onLogout }) => {
           registeredVoters={registeredVoters}
           ballotsCast={ballotsCast}
           votingOpen={votingOpen}
+          compact={printing === "one-page"}
           onClose={() => setPrinting(false)}
         />
       )}
@@ -643,7 +654,11 @@ const ElectionsDashboard = ({ onLogout }) => {
                   votesByPosition={votesByPosition}
                   onPrint={() => {
                     refresh();
-                    setPrinting(true);
+                    setPrinting("full");
+                  }}
+                  onPrintOnePage={() => {
+                    refresh();
+                    setPrinting("one-page");
                   }}
                 />
               )}

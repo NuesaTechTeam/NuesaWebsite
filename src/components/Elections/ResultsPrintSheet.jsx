@@ -18,7 +18,10 @@ const positionRows = (position, votesByCandidate = {}) => {
         { id: candidates[0].id, name: `Yes: ${candidates[0].name}` },
         { id: NO_VOTE_ID, name: "No" },
       ]
-    : candidates.map((candidate) => ({ id: candidate.id, name: candidate.name }));
+    : candidates.map((candidate) => ({
+        id: candidate.id,
+        name: candidate.name,
+      }));
   return options
     .map((option) => ({ ...option, votes: votesByCandidate[option.id] ?? 0 }))
     .sort((a, b) => b.votes - a.votes);
@@ -29,7 +32,103 @@ const positionRows = (position, votesByCandidate = {}) => {
  * the admin dashboard; the print stylesheet (index.css, .print-sheet) prints
  * only this sheet.
  */
-const ResultsPrintSheet = ({ votesByPosition, registeredVoters, ballotsCast, votingOpen, onClose }) => {
+const SIGNATORIES = [
+  "Chairman, Electoral Committee",
+  "Secretary, Electoral Committee",
+  ...Array.from({ length: 6 }, (_, index) => `Candidates' agent ${index + 1}`),
+];
+
+const Signatures = ({ compact }) => (
+  <div
+    className={
+      compact ? "mt-3 grid grid-cols-4 gap-x-4 gap-y-6 text-[9px]" : "mt-10 grid grid-cols-2 gap-x-10 gap-y-12 text-sm"
+    }
+  >
+    {SIGNATORIES.map((role) => (
+      <div key={role}>
+        <div className='border-b border-gray-900' />
+        <p className='mt-1'>
+          {role}: name, <span className='font-bold'>SIGNATURE AND DATE</span>
+        </p>
+      </div>
+    ))}
+  </div>
+);
+
+/** One-page version: every position in a compact two-column grid. */
+const OnePageBody = ({ votesByPosition, registered, cast, votingOpen, generatedAt }) => (
+  <>
+    <header className='flex items-center gap-3 border-b-2 border-gray-900 pb-2'>
+      <img src={logo} alt='' className='h-9 w-9 object-contain' />
+      <div className='flex-1'>
+        <h1 className='text-base font-bold leading-tight'>{ELECTION_META.title}: Official Results</h1>
+        <p className='text-[9px] text-gray-600'>
+          Session {ELECTION_META.session} · Generated {generatedAt.toLocaleString()} ·{" "}
+          {votingOpen ? "Voting OPEN (provisional)" : "Voting closed"}
+        </p>
+      </div>
+      <p className='text-right text-[10px] leading-tight'>
+        Registered <b className='tabular-nums'>{registered.toLocaleString()}</b> · Cast{" "}
+        <b className='tabular-nums'>{cast.toLocaleString()}</b> · Turnout <b>{percent(cast, registered)}</b>
+      </p>
+    </header>
+    <div className='mt-2 grid grid-cols-2 gap-x-3 gap-y-2'>
+      {ELECTED_POSITIONS.map((position) => {
+        const rows = positionRows(position, votesByPosition?.[position.id]);
+        const total = rows.reduce((sum, row) => sum + row.votes, 0);
+        const top = rows[0]?.votes ?? 0;
+        const tied = rows.filter((row) => row.votes === top).length > 1;
+        const blank = Math.max(cast - total, 0);
+        return (
+          <section key={position.id} className='break-inside-avoid'>
+            <h2 className='text-[10px] font-bold leading-tight'>
+              {position.order}. {position.title}
+              {isUnopposed(position.id) && (
+                <span className='ml-1 font-semibold uppercase text-gray-500'>(Yes / No)</span>
+              )}
+            </h2>
+            <table className='w-full border-collapse text-[9px] leading-tight'>
+              <tbody>
+                {rows.map((row) => (
+                  <tr key={row.id} className={row.votes === top && top > 0 ? "font-bold" : ""}>
+                    <td className='border border-gray-400 px-1.5 py-0.5'>
+                      {row.name}
+                      {row.votes === top && top > 0 && (
+                        <span className='ml-1 uppercase'>{tied ? "(tie)" : "(highest)"}</span>
+                      )}
+                    </td>
+                    <td className='w-12 border border-gray-400 px-1.5 py-0.5 text-right tabular-nums'>
+                      {row.votes.toLocaleString()}
+                    </td>
+                    <td className='w-12 border border-gray-400 px-1.5 py-0.5 text-right tabular-nums'>
+                      {percent(row.votes, total)}
+                    </td>
+                  </tr>
+                ))}
+                <tr className='text-gray-600'>
+                  <td className='border border-gray-400 px-1.5 py-0.5'>
+                    Total {total.toLocaleString()} · blank {blank.toLocaleString()}
+                  </td>
+                  <td className='border border-gray-400' colSpan={2} />
+                </tr>
+              </tbody>
+            </table>
+          </section>
+        );
+      })}
+    </div>
+    <Signatures compact />
+  </>
+);
+
+const ResultsPrintSheet = ({
+  votesByPosition,
+  registeredVoters,
+  ballotsCast,
+  votingOpen,
+  compact = false,
+  onClose,
+}) => {
   const generatedAt = new Date();
   const registered = registeredVoters ?? 0;
   const cast = ballotsCast ?? 0;
@@ -55,107 +154,122 @@ const ResultsPrintSheet = ({ votesByPosition, registeredVoters, ballotsCast, vot
         </button>
       </div>
 
-      <article className='print-sheet mx-auto max-w-3xl bg-white p-8 text-gray-900 shadow-xl print:max-w-none print:p-0 print:shadow-none'>
-        <header className='flex items-center gap-4 border-b-2 border-gray-900 pb-4'>
-          <img src={logo} alt='' className='h-14 w-14 object-contain' />
-          <div>
-            <h1 className='text-2xl font-bold'>{ELECTION_META.title}: Official Results</h1>
-            <p className='text-sm text-gray-600'>
-              Session {ELECTION_META.session} · Generated {generatedAt.toLocaleString()} ·{" "}
-              {votingOpen ? "Voting OPEN (provisional)" : "Voting closed"}
-            </p>
-          </div>
-        </header>
+      <article
+        className={`print-sheet mx-auto max-w-3xl bg-white text-gray-900 shadow-xl print:max-w-none print:p-0 print:shadow-none ${
+          compact ? "print-one-page p-5" : "p-8"
+        }`}
+      >
+        {compact ? (
+          <OnePageBody
+            votesByPosition={votesByPosition}
+            registered={registered}
+            cast={cast}
+            votingOpen={votingOpen}
+            generatedAt={generatedAt}
+          />
+        ) : (
+          <>
+            <header className='flex items-center gap-4 border-b-2 border-gray-900 pb-4'>
+              <img src={logo} alt='' className='h-14 w-14 object-contain' />
+              <div>
+                <h1 className='text-2xl font-bold'>{ELECTION_META.title}: Official Results</h1>
+                <p className='text-sm text-gray-600'>
+                  Session {ELECTION_META.session} · Generated {generatedAt.toLocaleString()} ·{" "}
+                  {votingOpen ? "Voting OPEN (provisional)" : "Voting closed"}
+                </p>
+              </div>
+            </header>
 
-        <table className='mt-4 w-full border-collapse text-sm'>
-          <tbody>
-            <tr>
-              <td className='border border-gray-400 px-3 py-2 font-semibold'>Registered voters</td>
-              <td className='border border-gray-400 px-3 py-2 text-right tabular-nums'>{registered.toLocaleString()}</td>
-              <td className='border border-gray-400 px-3 py-2 font-semibold'>Ballots cast</td>
-              <td className='border border-gray-400 px-3 py-2 text-right tabular-nums'>{cast.toLocaleString()}</td>
-              <td className='border border-gray-400 px-3 py-2 font-semibold'>Turnout</td>
-              <td className='border border-gray-400 px-3 py-2 text-right tabular-nums'>{percent(cast, registered)}</td>
-            </tr>
-          </tbody>
-        </table>
+            <table className='mt-4 w-full border-collapse text-sm'>
+              <tbody>
+                <tr>
+                  <td className='border border-gray-400 px-3 py-2 font-semibold'>Registered voters</td>
+                  <td className='border border-gray-400 px-3 py-2 text-right tabular-nums'>
+                    {registered.toLocaleString()}
+                  </td>
+                  <td className='border border-gray-400 px-3 py-2 font-semibold'>Ballots cast</td>
+                  <td className='border border-gray-400 px-3 py-2 text-right tabular-nums'>{cast.toLocaleString()}</td>
+                  <td className='border border-gray-400 px-3 py-2 font-semibold'>Turnout</td>
+                  <td className='border border-gray-400 px-3 py-2 text-right tabular-nums'>
+                    {percent(cast, registered)}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
 
-        {ELECTED_POSITIONS.map((position) => {
-          const rows = positionRows(position, votesByPosition?.[position.id]);
-          const total = rows.reduce((sum, row) => sum + row.votes, 0);
-          const top = rows[0]?.votes ?? 0;
-          const tied = rows.filter((row) => row.votes === top).length > 1;
-          const blank = Math.max(cast - total, 0);
+            {ELECTED_POSITIONS.map((position) => {
+              const rows = positionRows(position, votesByPosition?.[position.id]);
+              const total = rows.reduce((sum, row) => sum + row.votes, 0);
+              const top = rows[0]?.votes ?? 0;
+              const tied = rows.filter((row) => row.votes === top).length > 1;
+              const blank = Math.max(cast - total, 0);
 
-          return (
-            <section key={position.id} className='mt-6 break-inside-avoid'>
-              <h2 className='mb-1 text-base font-bold'>
-                {position.order}. {position.title}
-                {isUnopposed(position.id) && (
-                  <span className='ml-2 text-xs font-semibold uppercase text-gray-500'>(unopposed: Yes / No)</span>
-                )}
-              </h2>
-              <table className='w-full border-collapse text-sm'>
-                <thead>
-                  <tr className='bg-gray-100'>
-                    <th className='border border-gray-400 px-3 py-1.5 text-left'>Candidate</th>
-                    <th className='w-28 border border-gray-400 px-3 py-1.5 text-right'>Votes</th>
-                    <th className='w-24 border border-gray-400 px-3 py-1.5 text-right'>Share</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((row) => (
-                    <tr key={row.id} className={row.votes === top && top > 0 ? "font-bold" : ""}>
-                      <td className='border border-gray-400 px-3 py-1.5'>
-                        {row.name}
-                        {row.votes === top && top > 0 && (
-                          <span className='ml-2 text-xs uppercase'>{tied ? "(tie)" : "(highest)"}</span>
-                        )}
-                      </td>
-                      <td className='border border-gray-400 px-3 py-1.5 text-right tabular-nums'>
-                        {row.votes.toLocaleString()}
-                      </td>
-                      <td className='border border-gray-400 px-3 py-1.5 text-right tabular-nums'>
-                        {percent(row.votes, total)}
-                      </td>
-                    </tr>
-                  ))}
-                  <tr className='bg-gray-50'>
-                    <td className='border border-gray-400 px-3 py-1.5 font-semibold'>Total votes for this position</td>
-                    <td className='border border-gray-400 px-3 py-1.5 text-right font-semibold tabular-nums'>
-                      {total.toLocaleString()}
-                    </td>
-                    <td className='border border-gray-400 px-3 py-1.5' />
-                  </tr>
-                  <tr>
-                    <td className='border border-gray-400 px-3 py-1.5 text-gray-600'>Ballots left blank for this position</td>
-                    <td className='border border-gray-400 px-3 py-1.5 text-right tabular-nums text-gray-600'>
-                      {blank.toLocaleString()}
-                    </td>
-                    <td className='border border-gray-400 px-3 py-1.5' />
-                  </tr>
-                </tbody>
-              </table>
-            </section>
-          );
-        })}
+              return (
+                <section key={position.id} className='mt-6 break-inside-avoid'>
+                  <h2 className='mb-1 text-base font-bold'>
+                    {position.order}. {position.title}
+                    {isUnopposed(position.id) && (
+                      <span className='ml-2 text-xs font-semibold uppercase text-gray-500'>(unopposed: Yes / No)</span>
+                    )}
+                  </h2>
+                  <table className='w-full border-collapse text-sm'>
+                    <thead>
+                      <tr className='bg-gray-100'>
+                        <th className='border border-gray-400 px-3 py-1.5 text-left'>Candidate</th>
+                        <th className='w-28 border border-gray-400 px-3 py-1.5 text-right'>Votes</th>
+                        <th className='w-24 border border-gray-400 px-3 py-1.5 text-right'>Share</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {rows.map((row) => (
+                        <tr key={row.id} className={row.votes === top && top > 0 ? "font-bold" : ""}>
+                          <td className='border border-gray-400 px-3 py-1.5'>
+                            {row.name}
+                            {row.votes === top && top > 0 && (
+                              <span className='ml-2 text-xs uppercase'>{tied ? "(tie)" : "(highest)"}</span>
+                            )}
+                          </td>
+                          <td className='border border-gray-400 px-3 py-1.5 text-right tabular-nums'>
+                            {row.votes.toLocaleString()}
+                          </td>
+                          <td className='border border-gray-400 px-3 py-1.5 text-right tabular-nums'>
+                            {percent(row.votes, total)}
+                          </td>
+                        </tr>
+                      ))}
+                      <tr className='bg-gray-50'>
+                        <td className='border border-gray-400 px-3 py-1.5 font-semibold'>
+                          Total votes for this position
+                        </td>
+                        <td className='border border-gray-400 px-3 py-1.5 text-right font-semibold tabular-nums'>
+                          {total.toLocaleString()}
+                        </td>
+                        <td className='border border-gray-400 px-3 py-1.5' />
+                      </tr>
+                      <tr>
+                        <td className='border border-gray-400 px-3 py-1.5 text-gray-600'>
+                          Ballots left blank for this position
+                        </td>
+                        <td className='border border-gray-400 px-3 py-1.5 text-right tabular-nums text-gray-600'>
+                          {blank.toLocaleString()}
+                        </td>
+                        <td className='border border-gray-400 px-3 py-1.5' />
+                      </tr>
+                    </tbody>
+                  </table>
+                </section>
+              );
+            })}
 
-        <footer className='mt-10 break-inside-avoid'>
-          <p className='text-xs text-gray-600'>
-            Counts are taken from the live elections server at the time shown above. Shares are of
-            the votes cast for each position; blank ballots are excluded.
-          </p>
-          <div className='mt-10 grid grid-cols-2 gap-x-10 gap-y-12 text-sm'>
-            {["Chairman, Electoral Committee", "Secretary, Electoral Committee", "Candidates' agent", "Candidates' agent"].map(
-              (role, index) => (
-                <div key={index}>
-                  <div className='border-b border-gray-900' />
-                  <p className='mt-1'>{role}: name, signature and date</p>
-                </div>
-              )
-            )}
-          </div>
-        </footer>
+            <footer className='mt-10 break-inside-avoid'>
+              <p className='text-xs text-gray-600'>
+                Counts are taken from the live elections server at the time shown above. Shares are of the votes cast
+                for each position; blank ballots are excluded.
+              </p>
+              <Signatures />
+            </footer>
+          </>
+        )}
       </article>
     </div>
   );

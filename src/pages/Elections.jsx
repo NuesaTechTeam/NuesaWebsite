@@ -1,40 +1,47 @@
 import { useEffect, useState } from "react";
 import useSEO from "../hooks/useSEO";
-import { AdminGate, VoterPortal } from "../components/Elections";
+import { VoterPortal } from "../components/Elections";
 import { Spinner } from "../components/Elections/AdminGate";
 import { getElectionStatus } from "../lib/electionsApi";
 
+// How often the page re-checks whether voting has been opened or closed.
+const STATUS_POLL_MS = 20000;
+
 /**
- * /elections: the voter portal while voting is open (switched on from the admin
- * dashboard), otherwise the restricted admin login, so nothing about the
- * election is visible to the public before the window opens.
+ * /elections: the public voter portal. Voters can read the verification steps
+ * and the candidates at any time; signing in and voting only work once the
+ * admin presses "Start voting" (the server also refuses while voting is closed).
+ * The admin dashboard lives at /elections/admin.
  */
 const Elections = () => {
   const [votingOpen, setVotingOpen] = useState(null);
 
   useSEO({
     title: "Elections",
-    description: votingOpen
-      ? "NUESA ABUAD online elections. Verify with your matric and invoice numbers, view the candidates and cast your ballot."
-      : "NUESA ABUAD online elections portal. Restricted to authorised technical team members.",
+    description:
+      "NUESA ABUAD online elections. Verify with your matric and invoice numbers, view the candidates and cast your ballot.",
   });
 
   useEffect(() => {
     let cancelled = false;
-    getElectionStatus()
-      .then((data) => {
-        if (!cancelled) setVotingOpen(Boolean(data.votingOpen));
-      })
-      .catch(() => {
-        if (!cancelled) setVotingOpen(false);
-      });
+    const check = () =>
+      getElectionStatus()
+        .then((data) => {
+          if (!cancelled) setVotingOpen(Boolean(data.votingOpen));
+        })
+        .catch(() => {
+          if (!cancelled) setVotingOpen((current) => current ?? false);
+        });
+    check();
+    const timer = setInterval(check, STATUS_POLL_MS);
     return () => {
       cancelled = true;
+      clearInterval(timer);
     };
   }, []);
 
   if (votingOpen === null) return <Spinner />;
-  return votingOpen ? <VoterPortal /> : <AdminGate />;
+  return <VoterPortal votingOpen={votingOpen} />;
 };
 
 export default Elections;
