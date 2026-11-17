@@ -13,13 +13,17 @@ export const ELECTION_META = {
   status: "pending",
 };
 
-export const ELECTED_POSITIONS = [...BALLOT.positions].sort((a, b) => a.order - b.order);
+// Positions with no candidates (e.g. Social Director (Male) for now) are hidden
+// from the candidates page, ballot, results and printout until one is added.
+export const ELECTED_POSITIONS = [...BALLOT.positions]
+  .filter((position) => BALLOT.candidates.some((candidate) => candidate.positionId === position.id))
+  .sort((a, b) => a.order - b.order)
+  .map((position, index) => ({ ...position, order: index + 1 }));
 
 export const APPOINTED_POSITIONS = [
   { id: "chief-of-staff", title: "Chief of Staff", order: 13 },
   { id: "chief-strategy-officer", title: "Chief Strategy Officer", order: 14 },
   { id: "director-of-events", title: "Director of Events", order: 15 },
-  { id: "academic-director", title: "Academic Director", order: 16 },
   { id: "technical-director", title: "Technical Director", order: 17 },
   { id: "director-of-sponsorships", title: "Director of Sponsorships", order: 18 },
   { id: "director-of-external-affairs", title: "Director of External Affairs", order: 19 },

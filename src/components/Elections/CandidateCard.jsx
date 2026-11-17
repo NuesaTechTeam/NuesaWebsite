@@ -16,7 +16,7 @@ const CandidateCard = ({ candidate, positionTitle, unopposed = false }) => {
           <img
             src={candidate.photo}
             alt={candidate.name}
-            className='h-full w-full object-cover'
+            className='h-full w-full object-cover object-top'
           />
         ) : (
           <div className='flex h-full w-full flex-col items-center justify-center text-gray-400'>
