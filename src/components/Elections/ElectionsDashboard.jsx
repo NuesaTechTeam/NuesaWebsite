@@ -8,6 +8,7 @@ import {
   Lock,
   LogOut,
   Mail,
+  Printer,
   RefreshCw,
   ShieldCheck,
   Unlock,
@@ -33,6 +34,7 @@ import PositionResult from "./PositionResult";
 import VoterBallot from "./VoterBallot";
 import LiveOverview, { StatCard } from "./LiveOverview";
 import { CandidatesTab, VerificationTab } from "./VoterTabs";
+import ResultsPrintSheet from "./ResultsPrintSheet";
 
 const TABS = [
   { id: "results", label: "Live Results", icon: BarChart3 },
@@ -43,7 +45,20 @@ const TABS = [
   { id: "diagnostics", label: "Diagnostics", icon: Activity },
 ];
 
-export const ResultsTab = ({ votesByPosition }) => (
+export const ResultsTab = ({ votesByPosition, onPrint }) => (
+  <div>
+    {onPrint && (
+      <div className='mb-4 flex justify-end'>
+        <button
+          type='button'
+          onClick={onPrint}
+          className='inline-flex items-center gap-2 rounded-lg bg-green px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-dark'
+        >
+          <Printer className='h-4 w-4' />
+          Print results
+        </button>
+      </div>
+    )}
   <div className='grid grid-cols-1 gap-5 lg:grid-cols-2'>
     {ELECTED_POSITIONS.map((position, index) => (
       <PositionResult
@@ -53,6 +68,7 @@ export const ResultsTab = ({ votesByPosition }) => (
         votesByCandidate={votesByPosition?.[position.id]}
       />
     ))}
+  </div>
   </div>
 );
 
@@ -449,6 +465,7 @@ const DiagnosticsTab = () => {
 const ElectionsDashboard = ({ onLogout }) => {
   const [activeTab, setActiveTab] = useState("results");
   const [votingOpen, setVotingOpen] = useState(null);
+  const [printing, setPrinting] = useState(false);
   const {
     configured,
     votesByPosition,
@@ -470,6 +487,15 @@ const ElectionsDashboard = ({ onLogout }) => {
 
   return (
     <div className='min-h-screen bg-gray-50 dark:bg-gray-950 px-4 py-10 sm:px-6 lg:px-8'>
+      {printing && (
+        <ResultsPrintSheet
+          votesByPosition={votesByPosition}
+          registeredVoters={registeredVoters}
+          ballotsCast={ballotsCast}
+          votingOpen={votingOpen}
+          onClose={() => setPrinting(false)}
+        />
+      )}
       <div className='mx-auto max-w-7xl'>
         {/* header */}
         <motion.div
@@ -612,7 +638,15 @@ const ElectionsDashboard = ({ onLogout }) => {
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
             >
-              {activeTab === "results" && <ResultsTab votesByPosition={votesByPosition} />}
+              {activeTab === "results" && (
+                <ResultsTab
+                  votesByPosition={votesByPosition}
+                  onPrint={() => {
+                    refresh();
+                    setPrinting(true);
+                  }}
+                />
+              )}
               {activeTab === "candidates" && <CandidatesTab onVoteNow={() => setActiveTab("ballot")} />}
               {activeTab === "ballot" && <VoterBallot />}
               {activeTab === "verification" && (

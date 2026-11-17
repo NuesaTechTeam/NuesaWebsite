@@ -495,3 +495,14 @@ body::-webkit-scrollbar {
 .email-editor li { margin: 0.25em 0; }
 .email-editor a { text-decoration: underline; }
 .email-editor table[role="presentation"] a { text-decoration: none; }
+
+/* Elections results sheet: when it is open, print only the sheet. */
+@media print {
+  body:has(.print-sheet) * { visibility: hidden; }
+  /* same :has() prefix so these win over the hide-everything rule above */
+  body:has(.print-sheet) .print-sheet,
+  body:has(.print-sheet) .print-sheet * { visibility: visible; }
+  body:has(.print-sheet) .print-sheet { position: absolute; inset: 0 auto auto 0; width: 100%; }
+  .print-sheet * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  @page { size: A4; margin: 14mm; }
+}
