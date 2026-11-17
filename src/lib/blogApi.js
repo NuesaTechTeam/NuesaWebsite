@@ -46,6 +46,13 @@ export const updateBlogStatus = (id, status) =>
     token: getAdminToken(),
   });
 
+/** Admin: permanently delete a submission (any status) and its image. */
+export const deleteBlogSubmission = (id) =>
+  request(`/blog/submissions/${encodeURIComponent(id)}/delete`, {
+    method: "POST",
+    token: getAdminToken(),
+  });
+
 /** Public: approved posts for the site. */
 export const listPublishedPosts = () => request("/blog/posts");
 

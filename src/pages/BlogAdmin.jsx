@@ -12,6 +12,7 @@ import {
   Calendar,
   ShieldCheck,
   Lock,
+  Trash2,
 } from "lucide-react";
 import useSEO from "../hooks/useSEO";
 import TurnstileWidget, { turnstileFields, turnstileReady } from "../components/Elections/TurnstileWidget";
@@ -23,10 +24,7 @@ import {
   getAdminToken,
   isElectionsApiConfigured,
 } from "../lib/electionsApi";
-import {
-  listBlogSubmissions,
-  updateBlogStatus,
-} from "../lib/blogApi";
+import { listBlogSubmissions, updateBlogStatus, deleteBlogSubmission } from "../lib/blogApi";
 
 const TABS = [
   { id: "pending", label: "Pending" },
@@ -92,9 +90,7 @@ const LoginPanel = ({ onSuccess }) => {
 
         <div className='space-y-5'>
           <div>
-            <label className='mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-200'>
-              Username
-            </label>
+            <label className='mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-200'>Username</label>
             <div className='relative'>
               <User className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
               <input
@@ -110,9 +106,7 @@ const LoginPanel = ({ onSuccess }) => {
           </div>
 
           <div>
-            <label className='mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-200'>
-              Password
-            </label>
+            <label className='mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-200'>Password</label>
             <div className='relative'>
               <Lock className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400' />
               <input
@@ -151,7 +145,7 @@ const LoginPanel = ({ onSuccess }) => {
   );
 };
 
-const SubmissionCard = ({ submission, onApprove, onReject, busy }) => {
+const SubmissionCard = ({ submission, onApprove, onReject, onDelete, busy }) => {
   const [expanded, setExpanded] = React.useState(false);
   const isPending = submission.status === "pending";
 
@@ -227,26 +221,36 @@ const SubmissionCard = ({ submission, onApprove, onReject, busy }) => {
           {expanded ? "Show less" : "Read full content"}
         </button>
 
-        {isPending && (
-          <div className='flex items-center gap-2'>
-            <button
-              type='button'
-              disabled={busy}
-              onClick={() => onReject(submission.id)}
-              className='inline-flex items-center gap-1.5 rounded-lg border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50 dark:border-red-900/40 dark:hover:bg-red-900/30'
-            >
-              <X className='h-4 w-4' /> Reject
-            </button>
-            <button
-              type='button'
-              disabled={busy}
-              onClick={() => onApprove(submission.id)}
-              className='inline-flex items-center gap-1.5 rounded-lg bg-green px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-dark disabled:opacity-50'
-            >
-              <Check className='h-4 w-4' /> Approve
-            </button>
-          </div>
-        )}
+        <div className='flex flex-wrap items-center gap-2'>
+          <button
+            type='button'
+            disabled={busy}
+            onClick={() => onDelete(submission)}
+            className='inline-flex items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-semibold text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600 disabled:opacity-50 dark:text-gray-400 dark:hover:bg-red-900/30'
+          >
+            <Trash2 className='h-4 w-4' /> Delete
+          </button>
+          {isPending && (
+            <div className='flex items-center gap-2'>
+              <button
+                type='button'
+                disabled={busy}
+                onClick={() => onReject(submission.id)}
+                className='inline-flex items-center gap-1.5 rounded-lg border border-red-200 px-4 py-2 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50 dark:border-red-900/40 dark:hover:bg-red-900/30'
+              >
+                <X className='h-4 w-4' /> Reject
+              </button>
+              <button
+                type='button'
+                disabled={busy}
+                onClick={() => onApprove(submission.id)}
+                className='inline-flex items-center gap-1.5 rounded-lg bg-green px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-dark disabled:opacity-50'
+              >
+                <Check className='h-4 w-4' /> Approve
+              </button>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -316,6 +320,24 @@ const BlogAdmin = () => {
     }
   };
 
+  const handleDelete = async (submission) => {
+    const ok = window.confirm(
+      `Delete "${submission.title}" permanently?
+
+It will be removed from the blog (if published) and cannot be recovered.`,
+    );
+    if (!ok) return;
+    setBusyId(submission.id);
+    try {
+      await deleteBlogSubmission(submission.id);
+      setSubmissions((prev) => prev.filter((s) => s.id !== submission.id));
+    } catch (err) {
+      setError(err.message || "Could not delete the submission");
+    } finally {
+      setBusyId(null);
+    }
+  };
+
   const handleLogout = () => {
     setAdminToken("");
     setAuthed(false);
@@ -340,9 +362,7 @@ const BlogAdmin = () => {
             <span className='inline-flex items-center rounded-full bg-green-100 px-3 py-1 text-xs font-bold uppercase tracking-wide text-green-700 dark:bg-green-900/40 dark:text-green-400'>
               Editorial
             </span>
-            <h1 className='mt-3 text-3xl font-bold text-gray-900 dark:text-white'>
-              Blog Submissions
-            </h1>
+            <h1 className='mt-3 text-3xl font-bold text-gray-900 dark:text-white'>Blog Submissions</h1>
             <p className='text-sm text-gray-600 dark:text-gray-400'>
               Approve to publish on the blog, or reject to discard.
             </p>
@@ -402,9 +422,7 @@ const BlogAdmin = () => {
               <Loader2 className='h-8 w-8 animate-spin text-green-600' />
             </div>
           ) : submissions.length === 0 ? (
-            <p className='py-20 text-center text-gray-500 dark:text-gray-400'>
-              No {activeTab} submissions.
-            </p>
+            <p className='py-20 text-center text-gray-500 dark:text-gray-400'>No {activeTab} submissions.</p>
           ) : (
             <AnimatePresence mode='popLayout'>
               {submissions.map((submission) => (
@@ -420,6 +438,7 @@ const BlogAdmin = () => {
                     busy={busyId === submission.id}
                     onApprove={(id) => handleDecision(id, "approved")}
                     onReject={(id) => handleDecision(id, "rejected")}
+                    onDelete={handleDelete}
                   />
                 </motion.div>
               ))}

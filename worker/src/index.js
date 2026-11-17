@@ -19,6 +19,7 @@
  *   POST /blog/submissions             { title, author, email, category, content, image? } -> { id }
  *   GET  /blog/submissions?status=     (admin) list blog submissions
  *   POST /blog/submissions/:id/status  (admin) { status: approved|rejected }
+ *   POST /blog/submissions/:id/delete  (admin) delete a submission and its image
  *   GET  /blog/posts                   approved blog posts for the public site
  *   GET  /blog/images/:id              cover image for a submission (public, cached)
  *   POST /admin/diagnostics           (admin) { toEmail?, toPhone? } -> provider responses
@@ -193,6 +194,14 @@ export default {
             return json({ error: "Unauthorized" }, 401, cors);
           }
           response = await blogUpdateStatus(request, env, ctx, statusMatch[1]);
+          handled = true;
+        }
+        const deleteMatch = url.pathname.match(/^\/blog\/submissions\/([^/]+)\/delete$/);
+        if (!handled && deleteMatch && request.method === "POST") {
+          if (!(await isAdmin(request, env))) {
+            return json({ error: "Unauthorized" }, 401, cors);
+          }
+          response = await blogDelete(request, env, ctx, decodeURIComponent(deleteMatch[1]));
           handled = true;
         } else if (url.pathname === "/admin/diagnostics" && request.method === "POST") {
           if (!(await isAdmin(request, env))) {
@@ -794,7 +803,7 @@ const KNOWN_ROUTES = [
   /^\/admin\/mail\/(recipients|campaigns|test|attachments|images)$/,
   /^\/admin\/mail\/campaigns\/[^/]+(\/stop)?$/,
   /^\/blog\/(posts|submissions)$/,
-  /^\/blog\/submissions\/[^/]+\/status$/,
+  /^\/blog\/submissions\/[^/]+\/(status|delete)$/,
   /^\/(blog|mail)\/images\/[^/]+$/,
 ];
 
@@ -1861,6 +1870,28 @@ async function blogUpdateStatus(request, env, ctx, id) {
 
   if (ctx) ctx.waitUntil(caches.default.delete(cacheKeyFor(request, "blog-posts")));
   return json({ id, status });
+}
+
+/** Admin: permanently delete a blog submission (any status) and its cover image. */
+async function blogDelete(request, env, ctx, id) {
+  if (!id || id.length > 100) return json({ error: "Submission not found" }, 404);
+  const [result] = await env.DB.batch([
+    env.DB.prepare("DELETE FROM blog_submissions WHERE id = ?").bind(id),
+    env.DB.prepare("DELETE FROM blog_images WHERE id = ?").bind(id),
+  ]);
+  if (!result.meta || result.meta.changes === 0) {
+    return json({ error: "Submission not found" }, 404);
+  }
+  logEvent(request, "blog_deleted", { action: "deleted", id });
+  if (ctx) {
+    ctx.waitUntil(
+      Promise.all([
+        caches.default.delete(cacheKeyFor(request, "blog-posts")),
+        caches.default.delete(cacheKeyFor(request, `blog-image-v2:${id}`)),
+      ])
+    );
+  }
+  return json({ id, deleted: true });
 }
 
 async function blogPublicPosts(request, env, ctx) {
