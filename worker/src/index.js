@@ -101,7 +101,14 @@ const BLOG_SUBMISSIONS_PER_HOUR = 3;
 // number looks like 22/ENG05/037 or 22/ENG05/37 (2 digits / 5 letters+digits /
 // 2-3 digits); anything else, including a longer JAMB number, is refused here
 // before it ever reaches the voter sheet.
+//
+// Exception: Direct Entry students don't have a matric number yet either, so
+// they also enter a JAMB-style number, but theirs has one extra letter and
+// always ends in U (8 digits + 2 letters + "U" vs. the normal 8 digits + 2
+// letters), e.g. "12345678ABU" vs. "12345678AB". DE students are eligible
+// (they are not 100 Level), so that shape is let through.
 const MATRIC_FORMAT = /^\d{2}\/[a-z0-9]{5}\/\d{2,3}$/;
+const DIRECT_ENTRY_JAMB_FORMAT = /^\d{8}[a-z]{2}u$/;
 const NOT_ELIGIBLE_MESSAGE =
   "100 Level students are not eligible to vote in this election. If you believe this is a mistake, please see the electoral committee.";
 
@@ -1368,8 +1375,9 @@ async function voterVerify(request, env) {
 
   if (!(await isVotingOpen(env))) return votingClosed();
 
-  if (!MATRIC_FORMAT.test(normalizeValue(matricNumber))) {
-    const matric = normalizeValue(matricNumber).slice(0, 40);
+  const normalizedMatric = normalizeValue(matricNumber);
+  if (!MATRIC_FORMAT.test(normalizedMatric) && !DIRECT_ENTRY_JAMB_FORMAT.test(normalizedMatric)) {
+    const matric = normalizedMatric.slice(0, 40);
     logEvent(request, "matric_format_rejected", { action: "refused", matric });
     await recordSignInFailure(request, env, matric);
     return json({ error: NOT_ELIGIBLE_MESSAGE }, 403);
