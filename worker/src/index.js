@@ -96,6 +96,15 @@ const SIGNIN_GUESS_ALERT = 10;
 const SIGNIN_STORM_THRESHOLD = 150; // approximate (edge-cache counts can undercount bursts)
 const BLOG_SUBMISSIONS_PER_HOUR = 3;
 
+// 100 Level students aren't eligible to vote and are still using their JAMB
+// registration number where the form asks for a matric number. A real matric
+// number looks like 22/ENG05/037 or 22/ENG05/37 (2 digits / 5 letters+digits /
+// 2-3 digits); anything else, including a longer JAMB number, is refused here
+// before it ever reaches the voter sheet.
+const MATRIC_FORMAT = /^\d{2}\/[a-z0-9]{5}\/\d{2,3}$/;
+const NOT_ELIGIBLE_MESSAGE =
+  "100 Level students are not eligible to vote in this election. If you believe this is a mistake, please see the electoral committee.";
+
 // Mass Mailer: hard cap on emails sent per Cron tick. Keeps each invocation
 // well under the Workers subrequest limit (each email is one fetch to Brevo).
 const MAIL_MAX_PER_TICK = 30;
@@ -1358,6 +1367,13 @@ async function voterVerify(request, env) {
   }
 
   if (!(await isVotingOpen(env))) return votingClosed();
+
+  if (!MATRIC_FORMAT.test(normalizeValue(matricNumber))) {
+    const matric = normalizeValue(matricNumber).slice(0, 40);
+    logEvent(request, "matric_format_rejected", { action: "refused", matric });
+    await recordSignInFailure(request, env, matric);
+    return json({ error: NOT_ELIGIBLE_MESSAGE }, 403);
+  }
 
   const turnstile = await checkTurnstile(request, env, body);
   if (!turnstile.ok) return turnstile.response;
