@@ -34,8 +34,10 @@
  *   POST /admin/mail/images            (mailer) { name?, data } -> { id, url } (inline email images)
  *   GET  /mail/images/:id              public image bytes for emails (cached)
  *
- * /results and /stats require an admin Bearer token and are edge-cached for a
- * short TTL so repeated dashboard polling does not hit D1.
+ * /results and /stats require an admin Bearer token. Both read a single small
+ * table/row (not a per-vote scan), so they're always read fresh rather than
+ * edge-cached - caching them let a stale ballots-cast number get stuck on the
+ * agents' dashboard.
  *
  * Bindings (wrangler.toml / secrets):
  *   SESSIONS (KV)   - admin sessions + voter/otp/ballot tokens
@@ -277,7 +279,7 @@ export default {
           response = await mailImageUpload(request, env);
           break;
         case "POST /vote":
-          response = await castVote(request, env, ctx);
+          response = await castVote(request, env);
           break;
         case "GET /admin/session":
           response = json({ ok: true, role: await sessionRole(request, env) });
@@ -286,10 +288,10 @@ export default {
           response = await getBallots(env);
           break;
         case "GET /results":
-          response = await getResults(request, env, ctx);
+          response = await getResults(request, env);
           break;
         case "GET /stats":
-          response = await getStats(request, env, ctx);
+          response = await getStats(request, env);
           break;
         case "GET /candidates":
           response = await getCandidates(env);
@@ -1566,7 +1568,7 @@ function validateBallot(votes) {
   return "";
 }
 
-async function castVote(request, env, ctx) {
+async function castVote(request, env) {
   if (!(await isVotingOpen(env))) return votingClosed();
 
   const { ballotToken, votes } = await readJson(request);
@@ -1613,39 +1615,25 @@ async function castVote(request, env, ctx) {
   }
 
   logEvent(request, "vote_recorded", { action: "recorded", matric, positions: votes.length });
-  // Drop the cached results/stats so the next dashboard poll reflects this ballot.
-  if (ctx) {
-    ctx.waitUntil(
-      Promise.all([
-        caches.default.delete(cacheKeyFor(request, "results")),
-        caches.default.delete(cacheKeyFor(request, "stats")),
-      ])
-    );
-  }
   return json({ recorded: true });
 }
 
-async function getStats(request, env, ctx) {
-  const cache = caches.default;
-  const key = cacheKeyFor(request, "stats");
-  const cached = await cache.match(key);
-  if (cached) return cached;
-
+async function getStats(request, env) {
   // Ballots cast comes from a running counter kept in the vote's own batch, so
-  // dashboards refreshing every 15 s don't recount every ballot (free D1 reads).
+  // this is a single cheap row read, not a recount of every ballot. Always
+  // read fresh: an edge cache here previously let a stale ballots-cast number
+  // get stuck on the agents' dashboard (a slow-finishing read could re-cache
+  // an old value right after a vote invalidated it).
   const [registeredVoters, countRow, storm] = await Promise.all([
     countVoters(env, request),
     env.DB.prepare("SELECT value FROM election_settings WHERE key = 'ballots_cast'").first(),
     stormUntil(env),
   ]);
-  const response = json({
+  return json({
     registeredVoters,
     ballotsCast: Number(countRow?.value) || 0,
     stormUntil: storm > Date.now() ? storm : 0,
   });
-  response.headers.set("Cache-Control", "public, max-age=15");
-  if (ctx) ctx.waitUntil(cache.put(key, response.clone()));
-  return response;
 }
 
 async function countVoters(env, request) {
@@ -1658,13 +1646,9 @@ async function countVoters(env, request) {
   return Math.max(rows.length - 1, 0);
 }
 
-async function getResults(request, env, ctx) {
-  const cache = caches.default;
-  const key = cacheKeyFor(request, "results");
-  const cached = await cache.match(key);
-  if (cached) return cached;
-
+async function getResults(request, env) {
   // Reads the small aggregate table instead of scanning every vote row.
+  // Always fresh, for the same reason as getStats above.
   const { results } = await env.DB.prepare(
     "SELECT position_id AS positionId, candidate_id AS candidateId, votes FROM tallies"
   ).all();
@@ -1681,10 +1665,7 @@ async function getResults(request, env, ctx) {
     positions[row.positionId].total += row.votes;
   }
 
-  const response = json({ positions: Object.values(positions) });
-  response.headers.set("Cache-Control", "public, max-age=15");
-  if (ctx) ctx.waitUntil(cache.put(key, response.clone()));
-  return response;
+  return json({ positions: Object.values(positions) });
 }
 
 /** Admin: every recorded ballot, grouped by voter (matric number + choices). */
