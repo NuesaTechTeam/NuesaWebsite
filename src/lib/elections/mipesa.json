@@ -1,0 +1,131 @@
+{
+  "_note": "MIPESA election ballot. Read by the website (src/lib/electionsRegistry.js) AND the elections worker (worker/src/index.js), which rejects votes for anything not listed. After editing, redeploy BOTH. One candidate = unopposed (Yes/No). A position with no candidates is hidden. Posts for Ibeh (President) and Bassey (Sports Director) were inferred from the chat order: confirm with MIPESA.",
+  "id": "mipesa",
+  "shortName": "MIPESA",
+  "name": "Mechatronics, Industrial and Production Engineering Students Association, ABUAD",
+  "title": "MIPESA ABUAD Elections",
+  "session": "2026/2027",
+  "logo": "/images/elections/mipesa/logo.png",
+  "signIn": "matric",
+  "positions": [
+    {
+      "id": "mipesa-president",
+      "title": "President",
+      "order": 1
+    },
+    {
+      "id": "mipesa-vice-president",
+      "title": "Vice President",
+      "order": 2
+    },
+    {
+      "id": "mipesa-general-secretary",
+      "title": "General Secretary",
+      "order": 3
+    },
+    {
+      "id": "mipesa-assistant-general-secretary",
+      "title": "Assistant General Secretary",
+      "order": 4
+    },
+    {
+      "id": "mipesa-financial-secretary",
+      "title": "Financial Secretary",
+      "order": 5
+    },
+    {
+      "id": "mipesa-treasurer",
+      "title": "Treasurer",
+      "order": 6
+    },
+    {
+      "id": "mipesa-technical-secretary",
+      "title": "Technical Secretary",
+      "order": 7
+    },
+    {
+      "id": "mipesa-sports-director",
+      "title": "Sports Director",
+      "order": 8
+    },
+    {
+      "id": "mipesa-welfare-director",
+      "title": "Welfare Director",
+      "order": 9
+    }
+  ],
+  "candidates": [
+    {
+      "id": "mipesa-president-ibeh-albert-chibuike",
+      "positionId": "mipesa-president",
+      "name": "Ibeh Albert Chibuike",
+      "photo": "/images/elections/mipesa/ibeh-albert-chibuike.jpg"
+    },
+    {
+      "id": "mipesa-president-ofoni-ejiroghene-rex",
+      "positionId": "mipesa-president",
+      "name": "Ofoni Ejiroghene Rex",
+      "photo": "/images/elections/mipesa/ofoni-ejiroghene-rex.jpg"
+    },
+    {
+      "id": "mipesa-vice-president-omodun-tobiloba-paul",
+      "positionId": "mipesa-vice-president",
+      "name": "Omodun Tobiloba Paul",
+      "photo": "/images/elections/mipesa/omodun-tobiloba-paul.jpg"
+    },
+    {
+      "id": "mipesa-general-secretary-odogwu-chidubem-charles",
+      "positionId": "mipesa-general-secretary",
+      "name": "Odogwu Chidubem Charles",
+      "photo": "/images/elections/mipesa/odogwu-chidubem-charles.jpg"
+    },
+    {
+      "id": "mipesa-general-secretary-ologe-glory-mudi",
+      "positionId": "mipesa-general-secretary",
+      "name": "Ologe Glory Mudi",
+      "photo": "/images/elections/mipesa/ologe-glory-mudi.jpg"
+    },
+    {
+      "id": "mipesa-assistant-general-secretary-eshalomi-ejiroghene-praise",
+      "positionId": "mipesa-assistant-general-secretary",
+      "name": "Eshalomi Ejiroghene Praise",
+      "photo": "/images/elections/mipesa/eshalomi-ejiroghene-praise.jpg"
+    },
+    {
+      "id": "mipesa-financial-secretary-amazu-chibuzor-paschal",
+      "positionId": "mipesa-financial-secretary",
+      "name": "Amazu Chibuzor Paschal",
+      "photo": "/images/elections/mipesa/amazu-chibuzor-paschal.jpg"
+    },
+    {
+      "id": "mipesa-treasurer-olasope-oluwatobi-paul",
+      "positionId": "mipesa-treasurer",
+      "name": "Olasope Oluwatobi Paul",
+      "photo": "/images/elections/mipesa/olasope-oluwatobi-paul.jpg"
+    },
+    {
+      "id": "mipesa-technical-secretary-oguche-divine-eneojo",
+      "positionId": "mipesa-technical-secretary",
+      "name": "Oguche Divine Eneojo",
+      "photo": "/images/elections/mipesa/oguche-divine-eneojo.jpg"
+    },
+    {
+      "id": "mipesa-sports-director-bassey-godspower-effiong",
+      "positionId": "mipesa-sports-director",
+      "name": "Bassey God'spower Effiong",
+      "photo": "/images/elections/mipesa/bassey-godspower-effiong.jpg"
+    },
+    {
+      "id": "mipesa-sports-director-uchehara-munachimso-ifedichinma",
+      "positionId": "mipesa-sports-director",
+      "name": "Uchehara Munachimso Ifedichinma",
+      "photo": "/images/elections/mipesa/uchehara-munachimso-ifedichinma.jpg"
+    },
+    {
+      "id": "mipesa-welfare-director-nehemiah-layade-ebunoluwa",
+      "positionId": "mipesa-welfare-director",
+      "name": "Nehemiah Layade Ebunoluwa",
+      "photo": "/images/elections/mipesa/nehemiah-layade-ebunoluwa.jpg"
+    }
+  ]
+}

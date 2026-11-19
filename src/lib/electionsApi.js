@@ -97,10 +97,14 @@ export const agentLogin = async (username, password, turnstile = {}) => {
   return data;
 };
 
-export const voterVerify = (matricNumber, invoiceNumber, turnstile = {}) =>
+// Every call takes an election id ("nuesa", "mipesa", "apwen"); omitted = NUESA, the original election.
+const withElection = (path, election) =>
+  election && election !== "nuesa" ? `${path}?election=${encodeURIComponent(election)}` : path;
+
+export const voterVerify = (matricNumber, invoiceNumber, turnstile = {}, election = "nuesa") =>
   request("/voter/verify", {
     method: "POST",
-    body: { matricNumber, invoiceNumber, ...turnstile },
+    body: { matricNumber, ...(invoiceNumber ? { invoiceNumber } : {}), election, ...turnstile },
   });
 
 export const otpSend = (voterToken) =>
@@ -112,16 +116,21 @@ export const otpVerify = (voterToken, code) =>
 export const castVote = (ballotToken, votes) =>
   request("/vote", { method: "POST", body: { ballotToken, votes } });
 
-export const getResults = (token = getAdminToken()) => request("/results", { token });
+export const getResults = (token = getAdminToken(), election = "nuesa") =>
+  request(withElection("/results", election), { token });
 
-export const getStats = (token = getAdminToken()) => request("/stats", { token });
+export const getStats = (token = getAdminToken(), election = "nuesa") =>
+  request(withElection("/stats", election), { token });
 
-/** Public: whether the voter portal is open. */
-export const getElectionStatus = () => request("/election/status");
+/** Public: whether the voter portal is open for one election. */
+export const getElectionStatus = (election = "nuesa") => request(withElection("/election/status", election));
 
-/** Admin: open or close voting. */
-export const setElectionStatus = (open) =>
-  request("/admin/election/status", { method: "POST", body: { open }, token: getAdminToken() });
+/** Public: { nuesa: bool, mipesa: bool, apwen: bool }, whether voting is open for each election. */
+export const getAllElectionStatuses = () => request("/elections/status");
+
+/** Admin: open or close voting for one election. */
+export const setElectionStatus = (open, election = "nuesa") =>
+  request("/admin/election/status", { method: "POST", body: { open, election }, token: getAdminToken() });
 
 /** Admin: remaining Brevo email credits. */
 export const getBrevoCredits = () => request("/admin/brevo", { token: getAdminToken() });
@@ -133,4 +142,9 @@ export const runDiagnostics = (payload) =>
   request("/admin/diagnostics", { method: "POST", body: payload, token: getAdminToken() });
 
 /** Admin: every recorded ballot grouped by voter (matric + choices). */
-export const getBallots = () => request("/admin/ballots", { token: getAdminToken() });
+export const getBallots = (election = "nuesa") =>
+  request(withElection("/admin/ballots", election), { token: getAdminToken() });
+
+/** Admin: give one voter fresh verification-code sends (after checking their ID in person). */
+export const resetVoterCodes = (matric, election = "nuesa") =>
+  request("/admin/election/reset-codes", { method: "POST", body: { matric, election }, token: getAdminToken() });

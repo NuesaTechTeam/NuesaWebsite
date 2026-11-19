@@ -7,7 +7,7 @@ const REFRESH_MS = 30000;
  * Polls live results + stats. `getToken` picks the session (admin by default;
  * the agents' page passes its own token getter).
  */
-export const useElectionResults = ({ getToken, refreshMs = REFRESH_MS } = {}) => {
+export const useElectionResults = ({ getToken, refreshMs = REFRESH_MS, election = "nuesa" } = {}) => {
   const configured = isElectionsApiConfigured();
   const [results, setResults] = useState(null);
   const [stats, setStats] = useState(null);
@@ -20,7 +20,7 @@ export const useElectionResults = ({ getToken, refreshMs = REFRESH_MS } = {}) =>
     if (!configured) return;
     try {
       const token = getToken ? getToken() : undefined;
-      const [resultsData, statsData] = await Promise.all([getResults(token), getStats(token)]);
+      const [resultsData, statsData] = await Promise.all([getResults(token, election), getStats(token, election)]);
       if (cancelledRef.current) return;
       setResults(resultsData);
       setStats(statsData);
@@ -32,7 +32,7 @@ export const useElectionResults = ({ getToken, refreshMs = REFRESH_MS } = {}) =>
     } finally {
       if (!cancelledRef.current) setLoading(false);
     }
-  }, [configured, getToken]);
+  }, [configured, getToken, election]);
 
   useEffect(() => {
     cancelledRef.current = false;

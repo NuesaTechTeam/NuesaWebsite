@@ -1,0 +1,12 @@
+{
+  "_note": "APWEN election ballot (female engineering students). Candidates and posts not supplied yet: add positions and candidates here (see the new-election skill), drop photos in public/images/elections/apwen/, then redeploy the worker AND the site.",
+  "id": "apwen",
+  "shortName": "APWEN",
+  "name": "Association of Professional Women Engineers of Nigeria (APWEN) ABUAD Collegiate",
+  "title": "APWEN ABUAD Elections",
+  "session": "2026/2027",
+  "logo": "/images/APWEN/APWEN LOGO.png",
+  "signIn": "matric",
+  "positions": [],
+  "candidates": []
+}

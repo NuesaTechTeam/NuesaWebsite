@@ -1,8 +1,10 @@
 import { motion } from "framer-motion";
-import { NO_VOTE_ID, getCandidatesByPosition, isUnopposed } from "../../lib/electionData";
+import { NO_VOTE_ID } from "../../lib/electionsRegistry";
+import { useElection } from "./ElectionContext";
 import VoteBar from "./VoteBar";
 
 const PositionResult = ({ position, index = 0, votesByCandidate }) => {
+  const { getCandidatesByPosition, isUnopposed } = useElection();
   const unopposed = isUnopposed(position.id);
   // Unopposed positions are a Yes/No vote on the single candidate.
   const options = unopposed

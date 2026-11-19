@@ -55,6 +55,8 @@
  */
 
 import BALLOT from "../../src/lib/electionCandidates.json";
+import MIPESA_BALLOT from "../../src/lib/elections/mipesa.json";
+import APWEN_BALLOT from "../../src/lib/elections/apwen.json";
 
 const ADMIN_SESSION_TTL = 60 * 60 * 8;
 const OTP_TTL = 60 * 10;
@@ -73,14 +75,41 @@ const ROLE_MAILER = "mailer";
 const ROLE_AGENT = "agent";
 const MAIL_ROLES = [ROLE_ADMIN, ROLE_MAILER];
 
-// The ballot the worker accepts, shared with the website.
-const POSITION_IDS = new Set(BALLOT.positions.map((position) => position.id));
-const CANDIDATES_BY_POSITION = BALLOT.candidates.reduce((map, candidate) => {
-  if (!map.has(candidate.positionId)) map.set(candidate.positionId, new Set());
-  map.get(candidate.positionId).add(candidate.id);
-  return map;
-}, new Map());
+// The ballots the worker accepts, shared with the website. NUESA is the original election and keeps
+// its un-prefixed database keys ("voting_open", "ballots_cast", plain matric numbers). Every other
+// election (MIPESA, APWEN, ...) is "scoped": its settings are "voting_open:<id>" etc., its voters
+// live in the private election_voters table, and its matric keys are "<id>:<matric>" so one
+// student can vote once in EACH election. To add an election: add its JSON ballot, register it
+// here and in src/lib/electionsRegistry.js, import its voter list, deploy worker AND site.
 const NO_VOTE_ID = "no";
+const makeElection = (id, ballot, { scoped, signIn, label }) => ({
+  id,
+  label,
+  scoped,
+  signIn, // "matric-invoice" (NUESA sheet) or "matric" (private election_voters table)
+  positionIds: new Set(ballot.positions.map((position) => position.id)),
+  candidatesByPosition: ballot.candidates.reduce((map, candidate) => {
+    if (!map.has(candidate.positionId)) map.set(candidate.positionId, new Set());
+    map.get(candidate.positionId).add(candidate.id);
+    return map;
+  }, new Map()),
+  votingKey: scoped ? `voting_open:${id}` : "voting_open",
+  castKey: scoped ? `ballots_cast:${id}` : "ballots_cast",
+});
+const ELECTIONS = {
+  nuesa: makeElection("nuesa", BALLOT, { scoped: false, signIn: "matric-invoice", label: "NUESA" }),
+  mipesa: makeElection("mipesa", MIPESA_BALLOT, { scoped: true, signIn: "matric", label: "MIPESA" }),
+  apwen: makeElection("apwen", APWEN_BALLOT, { scoped: true, signIn: "matric", label: "APWEN" }),
+};
+const matricKey = (value) => String(value || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+/** The election a request is about: ?election= or body.election; none = NUESA. null = unknown id. */
+const electionFrom = (value) => {
+  if (value === undefined || value === null || value === "") return ELECTIONS.nuesa;
+  return typeof value === "string" && Object.prototype.hasOwnProperty.call(ELECTIONS, value) ? ELECTIONS[value] : null;
+};
+const unknownElection = () => json({ error: "Unknown election." }, 400);
+// Sign-ins per network per hour on matric-only elections (a hostel/campus NAT shares one address).
+const SCOPED_SIGNINS_PER_IP_HOUR = 200;
 
 // Site-wide failed-code alarm: more than STORM_THRESHOLD wrong codes across all
 // matrics in one 10-minute bucket puts the API in "storm" mode for STORM_MS,
@@ -135,6 +164,7 @@ const ROUTE_ROLES = new Map([
   ["GET /admin/ballots", [ROLE_ADMIN]],
   ["GET /admin/brevo", [ROLE_ADMIN]],
   ["POST /admin/election/status", [ROLE_ADMIN]],
+  ["POST /admin/election/reset-codes", [ROLE_ADMIN]],
 ]);
 
 export default {
@@ -171,6 +201,7 @@ export default {
 
       let response;
       let handled = false;
+      const election = electionFrom(url.searchParams.get("election"));
 
       /* ------------------------------------------------------------ blog */
       if (url.pathname.startsWith("/mail/images/") && request.method === "GET") {
@@ -240,10 +271,19 @@ export default {
           response = await agentLogin(request, env);
           break;
         case "GET /election/status":
-          response = json({ votingOpen: await isVotingOpen(env) });
+          {
+            const election = electionFrom(url.searchParams.get("election"));
+            response = election ? json({ votingOpen: await isVotingOpen(env, election) }) : unknownElection();
+          }
+          break;
+        case "GET /elections/status":
+          response = await allVotingStatuses(env);
           break;
         case "POST /admin/election/status":
           response = await setVotingOpen(request, env);
+          break;
+        case "POST /admin/election/reset-codes":
+          response = await resetVoterCodes(request, env);
           break;
         case "GET /admin/brevo":
           response = await brevoCredits(env);
@@ -285,13 +325,13 @@ export default {
           response = json({ ok: true, role: await sessionRole(request, env) });
           break;
         case "GET /admin/ballots":
-          response = await getBallots(env);
+          response = election ? await getBallots(env, election) : unknownElection();
           break;
         case "GET /results":
-          response = await getResults(request, env);
+          response = election ? await getResults(request, env, election) : unknownElection();
           break;
         case "GET /stats":
-          response = await getStats(request, env);
+          response = election ? await getStats(request, env, election) : unknownElection();
           break;
         case "GET /candidates":
           response = await getCandidates(env);
@@ -525,10 +565,10 @@ async function findVoter(env, matricNumber, invoiceNumber, request) {
 
 /* ------------------------------------------------------------------- mail */
 
-async function sendEmail(env, to, code) {
+async function sendEmail(env, to, code, label = "NUESA") {
   if (!to) return { channel: "email", sent: false, reason: "No email address on record" };
 
-  const subject = "Your NUESA Elections verification code";
+  const subject = `Your ${label} Elections verification code`;
   const text = `Your one-time verification code is ${code}. It expires in 10 minutes. If you did not request this, ignore this message.`;
 
   // Preferred provider: Brevo. Falls back to Resend when Brevo is not set.
@@ -603,7 +643,7 @@ function normalizePhone(value) {
   return /^\d{7,15}$/.test(phone) ? phone : "";
 }
 
-async function sendSms(env, to, code) {
+async function sendSms(env, to, code, label = "NUESA") {
   if (!to) return { channel: "sms", sent: false, reason: "No phone number on record" };
   if (!env.TERMII_API_KEY) return { channel: "sms", sent: false, reason: "TERMII_API_KEY is not configured" };
 
@@ -619,7 +659,7 @@ async function sendSms(env, to, code) {
       api_key: env.TERMII_API_KEY,
       to: recipient,
       from: env.TERMII_SENDER_ID || "NUESA",
-      sms: `Your NUESA Elections verification code is ${code}. It expires in 10 minutes.`,
+      sms: `Your ${label} Elections verification code is ${code}. It expires in 10 minutes.`,
       type: "plain",
       channel: env.TERMII_CHANNEL || "generic",
     }),
@@ -812,12 +852,12 @@ async function checkTurnstile(request, env, body) {
 // files like .env, laravel.log or /server-status), so the list of probe names
 // below is only used to label events, not to decide.
 const KNOWN_ROUTES = [
-  /^\/election\/status$/,
+  /^\/elections?\/status$/,
   /^\/voter\/(verify|otp\/send|otp\/verify)$/,
   /^\/vote$/,
   /^\/(results|stats|candidates)$/,
   /^\/(admin|agent|mailer)\/login$/,
-  /^\/admin\/(session|ballots|brevo|diagnostics|election\/status)$/,
+  /^\/admin\/(session|ballots|brevo|diagnostics|election\/(status|reset-codes))$/,
   /^\/admin\/mail\/(recipients|campaigns|test|attachments|images)$/,
   /^\/admin\/mail\/campaigns\/[^/]+(\/stop)?$/,
   /^\/blog\/(posts|submissions)$/,
@@ -1232,24 +1272,49 @@ function agentLogin(request, env) {
 
 /* ------------------------------------------------------------ voting window */
 
-async function isVotingOpen(env) {
-  const row = await env.DB.prepare(
-    "SELECT value FROM election_settings WHERE key = 'voting_open'"
-  ).first();
+async function isVotingOpen(env, election = ELECTIONS.nuesa) {
+  const row = await env.DB.prepare("SELECT value FROM election_settings WHERE key = ?")
+    .bind(election.votingKey)
+    .first();
   return row?.value === "1";
 }
 
+/** Public: { nuesa: bool, mipesa: bool, apwen: bool }, whether each election's voting is open. */
+async function allVotingStatuses(env) {
+  const out = {};
+  for (const election of Object.values(ELECTIONS)) out[election.id] = await isVotingOpen(env, election);
+  return json(out);
+}
+
 async function setVotingOpen(request, env) {
-  const { open } = await readJson(request);
+  const body = await readJson(request);
+  const { open } = body;
+  const election = electionFrom(body.election);
+  if (!election) return unknownElection();
   if (typeof open !== "boolean") return json({ error: "Send { open: true | false }" }, 400);
+  if (open && election.positionIds.size === 0) {
+    return json({ error: `${election.label} has no candidates yet, so voting can't be opened.` }, 409);
+  }
   await env.DB.prepare(
-    `INSERT INTO election_settings (key, value) VALUES ('voting_open', ?)
+    `INSERT INTO election_settings (key, value) VALUES (?, ?)
      ON CONFLICT (key) DO UPDATE SET value = excluded.value`
   )
-    .bind(open ? "1" : "0")
+    .bind(election.votingKey, open ? "1" : "0")
     .run();
-  logEvent(request, open ? "voting_opened" : "voting_closed", { action: "admin" });
-  return json({ votingOpen: open });
+  logEvent(request, open ? "voting_opened" : "voting_closed", { action: "admin", election: election.id });
+  return json({ votingOpen: open, election: election.id });
+}
+
+/** Admin: give one voter fresh verification-code sends (after checking their ID in person). */
+async function resetVoterCodes(request, env) {
+  const body = await readJson(request);
+  const election = electionFrom(body.election);
+  if (!election) return unknownElection();
+  if (typeof body.matric !== "string" || !body.matric.trim()) return json({ error: "Send the voter's matric number." }, 400);
+  const key = election.scoped ? `${election.id}:${matricKey(body.matric)}` : normalizeValue(body.matric);
+  const result = await env.DB.prepare("DELETE FROM otp_sends WHERE matric = ?").bind(key).run();
+  logEvent(request, "codes_reset", { action: "admin", election: election.id, matric: key });
+  return json({ reset: (result.meta?.changes || 0) > 0 });
 }
 
 /** Milliseconds-since-epoch until which "storm" mode lasts (0 when off). */
@@ -1365,8 +1430,76 @@ async function brevoCredits(env) {
   });
 }
 
+/** Matric-only election sign-in: look the member up in the private election_voters table. */
+async function voterVerifyScoped(request, env, election, body) {
+  const { matricNumber } = body;
+  if (typeof matricNumber !== "string" || !matricNumber.trim() || matricNumber.length > 60) {
+    return json({ error: "Enter your matric number as text." }, 400);
+  }
+  if (!(await isVotingOpen(env, election))) return votingClosed();
+
+  const ip = request.headers.get("CF-Connecting-IP") || "unknown";
+  const hour = Math.floor(Date.now() / 3600000);
+  if ((await edgeIncr(request, `scoped-signin:${ip}:${hour}`, 4000)) > SCOPED_SIGNINS_PER_IP_HOUR) {
+    logEvent(request, "signin_rate_limited", { action: "refused", election: election.id });
+    return json({ error: "Too many sign-in attempts from this connection. Please try again later." }, 429);
+  }
+
+  const turnstile = await checkTurnstile(request, env, body);
+  if (!turnstile.ok) return turnstile.response;
+
+  const key = matricKey(matricNumber);
+  const row = key
+    ? await env.DB.prepare(
+        "SELECT matric, name, level, department, email, phone FROM election_voters WHERE election_id = ? AND matric_key = ?"
+      )
+        .bind(election.id, key)
+        .first()
+    : null;
+  if (!row) {
+    logEvent(request, "voter_not_found", { action: "refused", election: election.id, matric: key.slice(0, 40) });
+    await recordSignInFailure(request, env, `${election.id}:${key.slice(0, 40)}`);
+    return json(
+      { error: `We could not find that matric number on the ${election.label} voters' list. Only members who have paid can vote. If you have paid, see the electoral committee.` },
+      401
+    );
+  }
+  if (!row.email && !row.phone) {
+    return json(
+      { error: "We have no email or phone number on record for you, so we can't send a code. Please see the electoral committee." },
+      422
+    );
+  }
+
+  const scoped = `${election.id}:${key}`;
+  if (await hasVoted(env, scoped)) return alreadyVoted();
+
+  const voter = {
+    key: scoped,
+    matric: scoped,
+    matricNumber: row.matric,
+    email: row.email || "",
+    phone: row.phone || "",
+    election: election.id,
+  };
+  const voterToken = randomToken();
+  await putToken(env, "voter", voterToken, voter, OTP_TTL);
+
+  return json({
+    voterToken,
+    maskedEmail: maskEmail(voter.email),
+    maskedPhone: maskPhone(voter.phone),
+    hasEmail: Boolean(voter.email),
+    hasPhone: Boolean(voter.phone),
+  });
+}
+
 async function voterVerify(request, env) {
   const body = await readJson(request);
+  const election = electionFrom(body.election);
+  if (!election) return unknownElection();
+  if (election.scoped) return voterVerifyScoped(request, env, election, body);
+
   const { matricNumber, invoiceNumber } = body;
   if (!matricNumber || !invoiceNumber) {
     return json({ error: "Matric number and invoice number are required" }, 400);
@@ -1375,7 +1508,7 @@ async function voterVerify(request, env) {
     return json({ error: "Enter your matric number and invoice number as text." }, 400);
   }
 
-  if (!(await isVotingOpen(env))) return votingClosed();
+  if (!(await isVotingOpen(env, election))) return votingClosed();
 
   const normalizedMatric = normalizeValue(matricNumber);
   if (!MATRIC_FORMAT.test(normalizedMatric) && !DIRECT_ENTRY_JAMB_FORMAT.test(normalizedMatric)) {
@@ -1396,6 +1529,7 @@ async function voterVerify(request, env) {
     return json({ error: "We could not find a verified dues payment for those details" }, 401);
   }
   voter.matric = normalizeValue(voter.matricNumber);
+  voter.election = election.id;
   if (await hasVoted(env, voter.matric)) return alreadyVoted();
 
   const voterToken = randomToken();
@@ -1415,7 +1549,8 @@ async function otpSend(request, env) {
   const voter = await getToken(env, "voter", voterToken);
   if (!voter) return json({ error: "Verification session expired. Please sign in again." }, 401);
 
-  if (!(await isVotingOpen(env))) return votingClosed();
+  const election = electionFrom(voter.election) || ELECTIONS.nuesa;
+  if (!(await isVotingOpen(env, election))) return votingClosed();
 
   const matric = voter.matric || normalizeValue(voter.matricNumber);
   if (await hasVoted(env, matric)) return alreadyVoted();
@@ -1458,8 +1593,8 @@ async function otpSend(request, env) {
     .run();
 
   const [emailResult, smsResult] = await Promise.all([
-    sendEmail(env, voter.email, code),
-    sendSms(env, voter.phone, code),
+    sendEmail(env, voter.email, code, election.label),
+    sendSms(env, voter.phone, code, election.label),
   ]);
 
   const channels = [emailResult, smsResult].filter((result) => result.sent);
@@ -1488,11 +1623,14 @@ async function otpSend(request, env) {
 }
 
 async function otpVerify(request, env) {
-  if (!(await isVotingOpen(env))) return votingClosed();
   const { voterToken, code } = await readJson(request);
   if (typeof voterToken !== "string" || !voterToken) {
     return json({ error: "Verification session expired. Please sign in again." }, 401);
   }
+  const voter = await getToken(env, "voter", voterToken);
+  if (!voter?.key) return json({ error: "Verification session expired. Please sign in again." }, 401);
+  const election = electionFrom(voter.election) || ELECTIONS.nuesa;
+  if (!(await isVotingOpen(env, election))) return votingClosed();
   const tokenHash = await sha256Hex(voterToken);
   const now = Date.now();
   const limit = (await stormActive(env)) ? STORM_OTP_ATTEMPTS : MAX_OTP_ATTEMPTS;
@@ -1517,8 +1655,6 @@ async function otpVerify(request, env) {
     return json({ error: "Too many attempts. Please request a new code." }, 429);
   }
 
-  const voter = await getToken(env, "voter", voterToken);
-  if (!voter?.key) return json({ error: "Verification session expired. Please sign in again." }, 401);
   const matric = voter.matric || normalizeValue(voter.matricNumber);
 
   const guessHash = await sha256Hex(`${voterToken}:${String(code ?? "").trim()}`);
@@ -1531,7 +1667,7 @@ async function otpVerify(request, env) {
   if (await hasVoted(env, matric)) return alreadyVoted();
 
   const ballotToken = randomToken();
-  await putToken(env, "ballot", ballotToken, { voterKey: voter.key, matric }, BALLOT_TTL);
+  await putToken(env, "ballot", ballotToken, { voterKey: voter.key, matric, election: election.id }, BALLOT_TTL);
   await env.DB.prepare("DELETE FROM otp_codes WHERE voter_token_hash = ?").bind(tokenHash).run();
 
   return json({ ballotToken });
@@ -1542,11 +1678,11 @@ async function otpVerify(request, env) {
  * positions blank but must choose at least one; unopposed positions take the
  * candidate's id (Yes) or NO_VOTE_ID (No). Returns an error message or "".
  */
-function validateBallot(votes) {
+function validateBallot(votes, election = ELECTIONS.nuesa) {
   if (!Array.isArray(votes) || votes.length === 0) {
     return "Choose at least one candidate before submitting.";
   }
-  if (votes.length > POSITION_IDS.size) return "Too many votes on this ballot.";
+  if (votes.length > election.positionIds.size) return "Too many votes on this ballot.";
 
   const seen = new Set();
   for (const vote of votes) {
@@ -1556,11 +1692,11 @@ function validateBallot(votes) {
       return "Your ballot is not in the expected format.";
     }
     const { positionId, candidateId } = vote;
-    if (!POSITION_IDS.has(positionId)) return "Your ballot contains an unknown position.";
+    if (!election.positionIds.has(positionId)) return "Your ballot contains an unknown position.";
     if (seen.has(positionId)) return "Your ballot has more than one vote for a position.";
     seen.add(positionId);
 
-    const candidates = CANDIDATES_BY_POSITION.get(positionId) || new Set();
+    const candidates = election.candidatesByPosition.get(positionId) || new Set();
     const unopposed = candidates.size === 1;
     const valid = candidates.has(candidateId) || (unopposed && candidateId === NO_VOTE_ID);
     if (!valid) return "Your ballot contains an unknown candidate.";
@@ -1569,13 +1705,14 @@ function validateBallot(votes) {
 }
 
 async function castVote(request, env) {
-  if (!(await isVotingOpen(env))) return votingClosed();
-
   const { ballotToken, votes } = await readJson(request);
   const stored = await getToken(env, "ballot", ballotToken);
   if (!stored) return json({ error: "Your ballot session expired. Please sign in again." }, 401);
 
-  const problem = validateBallot(votes);
+  const election = electionFrom(stored.election) || ELECTIONS.nuesa;
+  if (!(await isVotingOpen(env, election))) return votingClosed();
+
+  const problem = validateBallot(votes, election);
   if (problem) return json({ error: problem }, 400);
 
   const ballotTokenHash = await sha256Hex(ballotToken);
@@ -1601,9 +1738,9 @@ async function castVote(request, env) {
       ).bind(vote.positionId, vote.candidateId),
     ]),
     env.DB.prepare(
-      `INSERT INTO election_settings (key, value) VALUES ('ballots_cast', '1')
+      `INSERT INTO election_settings (key, value) VALUES (?, '1')
        ON CONFLICT (key) DO UPDATE SET value = CAST(CAST(value AS INTEGER) + 1 AS TEXT)`
-    ),
+    ).bind(election.castKey),
     env.DB.prepare("DELETE FROM auth_tokens WHERE token_hash = ?").bind(ballotTokenHash),
   ];
 
@@ -1614,19 +1751,24 @@ async function castVote(request, env) {
     return alreadyVoted();
   }
 
-  logEvent(request, "vote_recorded", { action: "recorded", matric, positions: votes.length });
+  logEvent(request, "vote_recorded", { action: "recorded", election: election.id, matric, positions: votes.length });
   return json({ recorded: true });
 }
 
-async function getStats(request, env) {
+async function getStats(request, env, election = ELECTIONS.nuesa) {
   // Ballots cast comes from a running counter kept in the vote's own batch, so
   // this is a single cheap row read, not a recount of every ballot. Always
   // read fresh: an edge cache here previously let a stale ballots-cast number
   // get stuck on the agents' dashboard (a slow-finishing read could re-cache
   // an old value right after a vote invalidated it).
   const [registeredVoters, countRow, storm] = await Promise.all([
-    countVoters(env, request),
-    env.DB.prepare("SELECT value FROM election_settings WHERE key = 'ballots_cast'").first(),
+    election.scoped
+      ? env.DB.prepare("SELECT COUNT(*) AS n FROM election_voters WHERE election_id = ?")
+          .bind(election.id)
+          .first()
+          .then((row) => row?.n || 0)
+      : countVoters(env, request),
+    env.DB.prepare("SELECT value FROM election_settings WHERE key = ?").bind(election.castKey).first(),
     stormUntil(env),
   ]);
   return json({
@@ -1646,7 +1788,7 @@ async function countVoters(env, request) {
   return Math.max(rows.length - 1, 0);
 }
 
-async function getResults(request, env) {
+async function getResults(request, env, election = ELECTIONS.nuesa) {
   // Reads the small aggregate table instead of scanning every vote row.
   // Always fresh, for the same reason as getStats above.
   const { results } = await env.DB.prepare(
@@ -1655,6 +1797,7 @@ async function getResults(request, env) {
 
   const positions = {};
   for (const row of results || []) {
+    if (!election.positionIds.has(row.positionId)) continue;
     if (!positions[row.positionId]) {
       positions[row.positionId] = { positionId: row.positionId, total: 0, candidates: [] };
     }
@@ -1669,7 +1812,7 @@ async function getResults(request, env) {
 }
 
 /** Admin: every recorded ballot, grouped by voter (matric number + choices). */
-async function getBallots(env) {
+async function getBallots(env, election = ELECTIONS.nuesa) {
   const { results } = await env.DB.prepare(
     `SELECT voter_key AS voterKey, position_id AS positionId,
             candidate_id AS candidateId, created_at AS createdAt
@@ -1679,10 +1822,11 @@ async function getBallots(env) {
 
   const byVoter = new Map();
   for (const row of results || []) {
+    if (!election.positionIds.has(row.positionId)) continue;
     if (!byVoter.has(row.voterKey)) {
       byVoter.set(row.voterKey, {
         voterKey: row.voterKey,
-        matric: String(row.voterKey).split(":")[0],
+        matric: election.scoped ? String(row.voterKey).split(":")[1] || "" : String(row.voterKey).split(":")[0],
         votedAt: row.createdAt,
         votes: [],
       });
@@ -1773,7 +1917,7 @@ function imageUrlFor(request, id, hasImage) {
 async function blogSubmit(request, env) {
   // Public form: paused while voting is open so it can't eat the free daily
   // D1 write allowance the election needs, and limited per address.
-  if (await isVotingOpen(env)) {
+  if ((await Promise.all(Object.values(ELECTIONS).map((election) => isVotingOpen(env, election)))).some(Boolean)) {
     return json({ error: "Blog submissions are paused during the election. Please try again later." }, 503);
   }
   const ip = request.headers.get("CF-Connecting-IP") || "unknown";

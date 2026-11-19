@@ -1,14 +1,7 @@
 import { motion } from "framer-motion";
 import { Users, Vote } from "lucide-react";
-import {
-  CANDIDATES,
-  ELECTED_POSITIONS,
-  OTP_STEPS,
-  VOTER_CONTACT_FIELDS,
-  VOTER_LOGIN_FIELDS,
-  VOTER_PROFILE_FIELDS,
-  isUnopposed,
-} from "../../lib/electionData";
+import { VOTER_CONTACT_FIELDS, VOTER_PROFILE_FIELDS } from "../../lib/electionData";
+import { useElection } from "./ElectionContext";
 import CandidateCard from "./CandidateCard";
 
 const fadeUp = {
@@ -20,7 +13,9 @@ const greenButton =
   "btn-lively inline-flex flex-1 items-center justify-center gap-2 rounded-lg bg-green px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-green-dark";
 
 /** Admin-only preview of the sign-in fields voters see. */
-const SignInPreview = () => (
+const SignInPreview = () => {
+  const election = useElection();
+  return (
   <motion.div
     variants={fadeUp}
     initial='hidden'
@@ -35,13 +30,14 @@ const SignInPreview = () => (
       </span>
     </div>
     <p className='mt-2 text-sm leading-relaxed text-gray-600 dark:text-gray-300'>
-      Matric number is the username and invoice number is the password. The
-      details are checked against the verified paid-dues record before a ballot
-      is issued. The fields below are a preview of what voters see.
+      {election.signIn === "matric-invoice"
+        ? "Matric number is the username and invoice number is the password. The details are checked against the verified paid-dues record before a ballot is issued."
+        : "Voters enter their matric number only. It is checked against the paid voters' list before a code is sent."}{" "}
+      The fields below are a preview of what voters see.
     </p>
 
     <div className='mt-5 space-y-4'>
-      {VOTER_LOGIN_FIELDS.map((field) => (
+      {election.loginFields.map((field) => (
         <div key={field.id}>
           <label className='mb-1.5 flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-200'>
             {field.label}
@@ -77,9 +73,12 @@ const SignInPreview = () => (
       </p>
     </div>
   </motion.div>
-);
+  );
+};
 
-export const VerificationTab = ({ onViewCandidates, onVoteNow, showPreview = false }) => (
+export const VerificationTab = ({ onViewCandidates, onVoteNow, showPreview = false }) => {
+  const election = useElection();
+  return (
   <div className={showPreview ? "grid grid-cols-1 gap-6 lg:grid-cols-2" : "mx-auto max-w-2xl"}>
     {showPreview && <SignInPreview />}
 
@@ -101,7 +100,7 @@ export const VerificationTab = ({ onViewCandidates, onVoteNow, showPreview = fal
         animate='visible'
         variants={{ visible: { transition: { staggerChildren: 0.08, delayChildren: 0.1 } } }}
       >
-        {OTP_STEPS.map((step, index) => (
+        {election.otpSteps.map((step, index) => (
           <motion.li key={index} variants={fadeUp} className='flex gap-3'>
             <span className='flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-green text-xs font-bold text-white'>
               {index + 1}
@@ -123,14 +122,27 @@ export const VerificationTab = ({ onViewCandidates, onVoteNow, showPreview = fal
       </div>
     </motion.div>
   </div>
-);
+  );
+};
 
-export const CandidatesTab = ({ onVoteNow }) => (
+export const CandidatesTab = ({ onVoteNow }) => {
+  const election = useElection();
+  if (!election.hasBallot) {
+    return (
+      <div className='mx-auto max-w-xl rounded-2xl border border-gray-200 bg-white p-8 text-center dark:border-gray-800 dark:bg-gray-900'>
+        <h2 className='text-lg font-bold text-gray-900 dark:text-white'>Candidates will appear here</h2>
+        <p className='mt-2 text-sm text-gray-600 dark:text-gray-300'>
+          The {election.shortName} candidates have not been announced yet. Check back soon.
+        </p>
+      </div>
+    );
+  }
+  return (
   <div className='space-y-10'>
-    {ELECTED_POSITIONS.map((position) => {
-      const candidates = CANDIDATES.filter((candidate) => candidate.positionId === position.id);
+    {election.positions.map((position) => {
+      const candidates = election.getCandidatesByPosition(position.id);
       if (candidates.length === 0) return null;
-      const unopposed = isUnopposed(position.id);
+      const unopposed = election.isUnopposed(position.id);
 
       return (
         <div key={position.id}>
@@ -177,4 +189,5 @@ export const CandidatesTab = ({ onVoteNow }) => (
       </button>
     </div>
   </div>
-);
+  );
+};

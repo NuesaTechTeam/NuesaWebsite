@@ -14,18 +14,13 @@ import {
   Unlock,
   Users,
 } from "lucide-react";
-import logo from "../../assets/logo.png";
-import {
-  CANDIDATES,
-  ELECTION_META,
-  ELECTED_POSITIONS,
-  NO_VOTE_ID,
-  getPositionById,
-} from "../../lib/electionData";
+import { ELECTIONS, ELECTION_ORDER, NO_VOTE_ID } from "../../lib/electionsRegistry";
+import { ElectionContext, useElection } from "./ElectionContext";
 import { useElectionResults } from "../../hooks/useElectionResults";
 import {
   getBallots,
   getBrevoCredits,
+  getAllElectionStatuses,
   getElectionStatus,
   runDiagnostics,
   setElectionStatus,
@@ -45,45 +40,49 @@ const TABS = [
   { id: "diagnostics", label: "Diagnostics", icon: Activity },
 ];
 
-export const ResultsTab = ({ votesByPosition, onPrint, onPrintOnePage }) => (
-  <div>
-    {onPrint && (
-      <div className='mb-4 flex flex-wrap justify-end gap-2'>
-        {onPrintOnePage && (
+export const ResultsTab = ({ votesByPosition, onPrint, onPrintOnePage }) => {
+  const election = useElection();
+  return (
+    <div>
+      {onPrint && (
+        <div className='mb-4 flex flex-wrap justify-end gap-2'>
+          {onPrintOnePage && (
+            <button
+              type='button'
+              onClick={onPrintOnePage}
+              className='inline-flex items-center gap-2 rounded-lg border border-green px-4 py-2 text-sm font-semibold text-green transition-colors hover:bg-green/10 dark:text-green-400'
+            >
+              <Printer className='h-4 w-4' />
+              Print on one page
+            </button>
+          )}
           <button
             type='button'
-            onClick={onPrintOnePage}
-            className='inline-flex items-center gap-2 rounded-lg border border-green px-4 py-2 text-sm font-semibold text-green transition-colors hover:bg-green/10 dark:text-green-400'
+            onClick={onPrint}
+            className='inline-flex items-center gap-2 rounded-lg bg-green px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-dark'
           >
             <Printer className='h-4 w-4' />
-            Print on one page
+            Print results
           </button>
-        )}
-        <button
-          type='button'
-          onClick={onPrint}
-          className='inline-flex items-center gap-2 rounded-lg bg-green px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-green-dark'
-        >
-          <Printer className='h-4 w-4' />
-          Print results
-        </button>
+        </div>
+      )}
+      <div className='grid grid-cols-1 gap-5 lg:grid-cols-2'>
+        {election.positions.map((position, index) => (
+          <PositionResult
+            key={position.id}
+            position={position}
+            index={index}
+            votesByCandidate={votesByPosition?.[position.id]}
+          />
+        ))}
       </div>
-    )}
-  <div className='grid grid-cols-1 gap-5 lg:grid-cols-2'>
-    {ELECTED_POSITIONS.map((position, index) => (
-      <PositionResult
-        key={position.id}
-        position={position}
-        index={index}
-        votesByCandidate={votesByPosition?.[position.id]}
-      />
-    ))}
-  </div>
-  </div>
-);
+    </div>
+  );
+};
 
 /** Open/close voting. While closed the public sees no voter portal and the API refuses voters. */
 const VotingSwitch = ({ votingOpen, onChange }) => {
+  const election = useElection();
   const [busy, setBusy] = useState(false);
   const [confirming, setConfirming] = useState(false);
   const [error, setError] = useState("");
@@ -92,7 +91,7 @@ const VotingSwitch = ({ votingOpen, onChange }) => {
     setBusy(true);
     setError("");
     try {
-      const data = await setElectionStatus(!votingOpen);
+      const data = await setElectionStatus(!votingOpen, election.id);
       onChange(data.votingOpen);
       setConfirming(false);
     } catch (err) {
@@ -125,8 +124,8 @@ const VotingSwitch = ({ votingOpen, onChange }) => {
       </p>
       <p className='mt-1 text-xs text-gray-500 dark:text-gray-400'>
         {votingOpen
-          ? "Voters can see the portal at /elections and cast ballots."
-          : "The voter portal is hidden and voter sign-ins are refused."}
+          ? `Voters can open the ${election.shortName} ballot at /elections and cast votes.`
+          : "The ballot is locked and voter sign-ins are refused."}
       </p>
 
       {!loading &&
@@ -190,11 +189,7 @@ const BrevoCredits = () => {
   }, [load]);
 
   return (
-    <StatCard
-      icon={Mail}
-      label='Brevo emails left'
-      value={state.credits ?? (state.loading ? "…" : "—")}
-    >
+    <StatCard icon={Mail} label='Brevo emails left' value={state.credits ?? (state.loading ? "…" : "—")}>
       <div className='mt-1 flex items-center justify-between gap-2 text-xs text-gray-500 dark:text-gray-400'>
         <span>
           {state.error
@@ -218,17 +213,11 @@ const BrevoCredits = () => {
   );
 };
 
-const CANDIDATE_NAME_BY_ID = CANDIDATES.reduce((map, candidate) => {
-  map[candidate.id] = candidate.name;
-  return map;
-}, {});
-
 /** How a recorded choice reads in the Ballots tab (handles unopposed Yes/No). */
-const choiceLabel = (positionId, candidateId) => {
+const choiceLabel = (election, positionId, candidateId) => {
   if (candidateId === NO_VOTE_ID) return "No";
-  const name = CANDIDATE_NAME_BY_ID[candidateId] || candidateId;
-  const unopposed = CANDIDATES.filter((c) => c.positionId === positionId).length === 1;
-  return unopposed ? `Yes: ${name}` : name;
+  const name = election.candidateName(candidateId) || candidateId;
+  return election.isUnopposed(positionId) ? `Yes: ${name}` : name;
 };
 
 const formatBallotTime = (iso) => {
@@ -244,6 +233,7 @@ const formatBallotTime = (iso) => {
 };
 
 const BallotsTab = () => {
+  const election = useElection();
   const [ballots, setBallots] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -253,7 +243,7 @@ const BallotsTab = () => {
     setLoading(true);
     setError("");
     try {
-      const data = await getBallots();
+      const data = await getBallots(election.id);
       setBallots(data?.ballots || []);
     } catch (err) {
       setError(err.message || "Could not load ballots.");
@@ -266,9 +256,7 @@ const BallotsTab = () => {
     load();
   }, []);
 
-  const filtered = (ballots || []).filter((ballot) =>
-    ballot.matric.toLowerCase().includes(query.trim().toLowerCase())
-  );
+  const filtered = (ballots || []).filter((ballot) => ballot.matric.toLowerCase().includes(query.trim().toLowerCase()));
 
   return (
     <div>
@@ -327,15 +315,12 @@ const BallotsTab = () => {
               </div>
               <div className='mt-3 grid grid-cols-1 gap-x-6 gap-y-1.5 sm:grid-cols-2'>
                 {ballot.votes.map((vote) => (
-                  <div
-                    key={vote.positionId}
-                    className='flex items-center justify-between gap-3 text-sm'
-                  >
+                  <div key={vote.positionId} className='flex items-center justify-between gap-3 text-sm'>
                     <span className='text-gray-500 dark:text-gray-400'>
-                      {getPositionById(vote.positionId)?.title || vote.positionId}
+                      {election.getPositionById(vote.positionId)?.title || vote.positionId}
                     </span>
                     <span className='text-right font-medium text-gray-800 dark:text-gray-100'>
-                      {choiceLabel(vote.positionId, vote.candidateId)}
+                      {choiceLabel(election, vote.positionId, vote.candidateId)}
                     </span>
                   </div>
                 ))}
@@ -381,15 +366,13 @@ const DiagnosticsTab = () => {
       <div className='rounded-2xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-gray-900'>
         <h2 className='text-lg font-bold text-gray-900 dark:text-white'>Delivery diagnostics</h2>
         <p className='mt-2 text-sm text-gray-600 dark:text-gray-300'>
-          Sends a real test OTP and shows exactly what Brevo (email) and Termii (SMS) replied.
-          The code is shown below — you can ignore it.
+          Sends a real test OTP and shows exactly what Brevo (email) and Termii (SMS) replied. The code is shown below —
+          you can ignore it.
         </p>
 
         <div className='mt-5 space-y-4'>
           <div>
-            <label className='mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-200'>
-              Test email
-            </label>
+            <label className='mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-200'>Test email</label>
             <input
               type='email'
               value={email}
@@ -399,9 +382,7 @@ const DiagnosticsTab = () => {
             />
           </div>
           <div>
-            <label className='mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-200'>
-              Test phone
-            </label>
+            <label className='mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-200'>Test phone</label>
             <input
               type='tel'
               value={phone}
@@ -437,9 +418,8 @@ const DiagnosticsTab = () => {
         ) : (
           <div className='mt-3 space-y-4'>
             <div className='text-xs text-gray-500 dark:text-gray-400'>
-              Config: email {result.config?.email ? "ok" : "missing"} · sms{" "}
-              {result.config?.sms ? "ok" : "missing"} · sender {result.config?.smsSenderId || "—"} /
-              channel {result.config?.smsChannel || "—"}
+              Config: email {result.config?.email ? "ok" : "missing"} · sms {result.config?.sms ? "ok" : "missing"} ·
+              sender {result.config?.smsSenderId || "—"} / channel {result.config?.smsChannel || "—"}
             </div>
             {[result.results?.email, result.results?.sms].filter(Boolean).map((r) => (
               <div
@@ -472,7 +452,8 @@ const DiagnosticsTab = () => {
   );
 };
 
-const ElectionsDashboard = ({ onLogout }) => {
+const ElectionDashboard = ({ onLogout }) => {
+  const election = useElection();
   const [activeTab, setActiveTab] = useState("results");
   const [votingOpen, setVotingOpen] = useState(null);
   const [printing, setPrinting] = useState(false);
@@ -487,13 +468,13 @@ const ElectionsDashboard = ({ onLogout }) => {
     error: resultsError,
     lastUpdated,
     refresh,
-  } = useElectionResults();
+  } = useElectionResults({ election: election.id });
 
   useEffect(() => {
-    getElectionStatus()
+    getElectionStatus(election.id)
       .then((data) => setVotingOpen(Boolean(data.votingOpen)))
       .catch(() => setVotingOpen(false));
-  }, []);
+  }, [election.id]);
 
   return (
     <div className='min-h-screen bg-gray-50 dark:bg-gray-950 px-4 py-10 sm:px-6 lg:px-8'>
@@ -531,11 +512,11 @@ const ElectionsDashboard = ({ onLogout }) => {
               </span>
             </div>
             <div className='mt-3 flex items-center gap-3'>
-              <img src={logo} alt='NUESA ABUAD' className='h-11 w-11 shrink-0 object-contain' />
-              <h1 className='text-3xl font-bold text-gray-900 dark:text-white'>{ELECTION_META.title}</h1>
+              <img src={election.logo} alt={election.shortName} className='h-11 w-11 shrink-0 object-contain' />
+              <h1 className='text-3xl font-bold text-gray-900 dark:text-white'>{election.title}</h1>
             </div>
             <p className='text-sm text-gray-600 dark:text-gray-400'>
-              Session {ELECTION_META.session} · Live voting dashboard
+              Session {election.session} · Live voting dashboard
             </p>
           </div>
           <div className='flex items-center gap-2 self-start'>
@@ -594,9 +575,9 @@ const ElectionsDashboard = ({ onLogout }) => {
           >
             <p className='font-bold'>Possible attack: unusually many wrong sign-ins or verification codes</p>
             <p className='mt-1'>
-              The server has cut each code to 3 guesses until{" "}
-              {new Date(stormUntil).toLocaleTimeString()}. Check the Workers Logs for
-              &quot;storm&quot;, &quot;code_fail&quot; and &quot;invoice_guessing&quot; events. Close voting if it looks targeted.
+              The server has cut each code to 3 guesses until {new Date(stormUntil).toLocaleTimeString()}. Check the
+              Workers Logs for &quot;storm&quot;, &quot;code_fail&quot; and &quot;invoice_guessing&quot; events. Close
+              voting if it looks targeted.
             </p>
           </div>
         )}
@@ -678,6 +659,81 @@ const ElectionsDashboard = ({ onLogout }) => {
         </div>
       </div>
     </div>
+  );
+};
+
+const STATUS_POLL_MS = 20000;
+const PICK_KEY = "nuesa-elections-admin-pick";
+
+/** Admin: one button per election; the dashboard below follows the one picked. */
+const ElectionsDashboard = ({ onLogout }) => {
+  const [electionId, setElectionId] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(PICK_KEY);
+      return ELECTIONS[saved] ? saved : ELECTION_ORDER[0];
+    } catch {
+      return ELECTION_ORDER[0];
+    }
+  });
+  const [statuses, setStatuses] = useState({});
+  const election = ELECTIONS[electionId];
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = () =>
+      getAllElectionStatuses()
+        .then((data) => !cancelled && setStatuses(data))
+        .catch(() => {});
+    load();
+    const timer = setInterval(load, STATUS_POLL_MS);
+    return () => {
+      cancelled = true;
+      clearInterval(timer);
+    };
+  }, []);
+
+  const pick = (id) => {
+    setElectionId(id);
+    try {
+      sessionStorage.setItem(PICK_KEY, id);
+    } catch {
+      // ignore storage access errors
+    }
+  };
+
+  return (
+    <ElectionContext.Provider value={election}>
+      <div className='bg-gray-50 px-4 pt-6 dark:bg-gray-950 sm:px-6 lg:px-8'>
+        <div className='mx-auto flex max-w-7xl flex-wrap items-center gap-2' role='tablist' aria-label='Election'>
+          <span className='mr-1 text-xs font-bold uppercase tracking-wide text-gray-400'>Election</span>
+          {ELECTION_ORDER.map((id) => {
+            const option = ELECTIONS[id];
+            const active = id === electionId;
+            return (
+              <button
+                key={id}
+                type='button'
+                role='tab'
+                aria-selected={active}
+                onClick={() => pick(id)}
+                className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
+                  active
+                    ? "border-green bg-green text-white"
+                    : "border-gray-300 bg-white text-gray-700 hover:border-green dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200"
+                }`}
+              >
+                <img src={option.logo} alt='' className='h-5 w-5 rounded-sm bg-white object-contain' />
+                {option.shortName}
+                {statuses[id] && (
+                  <span className='h-2 w-2 animate-pulse rounded-full bg-green-400' title='Voting is open' />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+      <ElectionDashboard key={electionId} onLogout={onLogout} />
+    </ElectionContext.Provider>
   );
 };
 

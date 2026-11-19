@@ -20,12 +20,8 @@ import {
   otpVerify,
   voterVerify,
 } from "../../lib/electionsApi";
-import {
-  ELECTED_POSITIONS,
-  NO_VOTE_ID,
-  getCandidatesByPosition,
-  isUnopposed,
-} from "../../lib/electionData";
+import { NO_VOTE_ID } from "../../lib/electionsRegistry";
+import { useElection } from "./ElectionContext";
 import TurnstileWidget, { turnstileFields, turnstileReady } from "./TurnstileWidget";
 
 const STEPS = ["Sign in", "Verify code", "Vote"];
@@ -117,6 +113,9 @@ const UnopposedChoice = ({ candidate, value, onChoose }) => (
 );
 
 const VoterBallot = () => {
+  const election = useElection();
+  const { positions: ELECTED_POSITIONS, getCandidatesByPosition, isUnopposed } = election;
+  const matricOnly = election.signIn === "matric";
   const configured = isElectionsApiConfigured();
   const [step, setStep] = useState(0);
   const [matricNumber, setMatricNumber] = useState("");
@@ -149,7 +148,7 @@ const VoterBallot = () => {
     event.preventDefault();
     run(async () => {
       try {
-        const data = await voterVerify(matricNumber, invoiceNumber, turnstileFields(turnstile));
+        const data = await voterVerify(matricNumber, matricOnly ? "" : invoiceNumber, turnstileFields(turnstile), election.id);
         setVoterToken(data.voterToken);
         setContacts(data);
         const sent = await otpSend(data.voterToken);
@@ -201,6 +200,14 @@ const VoterBallot = () => {
 
   const selectedCount = ELECTED_POSITIONS.filter((position) => selections[position.id]).length;
   const blankPositions = ELECTED_POSITIONS.filter((position) => !selections[position.id]);
+
+  if (!election.hasBallot) {
+    return (
+      <div className='mx-auto max-w-xl rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center text-sm text-amber-800 dark:border-amber-900/40 dark:bg-amber-900/20 dark:text-amber-300'>
+        The {election.shortName} ballot is not ready yet: candidates have not been added.
+      </div>
+    );
+  }
 
   if (!configured) {
     return (
@@ -267,30 +274,33 @@ const VoterBallot = () => {
                 <h2 className='font-bold text-gray-900 dark:text-white'>Voter sign-in</h2>
               </div>
               <p className='text-sm text-gray-600 dark:text-gray-300'>
-                Use your matric number as the username and your dues invoice
-                number as the password.
+                {matricOnly
+                  ? `Enter your matric number. If you are on the ${election.shortName} voters' list, we will send a one-time code to your phone and email on record.`
+                  : "Use your matric number as the username and your dues invoice number as the password."}
               </p>
               <Field
                 id='matric'
                 label='Matric Number'
-                hint='Username'
+                hint={matricOnly ? undefined : "Username"}
                 icon={User}
                 value={matricNumber}
                 onChange={(event) => setMatricNumber(event.target.value)}
                 placeholder='e.g. 24/ENG05/037'
                 required
               />
-              <Field
-                id='invoice'
-                label='Invoice Number'
-                hint='Password'
-                icon={KeyRound}
-                type='password'
-                value={invoiceNumber}
-                onChange={(event) => setInvoiceNumber(event.target.value)}
-                placeholder='Your dues invoice number'
-                required
-              />
+              {!matricOnly && (
+                <Field
+                  id='invoice'
+                  label='Invoice Number'
+                  hint='Password'
+                  icon={KeyRound}
+                  type='password'
+                  value={invoiceNumber}
+                  onChange={(event) => setInvoiceNumber(event.target.value)}
+                  placeholder='Your dues invoice number'
+                  required
+                />
+              )}
               <TurnstileWidget ref={turnstileRef} onChange={setTurnstile} />
               <button
                 type='submit'

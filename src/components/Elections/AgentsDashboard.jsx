@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { LogOut, Maximize2, Minimize2, RefreshCw } from "lucide-react";
-import logo from "../../assets/logo.png";
-import { ELECTION_META, ELECTED_POSITIONS } from "../../lib/electionData";
+import { ELECTIONS, ELECTION_ORDER } from "../../lib/electionsRegistry";
+import { ElectionContext, useElection } from "./ElectionContext";
 import { getAgentToken } from "../../lib/electionsApi";
 import { useElectionResults } from "../../hooks/useElectionResults";
 import LiveOverview from "./LiveOverview";
@@ -11,17 +11,10 @@ import PositionResult from "./PositionResult";
 const AGENT_REFRESH_MS = 15000;
 
 /** Live results only, for candidates' agents watching from the office screen. */
-const AgentsDashboard = ({ onLogout }) => {
-  const {
-    votesByPosition,
-    results,
-    registeredVoters,
-    ballotsCast,
-    loading,
-    error,
-    lastUpdated,
-    refresh,
-  } = useElectionResults({ getToken: getAgentToken, refreshMs: AGENT_REFRESH_MS });
+const AgentsView = ({ onLogout }) => {
+  const election = useElection();
+  const { votesByPosition, results, registeredVoters, ballotsCast, loading, error, lastUpdated, refresh } =
+    useElectionResults({ getToken: getAgentToken, refreshMs: AGENT_REFRESH_MS, election: election.id });
   const [fullscreen, setFullscreen] = useState(false);
 
   useEffect(() => {
@@ -54,12 +47,10 @@ const AgentsDashboard = ({ onLogout }) => {
               Agents&apos; live view
             </span>
             <div className='mt-3 flex items-center gap-3'>
-              <img src={logo} alt='NUESA ABUAD' className='h-11 w-11 shrink-0 object-contain' />
-              <h1 className='text-3xl font-bold text-gray-900 dark:text-white'>{ELECTION_META.title}</h1>
+              <img src={election.logo} alt={election.shortName} className='h-11 w-11 shrink-0 object-contain' />
+              <h1 className='text-3xl font-bold text-gray-900 dark:text-white'>{election.title}</h1>
             </div>
-            <p className='text-sm text-gray-600 dark:text-gray-400'>
-              Session {ELECTION_META.session} · Live results
-            </p>
+            <p className='text-sm text-gray-600 dark:text-gray-400'>Session {election.session} · Live results</p>
           </div>
           <div className='flex items-center gap-2 self-start'>
             <button
@@ -105,7 +96,7 @@ const AgentsDashboard = ({ onLogout }) => {
         </div>
 
         <div className='mt-8 grid grid-cols-1 gap-5 lg:grid-cols-2'>
-          {ELECTED_POSITIONS.map((position, index) => (
+          {election.positions.map((position, index) => (
             <PositionResult
               key={position.id}
               position={position}
@@ -116,6 +107,38 @@ const AgentsDashboard = ({ onLogout }) => {
         </div>
       </div>
     </div>
+  );
+};
+
+/** Candidates' agents: live results for the election they pick. */
+const AgentsDashboard = ({ onLogout }) => {
+  const [electionId, setElectionId] = useState(ELECTION_ORDER[0]);
+  return (
+    <ElectionContext.Provider value={ELECTIONS[electionId]}>
+      <div className='bg-gray-50 px-4 pt-6 dark:bg-gray-950 sm:px-6 lg:px-8'>
+        <div className='mx-auto flex max-w-7xl flex-wrap items-center gap-2' role='tablist' aria-label='Election'>
+          <span className='mr-1 text-xs font-bold uppercase tracking-wide text-gray-400'>Election</span>
+          {ELECTION_ORDER.map((id) => (
+            <button
+              key={id}
+              type='button'
+              role='tab'
+              aria-selected={id === electionId}
+              onClick={() => setElectionId(id)}
+              className={`inline-flex items-center gap-2 rounded-full border px-4 py-2 text-sm font-semibold transition-colors ${
+                id === electionId
+                  ? "border-green bg-green text-white"
+                  : "border-gray-300 bg-white text-gray-700 hover:border-green dark:border-gray-700 dark:bg-gray-900 dark:text-gray-200"
+              }`}
+            >
+              <img src={ELECTIONS[id].logo} alt='' className='h-5 w-5 rounded-sm bg-white object-contain' />
+              {ELECTIONS[id].shortName}
+            </button>
+          ))}
+        </div>
+      </div>
+      <AgentsView key={electionId} onLogout={onLogout} />
+    </ElectionContext.Provider>
   );
 };
 

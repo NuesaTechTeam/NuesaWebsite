@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { UserCog, Users, Vote } from "lucide-react";
-import { ELECTED_POSITIONS } from "../../lib/electionData";
+import { useElection } from "./ElectionContext";
 import CountUp from "../CountUp";
 
 const fadeUp = {
@@ -70,6 +70,7 @@ export const StatCard = ({ icon, label, value, children }) => {
 
 /** Registered voters, ballots cast, elected positions and the turnout donut. */
 const LiveOverview = ({ registered = 0, ballotsCast = 0 }) => {
+  const election = useElection();
   const turnout = registered > 0 ? (ballotsCast / registered) * 100 : 0;
 
   return (
@@ -86,7 +87,7 @@ const LiveOverview = ({ registered = 0, ballotsCast = 0 }) => {
         <StatCard icon={Vote} label='Ballots Cast' value={ballotsCast} />
       </motion.div>
       <motion.div variants={fadeUp}>
-        <StatCard icon={UserCog} label='Elected Positions' value={ELECTED_POSITIONS.length} />
+        <StatCard icon={UserCog} label='Elected Positions' value={election.positions.length} />
       </motion.div>
       <motion.div
         variants={fadeUp}

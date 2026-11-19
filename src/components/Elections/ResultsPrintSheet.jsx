@@ -1,19 +1,13 @@
 import { Printer, X } from "lucide-react";
-import logo from "../../assets/logo.png";
-import {
-  ELECTION_META,
-  ELECTED_POSITIONS,
-  NO_VOTE_ID,
-  getCandidatesByPosition,
-  isUnopposed,
-} from "../../lib/electionData";
+import { NO_VOTE_ID } from "../../lib/electionsRegistry";
+import { useElection } from "./ElectionContext";
 
 const percent = (part, whole) => (whole > 0 ? `${((part / whole) * 100).toFixed(1)}%` : "0.0%");
 
 /** Rows for one position: candidates (or Yes/No when unopposed), most votes first. */
-const positionRows = (position, votesByCandidate = {}) => {
-  const candidates = getCandidatesByPosition(position.id);
-  const options = isUnopposed(position.id)
+const positionRows = (election, position, votesByCandidate = {}) => {
+  const candidates = election.getCandidatesByPosition(position.id);
+  const options = election.isUnopposed(position.id)
     ? [
         { id: candidates[0].id, name: `Yes: ${candidates[0].name}` },
         { id: NO_VOTE_ID, name: "No" },
@@ -56,70 +50,73 @@ const Signatures = ({ compact }) => (
 );
 
 /** One-page version: every position in a compact two-column grid. */
-const OnePageBody = ({ votesByPosition, registered, cast, votingOpen, generatedAt }) => (
-  <>
-    <header className='flex items-center gap-3 border-b-2 border-gray-900 pb-2'>
-      <img src={logo} alt='' className='h-9 w-9 object-contain' />
-      <div className='flex-1'>
-        <h1 className='text-base font-bold leading-tight'>{ELECTION_META.title}: Official Results</h1>
-        <p className='text-[9px] text-gray-600'>
-          Session {ELECTION_META.session} · Generated {generatedAt.toLocaleString()} ·{" "}
-          {votingOpen ? "Voting OPEN (provisional)" : "Voting closed"}
+const OnePageBody = ({ votesByPosition, registered, cast, votingOpen, generatedAt }) => {
+  const election = useElection();
+  return (
+    <>
+      <header className='flex items-center gap-3 border-b-2 border-gray-900 pb-2'>
+        <img src={election.logo} alt='' className='h-9 w-9 object-contain' />
+        <div className='flex-1'>
+          <h1 className='text-base font-bold leading-tight'>{election.title}: Official Results</h1>
+          <p className='text-[9px] text-gray-600'>
+            Session {election.session} · Generated {generatedAt.toLocaleString()} ·{" "}
+            {votingOpen ? "Voting OPEN (provisional)" : "Voting closed"}
+          </p>
+        </div>
+        <p className='text-right text-[10px] leading-tight'>
+          Registered <b className='tabular-nums'>{registered.toLocaleString()}</b> · Cast{" "}
+          <b className='tabular-nums'>{cast.toLocaleString()}</b> · Turnout <b>{percent(cast, registered)}</b>
         </p>
-      </div>
-      <p className='text-right text-[10px] leading-tight'>
-        Registered <b className='tabular-nums'>{registered.toLocaleString()}</b> · Cast{" "}
-        <b className='tabular-nums'>{cast.toLocaleString()}</b> · Turnout <b>{percent(cast, registered)}</b>
-      </p>
-    </header>
-    <div className='mt-2 grid grid-cols-2 gap-x-3 gap-y-2'>
-      {ELECTED_POSITIONS.map((position) => {
-        const rows = positionRows(position, votesByPosition?.[position.id]);
-        const total = rows.reduce((sum, row) => sum + row.votes, 0);
-        const top = rows[0]?.votes ?? 0;
-        const tied = rows.filter((row) => row.votes === top).length > 1;
-        const blank = Math.max(cast - total, 0);
-        return (
-          <section key={position.id} className='break-inside-avoid'>
-            <h2 className='text-[10px] font-bold leading-tight'>
-              {position.order}. {position.title}
-              {isUnopposed(position.id) && (
-                <span className='ml-1 font-semibold uppercase text-gray-500'>(Yes / No)</span>
-              )}
-            </h2>
-            <table className='w-full border-collapse text-[9px] leading-tight'>
-              <tbody>
-                {rows.map((row) => (
-                  <tr key={row.id} className={row.votes === top && top > 0 ? "font-bold" : ""}>
+      </header>
+      <div className='mt-2 grid grid-cols-2 gap-x-3 gap-y-2'>
+        {election.positions.map((position) => {
+          const rows = positionRows(election, position, votesByPosition?.[position.id]);
+          const total = rows.reduce((sum, row) => sum + row.votes, 0);
+          const top = rows[0]?.votes ?? 0;
+          const tied = rows.filter((row) => row.votes === top).length > 1;
+          const blank = Math.max(cast - total, 0);
+          return (
+            <section key={position.id} className='break-inside-avoid'>
+              <h2 className='text-[10px] font-bold leading-tight'>
+                {position.order}. {position.title}
+                {election.isUnopposed(position.id) && (
+                  <span className='ml-1 font-semibold uppercase text-gray-500'>(Yes / No)</span>
+                )}
+              </h2>
+              <table className='w-full border-collapse text-[9px] leading-tight'>
+                <tbody>
+                  {rows.map((row) => (
+                    <tr key={row.id} className={row.votes === top && top > 0 ? "font-bold" : ""}>
+                      <td className='border border-gray-400 px-1.5 py-0.5'>
+                        {row.name}
+                        {row.votes === top && top > 0 && (
+                          <span className='ml-1 uppercase'>{tied ? "(tie)" : "(highest)"}</span>
+                        )}
+                      </td>
+                      <td className='w-12 border border-gray-400 px-1.5 py-0.5 text-right tabular-nums'>
+                        {row.votes.toLocaleString()}
+                      </td>
+                      <td className='w-12 border border-gray-400 px-1.5 py-0.5 text-right tabular-nums'>
+                        {percent(row.votes, total)}
+                      </td>
+                    </tr>
+                  ))}
+                  <tr className='text-gray-600'>
                     <td className='border border-gray-400 px-1.5 py-0.5'>
-                      {row.name}
-                      {row.votes === top && top > 0 && (
-                        <span className='ml-1 uppercase'>{tied ? "(tie)" : "(highest)"}</span>
-                      )}
+                      Total {total.toLocaleString()} · blank {blank.toLocaleString()}
                     </td>
-                    <td className='w-12 border border-gray-400 px-1.5 py-0.5 text-right tabular-nums'>
-                      {row.votes.toLocaleString()}
-                    </td>
-                    <td className='w-12 border border-gray-400 px-1.5 py-0.5 text-right tabular-nums'>
-                      {percent(row.votes, total)}
-                    </td>
+                    <td className='border border-gray-400' colSpan={2} />
                   </tr>
-                ))}
-                <tr className='text-gray-600'>
-                  <td className='border border-gray-400 px-1.5 py-0.5'>
-                    Total {total.toLocaleString()} · blank {blank.toLocaleString()}
-                  </td>
-                  <td className='border border-gray-400' colSpan={2} />
-                </tr>
-              </tbody>
-            </table>
-          </section>
-        );
-      })}
-    </div>
-    <Signatures compact />
-  </>
-);
+                </tbody>
+              </table>
+            </section>
+          );
+        })}
+      </div>
+      <Signatures compact />
+    </>
+  );
+};
 
 const ResultsPrintSheet = ({
   votesByPosition,
@@ -129,6 +126,7 @@ const ResultsPrintSheet = ({
   compact = false,
   onClose,
 }) => {
+  const election = useElection();
   const generatedAt = new Date();
   const registered = registeredVoters ?? 0;
   const cast = ballotsCast ?? 0;
@@ -170,11 +168,11 @@ const ResultsPrintSheet = ({
         ) : (
           <>
             <header className='flex items-center gap-4 border-b-2 border-gray-900 pb-4'>
-              <img src={logo} alt='' className='h-14 w-14 object-contain' />
+              <img src={election.logo} alt='' className='h-14 w-14 object-contain' />
               <div>
-                <h1 className='text-2xl font-bold'>{ELECTION_META.title}: Official Results</h1>
+                <h1 className='text-2xl font-bold'>{election.title}: Official Results</h1>
                 <p className='text-sm text-gray-600'>
-                  Session {ELECTION_META.session} · Generated {generatedAt.toLocaleString()} ·{" "}
+                  Session {election.session} · Generated {generatedAt.toLocaleString()} ·{" "}
                   {votingOpen ? "Voting OPEN (provisional)" : "Voting closed"}
                 </p>
               </div>
@@ -197,8 +195,8 @@ const ResultsPrintSheet = ({
               </tbody>
             </table>
 
-            {ELECTED_POSITIONS.map((position) => {
-              const rows = positionRows(position, votesByPosition?.[position.id]);
+            {election.positions.map((position) => {
+              const rows = positionRows(election, position, votesByPosition?.[position.id]);
               const total = rows.reduce((sum, row) => sum + row.votes, 0);
               const top = rows[0]?.votes ?? 0;
               const tied = rows.filter((row) => row.votes === top).length > 1;
@@ -208,7 +206,7 @@ const ResultsPrintSheet = ({
                 <section key={position.id} className='mt-6 break-inside-avoid'>
                   <h2 className='mb-1 text-base font-bold'>
                     {position.order}. {position.title}
-                    {isUnopposed(position.id) && (
+                    {election.isUnopposed(position.id) && (
                       <span className='ml-2 text-xs font-semibold uppercase text-gray-500'>(unopposed: Yes / No)</span>
                     )}
                   </h2>

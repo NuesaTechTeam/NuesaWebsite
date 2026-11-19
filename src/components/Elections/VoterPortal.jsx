@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { Clock, Fingerprint, ShieldCheck, Users } from "lucide-react";
-import logo from "../../assets/logo.png";
-import { ELECTION_META } from "../../lib/electionData";
+import { ArrowLeft, Clock, Fingerprint, ShieldCheck, Users } from "lucide-react";
+import { ElectionContext } from "./ElectionContext";
 import VoterBallot from "./VoterBallot";
 import { CandidatesTab, VerificationTab } from "./VoterTabs";
 
@@ -13,7 +12,7 @@ const TABS = [
   { id: "ballot", label: "Voter Ballot", icon: Fingerprint },
 ];
 
-const VoterPortal = ({ votingOpen = true }) => {
+const VoterPortal = ({ election, votingOpen = true, onBack }) => {
   const [activeTab, setActiveTab] = useState("verification");
 
   const goTo = (tab) => {
@@ -22,8 +21,18 @@ const VoterPortal = ({ votingOpen = true }) => {
   };
 
   return (
+    <ElectionContext.Provider value={election}>
     <div className='min-h-screen bg-gray-50 dark:bg-gray-950 px-4 py-10 sm:px-6 lg:px-8'>
       <div className='mx-auto max-w-7xl'>
+        {onBack && (
+          <button
+            type='button'
+            onClick={onBack}
+            className='mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-gray-500 transition-colors hover:text-green dark:text-gray-400 dark:hover:text-green-400'
+          >
+            <ArrowLeft className='h-4 w-4' /> All elections
+          </button>
+        )}
         <motion.div
           initial={{ opacity: 0, y: -16 }}
           animate={{ opacity: 1, y: 0 }}
@@ -37,15 +46,18 @@ const VoterPortal = ({ votingOpen = true }) => {
           ) : (
             <span className='inline-flex items-center gap-1.5 rounded-full bg-amber-100 dark:bg-amber-900/40 px-3 py-1 text-xs font-bold uppercase tracking-wide text-amber-700 dark:text-amber-400'>
               <Clock className='h-3.5 w-3.5' />
-              Voting has not started
+              {election.ended ? "Voting has ended" : "Voting has not started"}
             </span>
           )}
           <div className='mt-3 flex items-center gap-3'>
-            <img src={logo} alt='NUESA ABUAD' className='h-11 w-11 shrink-0 object-contain' />
-            <h1 className='text-3xl font-bold text-gray-900 dark:text-white'>{ELECTION_META.title}</h1>
+            <img src={election.logo} alt={election.shortName} className='h-11 w-11 shrink-0 object-contain' />
+            <h1 className='text-3xl font-bold text-gray-900 dark:text-white'>{election.title}</h1>
           </div>
           <p className='text-sm text-gray-600 dark:text-gray-400'>
-            Session {ELECTION_META.session} · Sign in with your matric and invoice numbers to vote
+            Session {election.session} ·{" "}
+            {election.signIn === "matric-invoice"
+              ? "Sign in with your matric and invoice numbers to vote"
+              : "Sign in with your matric number to vote"}
           </p>
         </motion.div>
 
@@ -99,10 +111,13 @@ const VoterPortal = ({ votingOpen = true }) => {
                 ) : (
                   <div className='mx-auto max-w-xl rounded-2xl border border-amber-200 bg-amber-50 p-8 text-center dark:border-amber-900 dark:bg-amber-950/40'>
                     <Clock className='mx-auto h-10 w-10 text-amber-600 dark:text-amber-400' />
-                    <h2 className='mt-3 text-xl font-bold text-gray-900 dark:text-white'>Voting has not started yet</h2>
+                    <h2 className='mt-3 text-xl font-bold text-gray-900 dark:text-white'>
+                      {election.ended ? "Voting has ended" : "Voting has not started yet"}
+                    </h2>
                     <p className='mt-2 text-sm text-gray-600 dark:text-gray-400'>
-                      The ballot opens when the electoral committee starts voting. Keep this page open: it updates on
-                      its own. Meanwhile you can read how verification works and view the candidates.
+                      {election.ended
+                        ? "The election is over. Thank you to everyone who voted. You can still look at how verification worked and who the candidates were."
+                        : "The ballot opens when the electoral committee starts voting. Keep this page open: it updates on its own. Meanwhile you can read how verification works and view the candidates."}
                     </p>
                   </div>
                 ))}
@@ -111,6 +126,7 @@ const VoterPortal = ({ votingOpen = true }) => {
         </div>
       </div>
     </div>
+    </ElectionContext.Provider>
   );
 };
 
