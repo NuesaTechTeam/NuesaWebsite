@@ -149,6 +149,12 @@ const VoterBallot = () => {
     run(async () => {
       try {
         const data = await voterVerify(matricNumber, matricOnly ? "" : invoiceNumber, turnstileFields(turnstile), election.id);
+        if (data.noCode) {
+          // No phone or email on the list: the server went straight to the ballot.
+          setBallotToken(data.ballotToken);
+          setStep(2);
+          return;
+        }
         setVoterToken(data.voterToken);
         setContacts(data);
         const sent = await otpSend(data.voterToken);

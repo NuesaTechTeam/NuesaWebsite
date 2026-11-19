@@ -1464,15 +1464,18 @@ async function voterVerifyScoped(request, env, election, body) {
       401
     );
   }
-  if (!row.email && !row.phone) {
-    return json(
-      { error: "We have no email or phone number on record for you, so we can't send a code. Please see the electoral committee." },
-      422
-    );
-  }
-
   const scoped = `${election.id}:${key}`;
   if (await hasVoted(env, scoped)) return alreadyVoted();
+
+  // Members with no email and no phone on the list (the committee's decision) have nowhere to
+  // send a code, so they go straight to the ballot with just their matric number. Logged so the
+  // committee can see how many votes were cast this way.
+  if (!row.email && !row.phone) {
+    const ballotToken = randomToken();
+    await putToken(env, "ballot", ballotToken, { voterKey: scoped, matric: scoped, election: election.id }, BALLOT_TTL);
+    logEvent(request, "signin_without_code", { action: "ballot_issued", election: election.id, matric: key.slice(0, 40) });
+    return json({ ballotToken, noCode: true });
+  }
 
   const voter = {
     key: scoped,

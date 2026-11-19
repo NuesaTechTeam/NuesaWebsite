@@ -1,5 +1,5 @@
 {
-  "_note": "MIPESA election ballot. Read by the website (src/lib/electionsRegistry.js) AND the elections worker (worker/src/index.js), which rejects votes for anything not listed. After editing, redeploy BOTH. One candidate = unopposed (Yes/No). A position with no candidates is hidden. Posts for Ibeh (President) and Bassey (Sports Director) were inferred from the chat order: confirm with MIPESA.",
+  "_note": "MIPESA election ballot. Read by the website (src/lib/electionsRegistry.js) AND the elections worker (worker/src/index.js), which rejects votes for anything not listed. After editing, redeploy BOTH. One candidate = unopposed (Yes/No). A position with no candidates is hidden.",
   "id": "mipesa",
   "shortName": "MIPESA",
   "name": "Mechatronics, Industrial and Production Engineering Students Association, ABUAD",
@@ -56,16 +56,16 @@
   ],
   "candidates": [
     {
-      "id": "mipesa-president-ibeh-albert-chibuike",
-      "positionId": "mipesa-president",
-      "name": "Ibeh Albert Chibuike",
-      "photo": "/images/elections/mipesa/ibeh-albert-chibuike.jpg"
-    },
-    {
       "id": "mipesa-president-ofoni-ejiroghene-rex",
       "positionId": "mipesa-president",
       "name": "Ofoni Ejiroghene Rex",
       "photo": "/images/elections/mipesa/ofoni-ejiroghene-rex.jpg"
+    },
+    {
+      "id": "mipesa-vice-president-ibeh-albert-chibuike",
+      "positionId": "mipesa-vice-president",
+      "name": "Ibeh Albert Chibuike",
+      "photo": "/images/elections/mipesa/ibeh-albert-chibuike.jpg"
     },
     {
       "id": "mipesa-vice-president-omodun-tobiloba-paul",
@@ -110,10 +110,10 @@
       "photo": "/images/elections/mipesa/oguche-divine-eneojo.jpg"
     },
     {
-      "id": "mipesa-sports-director-bassey-godspower-effiong",
+      "id": "mipesa-sports-director-nehemiah-layade-ebunoluwa",
       "positionId": "mipesa-sports-director",
-      "name": "Bassey God'spower Effiong",
-      "photo": "/images/elections/mipesa/bassey-godspower-effiong.jpg"
+      "name": "Nehemiah Layade Ebunoluwa",
+      "photo": "/images/elections/mipesa/nehemiah-layade-ebunoluwa.jpg"
     },
     {
       "id": "mipesa-sports-director-uchehara-munachimso-ifedichinma",
@@ -122,10 +122,10 @@
       "photo": "/images/elections/mipesa/uchehara-munachimso-ifedichinma.jpg"
     },
     {
-      "id": "mipesa-welfare-director-nehemiah-layade-ebunoluwa",
+      "id": "mipesa-welfare-director-bassey-godspower-effiong",
       "positionId": "mipesa-welfare-director",
-      "name": "Nehemiah Layade Ebunoluwa",
-      "photo": "/images/elections/mipesa/nehemiah-layade-ebunoluwa.jpg"
+      "name": "Bassey God'spower Effiong",
+      "photo": "/images/elections/mipesa/bassey-godspower-effiong.jpg"
     }
   ]
 }

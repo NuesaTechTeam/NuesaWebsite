@@ -1,5 +1,5 @@
 {
-  "_note": "APWEN election ballot (female engineering students). Candidates and posts not supplied yet: add positions and candidates here (see the new-election skill), drop photos in public/images/elections/apwen/, then redeploy the worker AND the site.",
+  "_note": "APWEN election ballot. Read by the website (src/lib/electionsRegistry.js) AND the elections worker (worker/src/index.js), which rejects votes for anything not listed. After editing, redeploy BOTH. One candidate = unopposed (Yes/No). A position with no candidates is hidden.",
   "id": "apwen",
   "shortName": "APWEN",
   "name": "Association of Professional Women Engineers of Nigeria (APWEN) ABUAD Collegiate",
@@ -7,6 +7,63 @@
   "session": "2026/2027",
   "logo": "/images/APWEN/APWEN LOGO.png",
   "signIn": "matric",
-  "positions": [],
-  "candidates": []
+  "positions": [
+    {
+      "id": "apwen-president",
+      "title": "President",
+      "order": 1
+    },
+    {
+      "id": "apwen-vice-president",
+      "title": "Vice President",
+      "order": 2
+    },
+    {
+      "id": "apwen-financial-director",
+      "title": "Financial Director",
+      "order": 3
+    },
+    {
+      "id": "apwen-technical-secretary",
+      "title": "Technical Secretary",
+      "order": 4
+    },
+    {
+      "id": "apwen-welfare-director",
+      "title": "Welfare Director",
+      "order": 5
+    }
+  ],
+  "candidates": [
+    {
+      "id": "apwen-president-briggs-tamunotari",
+      "positionId": "apwen-president",
+      "name": "Briggs Tamunotari",
+      "photo": "/images/elections/apwen/briggs-tamunotari.jpg"
+    },
+    {
+      "id": "apwen-vice-president-ayalogu-ijemamaka-michaela",
+      "positionId": "apwen-vice-president",
+      "name": "Ayalogu Ijemamaka Michaela",
+      "photo": "/images/elections/apwen/ayalogu-ijemamaka-michaela.jpg"
+    },
+    {
+      "id": "apwen-financial-director-ndu-onyinyechi-glory",
+      "positionId": "apwen-financial-director",
+      "name": "Ndu Onyinyechi Glory",
+      "photo": "/images/elections/apwen/ndu-onyinyechi-glory.jpg"
+    },
+    {
+      "id": "apwen-technical-secretary-odion-owase-kimberly",
+      "positionId": "apwen-technical-secretary",
+      "name": "Odion-Owase Kimberly",
+      "photo": "/images/elections/apwen/odion-owase-kimberly.jpg"
+    },
+    {
+      "id": "apwen-welfare-director-edomwande-ebuwa-blossom",
+      "positionId": "apwen-welfare-director",
+      "name": "Edomwande Ebuwa Blossom",
+      "photo": "/images/elections/apwen/edomwande-ebuwa-blossom.jpg"
+    }
+  ]
 }
