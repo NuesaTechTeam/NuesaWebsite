@@ -28,9 +28,9 @@ const MATRIC_FIELD = {
 };
 
 const MATRIC_ONLY_STEPS = [
-  "Voter enters their matric number. Only members on the paid voters' list can continue.",
-  "A one-time password is sent to the email address and phone number on record.",
-  "Voter enters the OTP to unlock the ballot.",
+  "Voter enters their matric number. Only members on the voters' list can continue.",
+  "A one-time password is sent to the email address and phone number on record. Members with no contact on record go straight to the ballot.",
+  "Voter enters the OTP to unlock the ballot (if one was sent).",
   "Pick a candidate for any position you want to vote on; you may leave positions blank. Unopposed candidates get a Yes or No vote.",
   "Submit once. Each voter has a single ballot, and it cannot be changed after submission.",
 ];
@@ -96,7 +96,7 @@ export const ELECTIONS = {
     blurb: "The main NUESA ABUAD executive elections.",
     ended: true, // 18 Nov 2026 election is over; set to false when NUESA votes again
   }),
-  mipesa: fromConfig(MIPESA, "Mechatronics, Industrial and Production Engineering students. Paid members only."),
+  mipesa: fromConfig(MIPESA, "Mechatronics, Industrial and Production Engineering students (100 to 500 level)."),
   apwen: fromConfig(APWEN, "APWEN ABUAD Collegiate: female engineering students."),
 };
 

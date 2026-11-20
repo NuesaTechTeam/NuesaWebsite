@@ -1460,7 +1460,7 @@ async function voterVerifyScoped(request, env, election, body) {
     logEvent(request, "voter_not_found", { action: "refused", election: election.id, matric: key.slice(0, 40) });
     await recordSignInFailure(request, env, `${election.id}:${key.slice(0, 40)}`);
     return json(
-      { error: `We could not find that matric number on the ${election.label} voters' list. Only members who have paid can vote. If you have paid, see the electoral committee.` },
+      { error: `We could not find that matric number on the ${election.label} voters' list. If you think you should be on it, please see the electoral committee.` },
       401
     );
   }
