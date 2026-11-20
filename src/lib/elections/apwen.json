@@ -29,8 +29,8 @@
       "order": 4
     },
     {
-      "id": "apwen-welfare-director",
-      "title": "Welfare Director",
+      "id": "apwen-social-director",
+      "title": "Social Director",
       "order": 5
     }
   ],
@@ -60,8 +60,8 @@
       "photo": "/images/elections/apwen/odion-owase-kimberly.jpg"
     },
     {
-      "id": "apwen-welfare-director-edomwande-ebuwa-blossom",
-      "positionId": "apwen-welfare-director",
+      "id": "apwen-social-director-edomwande-ebuwa-blossom",
+      "positionId": "apwen-social-director",
       "name": "Edomwande Ebuwa Blossom",
       "photo": "/images/elections/apwen/edomwande-ebuwa-blossom.jpg"
     }
